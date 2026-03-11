@@ -344,13 +344,13 @@
 
         .price { font-size: 26px; font-weight: 900; margin-bottom: 15px; color: #000; }
 
-        .buy-btn { background: #000; color: #fff; border: none; padding: 16px; border-radius: 14px; font-weight: 800; cursor: pointer; width: 100%; text-transform: uppercase; transition: 0.3s; letter-spacing: 1px; font-family: inherit; }
+        .buy-btn { background: #000; color: #fff; border: none; padding: 16px; border-radius: 14px; font-weight: 800; cursor: pointer; width: 100%; text-transform: uppercase; transition: 0.3s; letter-spacing: 1px; font-family: inherit; position: relative; z-index: 2; }
         .buy-btn:hover { background: #333; transform: scale(1.02); }
         .buy-btn.in-cart { background: #1a7a3a; color: #fff; }
         .buy-btn.in-cart:hover { background: #155f2d; transform: scale(1.02); }
 
         .card-links { margin-top: 15px; display: flex; flex-direction: column; gap: 8px; min-height: 35px; justify-content: flex-end; }
-        .avito-btn-small { color: #fff; background: #00AAFF; text-decoration: none; font-size: 13px; font-weight: 800; border: none; padding: 10px 14px; border-radius: 10px; transition: 0.2s; display: block; text-align: center; }
+        .avito-btn-small { color: #fff; background: #00AAFF; text-decoration: none; font-size: 13px; font-weight: 800; border: none; padding: 10px 14px; border-radius: 10px; transition: 0.2s; display: block; text-align: center; position: relative; z-index: 2; }
         .avito-btn-small:hover { background: #0099ee; transform: scale(1.02); }
 
         /* SEO-текстовый блок */
@@ -397,6 +397,46 @@
             .products { grid-template-columns: 1fr; padding: 20px 5%; }
             #cart-sidebar { max-width: 100%; padding: 20px; }
             .cart-icon .cart-text { display: none; }
+        }
+
+        /* === MODAL PRODUCT CARD === */
+        .product-card { cursor: pointer; }
+        #product-modal { display: none; position: fixed; inset: 0; z-index: 5000; background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); align-items: center; justify-content: center; padding: 20px; }
+        #product-modal.open { display: flex; }
+        .modal-inner { background: #111; color: #fff; border-radius: 24px; max-width: 900px; width: 100%; max-height: 90vh; overflow-y: auto; display: flex; flex-direction: column; position: relative; box-shadow: 0 30px 80px rgba(0,0,0,0.6); }
+        .modal-body { display: flex; gap: 0; }
+        .modal-img-side { flex: 1; background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%); border-radius: 24px 0 0 24px; display: flex; align-items: center; justify-content: center; padding: 40px; min-height: 400px; position: relative; }
+        .modal-img-side img { max-width: 100%; max-height: 320px; object-fit: contain; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5)); }
+        .modal-badge { position: absolute; top: 20px; right: 20px; background: rgba(255,200,0,0.15); border: 1px solid rgba(255,200,0,0.4); color: #ffd166; font-size: 11px; font-weight: 800; letter-spacing: 2px; padding: 6px 12px; border-radius: 20px; text-transform: uppercase; }
+        .modal-info-side { flex: 1; padding: 40px; display: flex; flex-direction: column; }
+        .modal-breadcrumb { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: #666; text-transform: uppercase; margin-bottom: 20px; }
+        .modal-breadcrumb span { color: #ffd166; }
+        .modal-title { font-size: clamp(32px, 5vw, 48px); font-weight: 900; line-height: 1.1; margin-bottom: 16px; }
+        .modal-title .gold { color: #ffd166; font-style: italic; display: block; }
+        .modal-desc { font-size: 15px; color: #aaa; line-height: 1.7; border-left: 3px solid #ffd166; padding-left: 16px; margin-bottom: 24px; font-style: italic; }
+        .modal-price-block { display: flex; align-items: center; gap: 16px; margin-bottom: 8px; }
+        .modal-price { font-size: 42px; font-weight: 900; color: #fff; }
+        .modal-price-old { font-size: 20px; color: #555; text-decoration: line-through; font-weight: 600; }
+        .modal-badge-small { font-size: 11px; font-weight: 800; color: #1a7a3a; background: rgba(26,122,58,0.15); border: 1px solid rgba(26,122,58,0.3); padding: 4px 10px; border-radius: 20px; letter-spacing: 1px; text-transform: uppercase; }
+        .modal-note { font-size: 12px; color: #ffd166; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 24px; display: flex; align-items: center; gap: 6px; }
+        .modal-note::before { content: '●'; font-size: 8px; }
+        .modal-btn-main { background: #ffd166; color: #000; border: none; padding: 18px 24px; border-radius: 14px; font-size: 16px; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; font-family: inherit; transition: 0.2s; margin-bottom: 12px; }
+        .modal-btn-main:hover { background: #ffca2c; transform: scale(1.02); }
+        .modal-btn-secondary { background: #1a1a1a; color: #aaa; border: 1px solid #333; padding: 14px 24px; border-radius: 14px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; transition: 0.2s; text-decoration: none; display: block; text-align: center; }
+        .modal-btn-secondary:hover { border-color: #555; color: #fff; }
+        .modal-btn-avito { background: #00AAFF; color: #fff; border: none; padding: 14px 24px; border-radius: 14px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; transition: 0.2s; text-decoration: none; display: block; text-align: center; margin-top: 8px; }
+        .modal-btn-avito:hover { background: #0099ee; }
+        .modal-specs { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 24px; padding-top: 24px; border-top: 1px solid #222; }
+        .modal-spec { }
+        .modal-spec-label { font-size: 10px; font-weight: 800; letter-spacing: 2px; color: #ffd166; text-transform: uppercase; margin-bottom: 4px; }
+        .modal-spec-value { font-size: 14px; font-weight: 700; color: #fff; }
+        .modal-close { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.1); border: none; color: #fff; width: 40px; height: 40px; border-radius: 50%; font-size: 20px; cursor: pointer; z-index: 10; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+        .modal-close:hover { background: rgba(255,255,255,0.2); }
+        @media (max-width: 650px) {
+            .modal-body { flex-direction: column; }
+            .modal-img-side { border-radius: 24px 24px 0 0; min-height: 260px; padding: 30px; }
+            .modal-info-side { padding: 24px; }
+            .modal-specs { grid-template-columns: 1fr 1fr; }
         }
     </style>
 
@@ -467,78 +507,72 @@
 </section>
 
 <div class="products">
-   <div class="product-card">
+   <div class="product-card" onclick="openModal('gold')">
     <div class="img-container">
-        <a href="https://timmir1.github.io/gold-youtube-button">
-            <img src="https://timmir1.github.io/gold%20button.png" alt="Золотая кнопка YouTube купить из металла">
-        </a>
+        <img src="https://timmir1.github.io/gold%20button.png" alt="Золотая кнопка YouTube купить из металла">
     </div>
     <h3>Золотая кнопка Ютуб</h3>
     <p>Тяжелый металл 1,8 кг, зеркальная полировка вручную. Реплика награды за 1 000 000 подписчиков. Полный комплект.</p>
     <div class="price">8 600 ₽</div>
-    <button class="buy-btn" data-name='Золотая кнопка Ютуб' onclick="addToCart('Золотая кнопка Ютуб', 8600, 'https://timmir1.github.io/gold%20button.png', this)">В корзину</button>
-    <div class="card-links"><a href="https://www.avito.ru/moskva/kollektsionirovanie/zolotaya_knopka_youtube_statusnyy_podarok_1954819361" target="_blank" class="avito-btn-small">Посмотреть на Авито →</a></div>
+    <button class="buy-btn" data-name='Золотая кнопка Ютуб' onclick="event.stopPropagation(); addToCart('Золотая кнопка Ютуб', 8600, 'https://timmir1.github.io/gold%20button.png', this)">В корзину</button>
+    <div class="card-links"><a href="https://www.avito.ru/moskva/kollektsionirovanie/zolotaya_knopka_youtube_statusnyy_podarok_1954819361" target="_blank" class="avito-btn-small" onclick="event.stopPropagation()">Посмотреть на Авито →</a></div>
 </div>
 
-   <div class="product-card">
+   <div class="product-card" onclick="openModal('silver')">
     <div class="img-container">
-        <a href="https://timmir1.github.io/silver-youtube-button.html">
-            <img src="https://timmir1.github.io/gray%20button3.png" alt="Серебряная кнопка YouTube купить из металла">
-        </a>
+        <img src="https://timmir1.github.io/gray%20button3.png" alt="Серебряная кнопка YouTube купить из металла">
     </div>
     <h3>Серебряная кнопка Ютуб</h3>
     <p>Точная копия награды за 100 000 подписчиков. Металл 1,2 кг, матовый и глянцевый — не пластик.</p>
     <div class="price">6 800 ₽</div>
-    <button class="buy-btn" data-name='Серебряная кнопка Ютуб' onclick="addToCart('Серебряная кнопка Ютуб', 6800, 'https://timmir1.github.io/gray%20button3.png', this)">В корзину</button>
-    <div class="card-links"><a href="https://www.avito.ru/moskva/kollektsionirovanie/serebryanaya_knopka_youtube_premium_kachestvo_2434259570" target="_blank" class="avito-btn-small">Посмотреть на Авито →</a></div>
+    <button class="buy-btn" data-name='Серебряная кнопка Ютуб' onclick="event.stopPropagation(); addToCart('Серебряная кнопка Ютуб', 6800, 'https://timmir1.github.io/gray%20button3.png', this)">В корзину</button>
+    <div class="card-links"><a href="https://www.avito.ru/moskva/kollektsionirovanie/serebryanaya_knopka_youtube_premium_kachestvo_2434259570" target="_blank" class="avito-btn-small" onclick="event.stopPropagation()">Посмотреть на Авито →</a></div>
 </div>
 
-    <div class="product-card">
+    <div class="product-card" onclick="openModal('shorts')">
         <div class="img-container"><img src="https://timmir1.github.io/shorts2.png" alt="Золотая кнопка YouTube Shorts из металла"></div>
         <h3>Золотая кнопка Shorts</h3>
         <p>Эксклюзивная металлическая награда 1,8 кг для авторов коротких видео YouTube Shorts.</p>
         <div class="price">8 600 ₽</div>
-        <button class="buy-btn" data-name='Золотая кнопка Shorts' onclick="addToCart('Золотая кнопка Shorts', 8600, 'https://timmir1.github.io/shorts2.png', this)">В корзину</button>
-        <div class="card-links"><a href="https://www.avito.ru/moskva/kollektsionirovanie/zolotaya_knopka_youtube_statusnyy_podarok_1954819361" target="_blank" class="avito-btn-small">Посмотреть на Авито →</a></div>
+        <button class="buy-btn" data-name='Золотая кнопка Shorts' onclick="event.stopPropagation(); addToCart('Золотая кнопка Shorts', 8600, 'https://timmir1.github.io/shorts2.png', this)">В корзину</button>
+        <div class="card-links"><a href="https://www.avito.ru/moskva/kollektsionirovanie/zolotaya_knopka_youtube_statusnyy_podarok_1954819361" target="_blank" class="avito-btn-small" onclick="event.stopPropagation()">Посмотреть на Авито →</a></div>
     </div>
 
-    <div class="product-card">
+    <div class="product-card" onclick="openModal('mini')">
         <div class="img-container"><img src="https://timmir1.github.io/Instagram_button.png" alt="Мини-кнопка YouTube с никнеймом"></div>
         <h3>Мини-кнопка (Эксклюзив)</h3>
         <p>Карманная металлическая версия награды с вашим никнеймом. Вес 220 г. Уникальный сувенир для блогера.</p>
         <div class="price">4 900 ₽</div>
-        <button class="buy-btn" data-name='Мини-кнопка' onclick="addToCart('Мини-кнопка', 4900, 'https://timmir1.github.io/Instagram_button.png', this)">В корзину</button>
-        <div class="card-links"><a href="https://www.avito.ru/moskva/kollektsionirovanie/zolotaya_knopka_youtube_statusnyy_podarok_1954819361" target="_blank" class="avito-btn-small">Посмотреть на Авито →</a></div>
+        <button class="buy-btn" data-name='Мини-кнопка' onclick="event.stopPropagation(); addToCart('Мини-кнопка', 4900, 'https://timmir1.github.io/Instagram_button.png', this)">В корзину</button>
+        <div class="card-links"><a href="https://www.avito.ru/moskva/kollektsionirovanie/zolotaya_knopka_youtube_statusnyy_podarok_1954819361" target="_blank" class="avito-btn-small" onclick="event.stopPropagation()">Посмотреть на Авито →</a></div>
     </div>
 
-    <div class="product-card">
+    <div class="product-card" onclick="openModal('likee')">
         <div class="img-container"><img src="https://timmir1.github.io/Likesite.png" alt="Золотая кнопка Likee из металла"></div>
         <h3>Золотая кнопка Likee</h3>
         <p>Для звёзд платформы Likee. Металл 1,8 кг, точное соответствие оригинальной награде.</p>
         <div class="price">8 600 ₽</div>
-        <button class="buy-btn" data-name='Золотая кнопка Likee' onclick="addToCart('Золотая кнопка Likee', 8600, 'https://timmir1.github.io/Likesite.png', this)">В корзину</button>
-        <div class="card-links"><a href="https://www.avito.ru/moskva/kollektsionirovanie/zolotaya_knopka_youtube_statusnyy_podarok_1954819361" target="_blank" class="avito-btn-small">Посмотреть на Авито →</a></div>
+        <button class="buy-btn" data-name='Золотая кнопка Likee' onclick="event.stopPropagation(); addToCart('Золотая кнопка Likee', 8600, 'https://timmir1.github.io/Likesite.png', this)">В корзину</button>
+        <div class="card-links"><a href="https://www.avito.ru/moskva/kollektsionirovanie/zolotaya_knopka_youtube_statusnyy_podarok_1954819361" target="_blank" class="avito-btn-small" onclick="event.stopPropagation()">Посмотреть на Авито →</a></div>
     </div>
 
-    <div class="product-card">
+    <div class="product-card" onclick="openModal('chatgpt')">
         <div class="img-container"><img src="https://timmir1.github.io/chatchptsite.png" alt="Кнопка ChatGPT из металла подарок"></div>
         <h3>Кнопка ChatGPT</h3>
         <p>Для тех, кто на волне ИИ. Футуристичный дизайн из металла 1,8 кг — необычный подарок.</p>
         <div class="price">8 600 ₽</div>
-        <button class="buy-btn" data-name='Кнопка ChatGPT' onclick="addToCart('Кнопка ChatGPT', 8600, 'https://timmir1.github.io/chatchptsite.png', this)">В корзину</button>
-        <div class="card-links"><a href="https://www.avito.ru/moskva/kollektsionirovanie/zolotaya_knopka_youtube_statusnyy_podarok_1954819361" target="_blank" class="avito-btn-small">Посмотреть на Авито →</a></div>
+        <button class="buy-btn" data-name='Кнопка ChatGPT' onclick="event.stopPropagation(); addToCart('Кнопка ChatGPT', 8600, 'https://timmir1.github.io/chatchptsite.png', this)">В корзину</button>
+        <div class="card-links"><a href="https://www.avito.ru/moskva/kollektsionirovanie/zolotaya_knopka_youtube_statusnyy_podarok_1954819361" target="_blank" class="avito-btn-small" onclick="event.stopPropagation()">Посмотреть на Авито →</a></div>
     </div>
 
-   <div class="product-card">
+   <div class="product-card" onclick="openModal('custom')">
     <div class="img-container">
-        <a href="https://timmir1.github.io/custom-youtube-play-button.html">
-            <img src="https://raw.githubusercontent.com/TimMir1/timmir1.github.io/main/Gucci.png" alt="Индивидуальная кнопка YouTube на заказ">
-        </a>
+        <img src="https://raw.githubusercontent.com/TimMir1/timmir1.github.io/main/Gucci.png" alt="Индивидуальная кнопка YouTube на заказ">
     </div>
     <h3>Индивидуальная кнопка</h3>
     <p>Создадим кнопку с вашим логотипом, ником или уникальным дизайном. Любые цвета и материалы.</p>
     <div class="price">от 7 500 ₽</div>
-    <button class="buy-btn" data-name='Индивидуальная кнопка' onclick="addToCart('Индивидуальная кнопка', 7500, 'https://timmir1.github.io/individual.png', this)">В корзину</button>
+    <button class="buy-btn" data-name='Индивидуальная кнопка' onclick="event.stopPropagation(); addToCart('Индивидуальная кнопка', 7500, 'https://timmir1.github.io/individual.png', this)">В корзину</button>
 </div>
 </div>
 
@@ -683,6 +717,52 @@
     </div>
 </div>
 
+<!-- PRODUCT MODAL -->
+<div id="product-modal" onclick="closeModalOutside(event)">
+    <div class="modal-inner" id="modal-inner">
+        <button class="modal-close" onclick="closeModal()">✕</button>
+        <div class="modal-body">
+            <div class="modal-img-side">
+                <img id="modal-img" src="" alt="">
+                <div class="modal-badge" id="modal-badge">EDITION</div>
+            </div>
+            <div class="modal-info-side">
+                <div class="modal-breadcrumb">ГЛАВНАЯ / <span id="modal-breadcrumb-name">ТОВАР</span></div>
+                <h2 class="modal-title">
+                    <span class="gold" id="modal-title-gold"></span>
+                    <span id="modal-title-main"></span>
+                </h2>
+                <p class="modal-desc" id="modal-desc"></p>
+                <div class="modal-price-block">
+                    <div class="modal-price" id="modal-price"></div>
+                    <div class="modal-price-old" id="modal-price-old"></div>
+                </div>
+                <div class="modal-note" id="modal-note">ТЯЖЁЛЫЙ ЛЮКС. ГРАВИРОВКА НИКА ЗА 4 ЧАСА.</div>
+                <button class="modal-btn-main" id="modal-cart-btn" onclick="modalAddToCart()">ЗАКАЗАТЬ В TELEGRAM</button>
+                <a class="modal-btn-avito" id="modal-avito-btn" href="#" target="_blank">На Авито →</a>
+                <div class="modal-specs">
+                    <div class="modal-spec">
+                        <div class="modal-spec-label">ВЕС ИЗДЕЛИЯ</div>
+                        <div class="modal-spec-value" id="modal-weight"></div>
+                    </div>
+                    <div class="modal-spec">
+                        <div class="modal-spec-label">МАТЕРИАЛ</div>
+                        <div class="modal-spec-value" id="modal-material"></div>
+                    </div>
+                    <div class="modal-spec">
+                        <div class="modal-spec-label">СРОК ИЗГОТОВЛЕНИЯ</div>
+                        <div class="modal-spec-value" id="modal-time"></div>
+                    </div>
+                    <div class="modal-spec">
+                        <div class="modal-spec-label">ДОСТАВКА</div>
+                        <div class="modal-spec-value" id="modal-delivery"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <footer>
     <div class="footer-content">
         <div class="footer-section">
@@ -805,6 +885,178 @@
     }
 
     updateCart();
+
+    // === PRODUCT MODAL DATA ===
+    const products = {
+        'gold': {
+            img: 'https://timmir1.github.io/gold%20button.png',
+            badge: 'GOLD AWARD',
+            titleGold: 'ЗОЛОТАЯ',
+            titleMain: 'YOUTUBE',
+            desc: 'Эксклюзивная металлическая награда весом 1,8 кг. Зеркальная полировка вручную. Реплика Gold Play Button за 1 000 000 подписчиков.',
+            price: '8 600 ₽',
+            priceOld: '12 500 ₽',
+            priceVal: 8600,
+            weight: '1.8 кг (Массив)',
+            material: 'Металл + Анодирование',
+            time: '4 часа',
+            delivery: 'По всей России',
+            avito: 'https://www.avito.ru/moskva/kollektsionirovanie/zolotaya_knopka_youtube_statusnyy_podarok_1954819361',
+            breadcrumb: 'GOLD PLAY BUTTON',
+            name: 'Золотая кнопка Ютуб'
+        },
+        'silver': {
+            img: 'https://timmir1.github.io/gray%20button3.png',
+            badge: 'SILVER AWARD',
+            titleGold: 'СЕРЕБРЯНАЯ',
+            titleMain: 'YOUTUBE',
+            desc: 'Точная копия Silver Play Button за 100 000 подписчиков. Металл 1,2 кг, матовый и глянцевый — не пластик.',
+            price: '6 800 ₽',
+            priceOld: '10 000 ₽',
+            priceVal: 6800,
+            weight: '1.2 кг (Массив)',
+            material: 'Металл + Анодирование',
+            time: '4 часа',
+            delivery: 'По всей России',
+            avito: 'https://www.avito.ru/moskva/kollektsionirovanie/serebryanaya_knopka_youtube_premium_kachestvo_2434259570',
+            breadcrumb: 'SILVER PLAY BUTTON',
+            name: 'Серебряная кнопка Ютуб'
+        },
+        'shorts': {
+            img: 'https://timmir1.github.io/shorts2.png',
+            badge: 'SHORTS EDITION',
+            titleGold: 'ЗОЛОТОЙ',
+            titleMain: 'SHORTS',
+            desc: 'Эксклюзивная металлическая награда весом 1,8 кг, созданная специально для авторов коротких видео. Массивный корпус и безупречное золотое сияние.',
+            price: '8 600 ₽',
+            priceOld: '12 500 ₽',
+            priceVal: 8600,
+            weight: '1.8 кг (Массив)',
+            material: 'Металл + Анодирование',
+            time: '4 часа',
+            delivery: 'По всей России',
+            avito: 'https://www.avito.ru/moskva/kollektsionirovanie/zolotaya_knopka_youtube_statusnyy_podarok_1954819361',
+            breadcrumb: 'SHORTS GOLD AWARD',
+            name: 'Золотая кнопка Shorts'
+        },
+        'mini': {
+            img: 'https://timmir1.github.io/Instagram_button.png',
+            badge: 'MINI EDITION',
+            titleGold: 'МИНИ',
+            titleMain: 'КНОПКА',
+            desc: 'Карманная металлическая версия награды с вашим никнеймом. Уникальный сувенир для блогера. Идеальный подарок.',
+            price: '4 900 ₽',
+            priceOld: '7 500 ₽',
+            priceVal: 4900,
+            weight: '220 г (Массив)',
+            material: 'Металл + Анодирование',
+            time: '4 часа',
+            delivery: 'По всей России',
+            avito: 'https://www.avito.ru/moskva/kollektsionirovanie/zolotaya_knopka_youtube_statusnyy_podarok_1954819361',
+            breadcrumb: 'MINI AWARD',
+            name: 'Мини-кнопка'
+        },
+        'likee': {
+            img: 'https://timmir1.github.io/Likesite.png',
+            badge: 'LIKEE EDITION',
+            titleGold: 'ЗОЛОТАЯ',
+            titleMain: 'LIKEE',
+            desc: 'Для звёзд платформы Likee. Металл 1,8 кг, точное соответствие оригинальной награде. Полировка вручную.',
+            price: '8 600 ₽',
+            priceOld: '12 500 ₽',
+            priceVal: 8600,
+            weight: '1.8 кг (Массив)',
+            material: 'Металл + Анодирование',
+            time: '4 часа',
+            delivery: 'По всей России',
+            avito: 'https://www.avito.ru/moskva/kollektsionirovanie/zolotaya_knopka_youtube_statusnyy_podarok_1954819361',
+            breadcrumb: 'LIKEE GOLD AWARD',
+            name: 'Золотая кнопка Likee'
+        },
+        'chatgpt': {
+            img: 'https://timmir1.github.io/chatchptsite.png',
+            badge: 'AI EDITION',
+            titleGold: 'КНОПКА',
+            titleMain: 'CHATGPT',
+            desc: 'Для тех, кто на волне ИИ. Футуристичный дизайн из металла 1,8 кг — необычный и стильный подарок.',
+            price: '8 600 ₽',
+            priceOld: '12 500 ₽',
+            priceVal: 8600,
+            weight: '1.8 кг (Массив)',
+            material: 'Металл + Анодирование',
+            time: '4 часа',
+            delivery: 'По всей России',
+            avito: 'https://www.avito.ru/moskva/kollektsionirovanie/zolotaya_knopka_youtube_statusnyy_podarok_1954819361',
+            breadcrumb: 'AI AWARD',
+            name: 'Кнопка ChatGPT'
+        },
+        'custom': {
+            img: 'https://raw.githubusercontent.com/TimMir1/timmir1.github.io/main/Gucci.png',
+            badge: 'CUSTOM EDITION',
+            titleGold: 'ИНДИВИДУАЛЬНАЯ',
+            titleMain: 'КНОПКА',
+            desc: 'Создадим кнопку с вашим логотипом, ником или уникальным дизайном. Любые цвета и материалы. Ваша идея — наш металл.',
+            price: 'от 7 500 ₽',
+            priceOld: '',
+            priceVal: 7500,
+            weight: 'По заказу',
+            material: 'Металл + Анодирование',
+            time: 'от 4 часов',
+            delivery: 'По всей России',
+            avito: 'https://www.avito.ru/moskva/kollektsionirovanie/zolotaya_knopka_youtube_statusnyy_podarok_1954819361',
+            breadcrumb: 'CUSTOM AWARD',
+            name: 'Индивидуальная кнопка'
+        }
+    };
+
+    let currentModalProduct = null;
+
+    function openModal(key) {
+        const p = products[key];
+        if (!p) return;
+        currentModalProduct = p;
+        document.getElementById('modal-img').src = p.img;
+        document.getElementById('modal-img').alt = p.name;
+        document.getElementById('modal-badge').textContent = p.badge;
+        document.getElementById('modal-breadcrumb-name').textContent = p.breadcrumb;
+        document.getElementById('modal-title-gold').textContent = p.titleGold;
+        document.getElementById('modal-title-main').textContent = p.titleMain;
+        document.getElementById('modal-desc').textContent = p.desc;
+        document.getElementById('modal-price').textContent = p.price;
+        document.getElementById('modal-price-old').textContent = p.priceOld;
+        document.getElementById('modal-weight').textContent = p.weight;
+        document.getElementById('modal-material').textContent = p.material;
+        document.getElementById('modal-time').textContent = p.time;
+        document.getElementById('modal-delivery').textContent = p.delivery;
+        document.getElementById('modal-avito-btn').href = p.avito;
+
+        const btn = document.getElementById('modal-cart-btn');
+        const inCart = cart.some(item => item.name === p.name);
+        btn.textContent = inCart ? '✓ УЖЕ В КОРЗИНЕ' : 'ЗАКАЗАТЬ В TELEGRAM';
+
+        document.getElementById('product-modal').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        document.getElementById('product-modal').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    function closeModalOutside(e) {
+        if (e.target === document.getElementById('product-modal')) closeModal();
+    }
+
+    function modalAddToCart() {
+        if (!currentModalProduct) return;
+        const p = currentModalProduct;
+        const msg = `🏆 Хочу заказать: ${p.name}\n💰 Цена: ${p.price}\n\nМастерская MIRA & PAPA`;
+        window.open('https://t.me/+79779662521?text=' + encodeURIComponent(msg), '_blank');
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeModal();
+    });
 
     // Hide logo on scroll, keep only cart
     window.addEventListener('scroll', function() {
