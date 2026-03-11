@@ -881,7 +881,9 @@
         msg += `📍 Мастерская: MIRA & PAPA\n`;
         msg += `🔗 Наши работы: https://t.me/knopka_youtuba\n\n`;
         msg += `--- 👋 Жду детали по гравировке! ---`;
-        window.open("https://t.me/+79779662521?text=" + encodeURIComponent(msg), '_blank');
+        const encoded = encodeURIComponent(msg);
+        // tg:// открывает приложение напрямую, минуя блокировки t.me
+        window.location.href = "tg://resolve?phone=79779662521&text=" + encoded;
     }
 
     updateCart();
@@ -1051,7 +1053,8 @@
         if (!currentModalProduct) return;
         const p = currentModalProduct;
         const msg = `🏆 Хочу заказать: ${p.name}\n💰 Цена: ${p.price}\n\nМастерская MIRA & PAPA`;
-        window.open('https://t.me/+79779662521?text=' + encodeURIComponent(msg), '_blank');
+        const encoded = encodeURIComponent(msg);
+        window.location.href = "tg://resolve?phone=79779662521&text=" + encoded;
     }
 
     document.addEventListener('keydown', function(e) {
