@@ -713,7 +713,7 @@
             <span id="total-price">0 ₽</span>
         </div>
         <p style="font-size: 13px; color: #888; margin-bottom: 15px; font-weight: 600;">После нажатия вы перейдете в Telegram для оформления заказа.</p>
-        <a href="#" class="checkout-btn" onclick="checkout()">Оформить в Telegram</a>
+        <a href="#" class="checkout-btn" onclick="event.preventDefault(); checkout()">Оформить в Telegram</a>
     </div>
 </div>
 
