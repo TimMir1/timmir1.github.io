@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+<!-- Главная -->
 <url>
 <loc>https://timmir1.github.io/</loc>
 <changefreq>weekly</changefreq>
 <priority>1.0</priority>
 </url>
+
+<!-- Страницы товаров -->
 <url>
 <loc>https://timmir1.github.io/gold-button.html</loc>
 <changefreq>monthly</changefreq>
@@ -40,4 +44,42 @@
 <changefreq>monthly</changefreq>
 <priority>0.7</priority>
 </url>
+
+<!-- Информационные статьи -->
+<url>
+<loc>https://timmir1.github.io/podarok-bloggeru.html</loc>
+<changefreq>monthly</changefreq>
+<priority>0.8</priority>
+</url>
+<url>
+<loc>https://timmir1.github.io/skolko-stoit-knopka-youtube.html</loc>
+<changefreq>monthly</changefreq>
+<priority>0.8</priority>
+</url>
+<url>
+<loc>https://timmir1.github.io/zolotaya-vs-serebryanaya.html</loc>
+<changefreq>monthly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://timmir1.github.io/kak-vyglyadit-knopka-youtube.html</loc>
+<changefreq>monthly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://timmir1.github.io/dostavka-knopki-youtube.html</loc>
+<changefreq>monthly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://timmir1.github.io/knopka-youtube-s-nikom.html</loc>
+<changefreq>monthly</changefreq>
+<priority>0.8</priority>
+</url>
+<url>
+<loc>https://timmir1.github.io/knopka-youtube-metall-vs-plastik.html</loc>
+<changefreq>monthly</changefreq>
+<priority>0.7</priority>
+</url>
+
 </urlset>
