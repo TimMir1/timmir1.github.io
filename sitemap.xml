@@ -1,85 +1,118 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 
-<!-- Главная -->
-<url>
-<loc>https://timmir1.github.io/</loc>
-<changefreq>weekly</changefreq>
-<priority>1.0</priority>
-</url>
+  <url>
+    <loc>https://timmir1.github.io/</loc>
+    <lastmod>2026-03-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
 
-<!-- Страницы товаров -->
-<url>
-<loc>https://timmir1.github.io/gold-button.html</loc>
-<changefreq>monthly</changefreq>
-<priority>0.9</priority>
-</url>
-<url>
-<loc>https://timmir1.github.io/silver-button.html</loc>
-<changefreq>monthly</changefreq>
-<priority>0.9</priority>
-</url>
-<url>
-<loc>https://timmir1.github.io/shorts-button.html</loc>
-<changefreq>monthly</changefreq>
-<priority>0.8</priority>
-</url>
-<url>
-<loc>https://timmir1.github.io/mini-button.html</loc>
-<changefreq>monthly</changefreq>
-<priority>0.8</priority>
-</url>
-<url>
-<loc>https://timmir1.github.io/likee-button.html</loc>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
-<url>
-<loc>https://timmir1.github.io/chatgpt-button.html</loc>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
-<url>
-<loc>https://timmir1.github.io/custom-button.html</loc>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
+  <url>
+    <loc>https://timmir1.github.io/gold-button.html</loc>
+    <lastmod>2026-03-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://timmir1.github.io/images/gold-button.jpg</image:loc>
+      <image:title>Золотая кнопка YouTube — заказать реплику</image:title>
+    </image:image>
+  </url>
 
-<!-- Информационные статьи -->
-<url>
-<loc>https://timmir1.github.io/podarok-bloggeru.html</loc>
-<changefreq>monthly</changefreq>
-<priority>0.8</priority>
-</url>
-<url>
-<loc>https://timmir1.github.io/skolko-stoit-knopka-youtube.html</loc>
-<changefreq>monthly</changefreq>
-<priority>0.8</priority>
-</url>
-<url>
-<loc>https://timmir1.github.io/zolotaya-vs-serebryanaya.html</loc>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
-<url>
-<loc>https://timmir1.github.io/kak-vyglyadit-knopka-youtube.html</loc>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
-<url>
-<loc>https://timmir1.github.io/dostavka-knopki-youtube.html</loc>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
-<url>
-<loc>https://timmir1.github.io/knopka-youtube-s-nikom.html</loc>
-<changefreq>monthly</changefreq>
-<priority>0.8</priority>
-</url>
-<url>
-<loc>https://timmir1.github.io/knopka-youtube-metall-vs-plastik.html</loc>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
+  <url>
+    <loc>https://timmir1.github.io/silver-button.html</loc>
+    <lastmod>2026-03-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://timmir1.github.io/images/silver-button.jpg</image:loc>
+      <image:title>Серебряная кнопка YouTube — качественная реплика</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://timmir1.github.io/shorts-button.html</loc>
+    <lastmod>2026-03-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://timmir1.github.io/mini-button.html</loc>
+    <lastmod>2026-03-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://timmir1.github.io/likee-button.html</loc>
+    <lastmod>2026-03-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://timmir1.github.io/chatgpt-button.html</loc>
+    <lastmod>2026-03-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://timmir1.github.io/custom-button.html</loc>
+    <lastmod>2026-03-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://timmir1.github.io/podarok-bloggeru.html</loc>
+    <lastmod>2026-03-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://timmir1.github.io/skolko-stoit-knopka-youtube.html</loc>
+    <lastmod>2026-03-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://timmir1.github.io/zolotaya-vs-serebryanaya.html</loc>
+    <lastmod>2026-03-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://timmir1.github.io/kak-vyglyadit-knopka-youtube.html</loc>
+    <lastmod>2026-03-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://timmir1.github.io/dostavka-knopki-youtube.html</loc>
+    <lastmod>2026-03-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://timmir1.github.io/knopka-youtube-s-nikom.html</loc>
+    <lastmod>2026-03-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://timmir1.github.io/knopka-youtube-metall-vs-plastik.html</loc>
+    <lastmod>2026-03-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
 
 </urlset>
