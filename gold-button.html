@@ -111,7 +111,7 @@
         .product-page {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            align-items: start;
+            min-height: calc(100vh - 64px);
         }
 
         /* ── LEFT: GALLERY ── */
@@ -120,7 +120,6 @@
             height: calc(100vh - 64px);
             overflow: hidden;
             background: var(--surface);
-            align-self: start;
         }
         .gallery-main {
             width: 100%; height: 100%;
@@ -153,7 +152,7 @@
         .info-col {
             padding: 60px 8% 80px;
             display: flex; flex-direction: column;
-            min-height: calc(100vh - 64px);
+            overflow-y: auto;
         }
         .breadcrumb {
             font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
@@ -236,7 +235,8 @@
         .seo-section {
             border-top: 1px solid var(--border);
             padding: 60px 5%;
-            max-width: 1400px; margin: 0 auto;
+            max-width: 1400px; 
+            margin: 80px auto 0;
         }
         .seo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; }
         .seo-section h2 {
@@ -343,14 +343,13 @@
     <a href="/" class="site-logo">Ютуб кнопки на заказ</a>
     <nav class="site-nav">
         <a href="/">Каталог</a>
-        <a href="tg://resolve?domain=+79779662521" class="nav-tg">Написать в Telegram</a>
+        <a href="https://t.me/+79779662521" target="_blank" class="nav-tg">Написать в Telegram</a>
     </nav>
 </header>
 
 <main>
 <div class="product-page">
 
-    <!-- GALLERY -->
     <div class="gallery-col" style="position:relative;">
         <div class="gallery-main">
             <img id="main-img" src="https://timmir1.github.io/gold%20button.png" alt="Золотая кнопка YouTube купить из металла — Gold Play Button реплика">
@@ -362,7 +361,6 @@
         </div>
     </div>
 
-    <!-- INFO -->
     <div class="info-col">
         <div class="breadcrumb"><a href="/">Главная</a> &nbsp;/&nbsp; Золотая кнопка YouTube</div>
         <div class="product-badge">Gold Play Button</div>
@@ -379,13 +377,12 @@
         </div>
 
         <div class="btn-group">
-            <a href="tg://resolve?domain=+79779662521" class="btn-primary">Заказать в Telegram</a>
+            <a href="https://t.me/+79779662521" target="_blank" class="btn-primary">Заказать в Telegram</a>
             <a href="https://www.avito.ru/moskva/kollektsionirovanie/zolotaya_knopka_youtube_statusnyy_podarok_1954819361" target="_blank" class="btn-secondary btn-avito">Посмотреть на Авито →</a>
         </div>
     </div>
 </div>
 
-<!-- SEO + COMPARE -->
 <section class="seo-section">
     <div class="seo-grid">
         <div>
@@ -424,11 +421,10 @@
     </div>
 </section>
 
-<!-- CTA -->
 <div class="cta-block">
     <h2>Заказать золотую кнопку YouTube</h2>
     <p>Гравировка вашего ника включена в цену. Готово за 4 часа.</p>
-    <a href="tg://resolve?domain=+79779662521" class="btn-primary">Написать в Telegram</a>
+    <a href="https://t.me/+79779662521" target="_blank" class="btn-primary">Написать в Telegram</a>
 </div>
 </main>
 
@@ -450,7 +446,7 @@
     <div class="footer-col">
         <h5>Контакты</h5>
         <ul>
-            <li><a href="tg://resolve?domain=+79779662521" style="color:#25a244;">Telegram</a></li>
+            <li><a href="https://t.me/+79779662521" target="_blank" style="color:#25a244;">Telegram</a></li>
             <li><a href="https://www.avito.ru/brands/i115535541" target="_blank">Авито</a></li>
             <li><a href="tel:+79779662521">+7 977 966 25 21</a></li>
         </ul>
@@ -461,9 +457,8 @@
     <p style="font-size:12px; color:#aaa;">Москва · Самовывоз и доставка по России</p>
 </div>
 
-<!-- Mobile sticky -->
 <div class="mobile-cta">
-    <a href="tg://resolve?domain=+79779662521">Заказать — 7 800 ₽</a>
+    <a href="https://t.me/+79779662521" target="_blank">Заказать — 7 800 ₽</a>
 </div>
 
 <script>
