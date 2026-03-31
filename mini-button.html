@@ -6,14 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Мини кнопка YouTube — карманная металлическая с никнеймом | MIRA & PAPA</title>
     <meta name="description" content="Мини-кнопка YouTube из металла с гравировкой вашего ника. Вес 220 г, ручная полировка. Идеальный подарок блогеру. Цена 3 700 ₽. Москва, доставка.">
-    <meta name="keywords" content="мини кнопка youtube, карманная кнопка ютуб, youtube кнопка с ником, сувенир youtube из металла">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
     
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
         :root {
             --bg: #f5f2ee;
             --surface: #ffffff;
@@ -30,31 +28,26 @@
             --font-display: 'DM Serif Display', serif;
         }
 
-        html { font-size: 16px; scroll-behavior: smooth; }
         body { font-family: var(--font-body); background: var(--bg); color: var(--text); line-height: 1.6; -webkit-font-smoothing: antialiased; }
 
         /* HEADER */
         .site-header { position: sticky; top: 0; z-index: 100; background: var(--bg); border-bottom: 1px solid var(--border); padding: 0 5%; display: flex; align-items: center; justify-content: space-between; height: 64px; }
         .site-logo { font-family: var(--font-display); font-size: 20px; color: var(--text); text-decoration: none; letter-spacing: 0.02em; }
         .site-nav { display: flex; gap: 32px; align-items: center; }
-        .site-nav a { font-size: 13px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
-        .site-nav a:hover { color: var(--text); }
+        .site-nav a { font-size: 13px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); text-decoration: none; }
         .nav-tg { background: var(--btn-bg); color: var(--btn-text) !important; padding: 8px 18px; border-radius: var(--radius); font-size: 12px !important; }
 
         /* PRODUCT PAGE */
         .product-page { display: grid; grid-template-columns: 1fr 1fr; min-height: calc(100vh - 64px); }
         .gallery-col { position: sticky; top: 64px; height: calc(100vh - 64px); overflow: hidden; background: var(--surface); }
-        .gallery-main { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .gallery-main img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease, opacity 0.3s; }
-        .gallery-main img:hover { transform: scale(1.05); }
+        .gallery-main { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+        .gallery-main img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
         .gallery-thumbs { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; }
-        .thumb { width: 48px; height: 48px; border: 2px solid transparent; border-radius: var(--radius); overflow: hidden; cursor: pointer; transition: 0.2s; }
+        .thumb { width: 48px; height: 48px; border: 2px solid transparent; border-radius: var(--radius); overflow: hidden; cursor: pointer; }
         .thumb.active { border-color: var(--text); }
         .thumb img { width: 100%; height: 100%; object-fit: cover; }
 
         .info-col { padding: 60px 8% 80px; overflow-y: auto; }
-        .breadcrumb { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 24px; }
-        .breadcrumb a { color: var(--text-muted); text-decoration: none; }
         .product-title { font-family: var(--font-display); font-size: clamp(32px, 4vw, 52px); line-height: 1.1; margin-bottom: 16px; font-weight: 400; }
         .product-price { font-size: 28px; font-weight: 300; margin-bottom: 24px; }
 
@@ -66,20 +59,12 @@
         /* BUTTONS */
         .btn-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 32px; }
         .btn-primary { display: block; text-align: center; background: var(--btn-bg); color: var(--btn-text); padding: 18px 24px; border-radius: var(--radius); font-size: 13px; font-weight: 600; text-transform: uppercase; text-decoration: none; transition: 0.3s; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-        .btn-avito { background: var(--avito); border: none; color: white; }
+        .btn-avito { background: var(--avito); color: white; }
 
-        /* PROCESS STEPS */
+        /* PROCESS */
         .process-section { padding: 80px 5%; background: #fff; text-align: center; }
         .process-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; max-width: 1200px; margin: 40px auto 0; }
-        .step { position: relative; }
         .step-num { font-family: var(--font-display); font-size: 48px; color: var(--border); line-height: 1; margin-bottom: 10px; }
-        .step h4 { font-size: 14px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
-        .step p { font-size: 13px; color: var(--text-muted); }
-
-        /* SEO SECTION */
-        .seo-section { border-top: 1px solid var(--border); padding: 80px 5%; max-width: 1400px; margin: 80px auto 0; }
-        .seo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; }
 
         /* FOOTER */
         .site-footer { border-top: 1px solid var(--border); padding: 60px 5% 40px; display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px; }
@@ -89,8 +74,6 @@
         @media (max-width: 900px) {
             .product-page { grid-template-columns: 1fr; }
             .gallery-col { position: relative; top: 0; height: 80vw; }
-            .info-col { padding: 40px 5% 100px; }
-            .seo-grid { grid-template-columns: 1fr; }
             .mobile-cta { display: block; }
         }
     </style>
@@ -109,21 +92,19 @@
     <div class="product-page">
         <div class="gallery-col">
             <div class="gallery-main">
-                <img id="main-img" src="https://timmir1.github.io/mini2.png" alt="Мини кнопка YouTube из металла с никнеймом">
+                <img id="main-img" src="mini.webp" alt="Мини кнопка YouTube">
             </div>
             <div class="gallery-thumbs">
-                <div class="thumb active" data-src="https://timmir1.github.io/mini2.png"><img src="https://timmir1.github.io/mini2.png" alt="Вид 1"></div>
-                <div class="thumb" data-src="https://timmir1.github.io/mini3.png"><img src="https://timmir1.github.io/mini3.png" alt="Вид 2"></div>
-                <div class="thumb" data-src="https://timmir1.github.io/mini4.png"><img src="https://timmir1.github.io/mini4.png" alt="Вид 3"></div>
+                <div class="thumb active" data-src="mini2.webp"><img src="mini2.webp" alt="Вид 1"></div>
+                <div class="thumb" data-src="mini3.webp"><img src="mini3.webp" alt="Вид 2"></div>
+                <div class="thumb" data-src="mini4.webp"><img src="mini4.webp" alt="Вид 3"></div>
             </div>
         </div>
 
         <div class="info-col">
-            <div class="breadcrumb"><a href="/">Главная</a> / Мини кнопка</div>
             <h1 class="product-title">Мини кнопка YouTube</h1>
             <div class="product-price">3 700 ₽</div>
-            
-            <p class="product-desc">Компактная, но увесистая металлическая версия легендарной награды. Помещается на ладони, идеально подходит для рабочего стола или в качестве стильного сувенира.</p>
+            <p>Компактная металлическая версия легендарной награды. Помещается на ладони, идеально для рабочего стола.</p>
 
             <div class="trust-badges">
                 <div class="trust-item">
@@ -140,54 +121,31 @@
                 <a href="https://t.me/+79779662521" target="_blank" class="btn-primary">Заказать в Telegram</a>
                 <a href="https://www.avito.ru/moskva/kollektsionirovanie/mini-knopka_youtube_iz_metalla_s_nikneymom_4732159231" target="_blank" class="btn-primary btn-avito">Купить на Avito</a>
             </div>
-
-            <div class="specs">
-                <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:10px 0;">
-                    <span style="color:var(--text-muted)">Материал</span>
-                    <span>Металл, ручная полировка</span>
-                </div>
-                <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:10px 0;">
-                    <span style="color:var(--text-muted)">Размер</span>
-                    <span>Уменьшенная копия</span>
-                </div>
-            </div>
         </div>
     </div>
 
     <section class="process-section">
-        <h2 style="font-family:var(--font-display); font-size:32px;">Как мы работаем</h2>
+        <h2 style="font-family:var(--font-display); font-size:32px;">Как заказать</h2>
         <div class="process-grid">
             <div class="step">
                 <div class="step-num">01</div>
-                <h4>Заказ</h4>
-                <p>Пишете в Telegram нужный никнейм.</p>
+                <h4>Заявка</h4>
+                <p>Пишете никнейм в Telegram.</p>
             </div>
             <div class="step">
                 <div class="step-num">02</div>
                 <h4>Макет</h4>
-                <p>Утверждаем шрифт и расположение надписи.</p>
+                <p>Утверждаем шрифт и расположение.</p>
             </div>
             <div class="step">
                 <div class="step-num">03</div>
                 <h4>Гравировка</h4>
-                <p>Наносим надпись на металл за пару часов.</p>
+                <p>Делаем за пару часов.</p>
             </div>
             <div class="step">
                 <div class="step-num">04</div>
                 <h4>Доставка</h4>
-                <p>Отправляем СДЭКом или Почтой по всей РФ.</p>
-            </div>
-        </div>
-    </section>
-
-    <section class="seo-section">
-        <div class="seo-grid">
-            <div>
-                <h2>Карманная награда для настоящих блогеров</h2>
-                <p>Мини-кнопка — это отличный способ отметить достижение промежуточной цели или сделать приятный подарок коллеге по цеху. Несмотря на размер, она выполнена из цельного металла и имеет приятный вес.</p>
-            </div>
-            <div>
-                <p>Зеркальная поверхность и глубокая лазерная гравировка делают этот сувенир неотличимым по качеству от полноразмерных наград YouTube. В комплекте идет подставка для установки на полку или стол.</p>
+                <p>Отправляем по всей России.</p>
             </div>
         </div>
     </section>
@@ -196,14 +154,7 @@
 <footer class="site-footer">
     <div>
         <div class="site-logo">MIRA & PAPA</div>
-        <p style="font-size:13px; color:var(--text-muted); margin-top:10px;">Создаем награды, которые вдохновляют. Москва, с 2014 года.</p>
-    </div>
-    <div class="footer-col">
-        <h5 style="font-size:11px; text-transform:uppercase; margin-bottom:15px;">Продукция</h5>
-        <ul style="list-style:none; font-size:13px;">
-            <li><a href="/gold-button.html" style="text-decoration:none; color:var(--text-muted)">Золотая кнопка</a></li>
-            <li><a href="/custom-button.html" style="text-decoration:none; color:var(--text-muted)">Индивидуальная</a></li>
-        </ul>
+        <p style="font-size:13px; color:var(--text-muted);">Москва, с 2014 года.</p>
     </div>
     <div class="footer-col">
         <h5 style="font-size:11px; text-transform:uppercase; margin-bottom:15px;">Связь</h5>
@@ -223,16 +174,11 @@
     const thumbs = document.querySelectorAll('.thumb');
     thumbs.forEach(t => {
         t.addEventListener('click', () => {
-            mainImg.style.opacity = '0';
-            setTimeout(() => {
-                mainImg.src = t.dataset.src;
-                mainImg.style.opacity = '1';
-            }, 200);
+            mainImg.src = t.dataset.src;
             thumbs.forEach(x => x.classList.remove('active'));
             t.classList.add('active');
         });
     });
 </script>
-
 </body>
 </html>
