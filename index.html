@@ -56,148 +56,717 @@
     </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Unbounded:wght@300;400;700&display=swap" rel="stylesheet">
+
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
         :root {
-            --bg: #f5f2ee; --surface: #ffffff; --border: #e8e2da;
-            --text: #1a1814; --text-muted: #7a7570;
-            --accent: #c9a84c; --accent-dark: #a8872e;
-            --btn-bg: #1a1814; --btn-text: #f5f2ee;
-            --radius: 4px;
-            --font-body: 'DM Sans', sans-serif;
-            --font-display: 'DM Serif Display', serif;
+            --bg: #0a0906;
+            --bg2: #100e0a;
+            --bg3: #151210;
+            --gold: #c9963a;
+            --gold-light: #e8b44a;
+            --gold-pale: #f5d98a;
+            --gold-dim: rgba(201,150,58,0.12);
+            --text: #f0ead8;
+            --text-muted: #7a6e58;
+            --text-mid: #b5a88a;
+            --border: rgba(201,150,58,0.18);
+            --border-dim: rgba(255,255,255,0.06);
+            --font-display: 'Cormorant Garamond', serif;
+            --font-body: 'Unbounded', sans-serif;
         }
+
         html { font-size: 16px; scroll-behavior: smooth; }
-        body { font-family: var(--font-body); background: var(--bg); color: var(--text); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
 
-        /* HEADER */
-        .site-header { position: sticky; top: 0; z-index: 100; background: var(--bg); border-bottom: 1px solid var(--border); padding: 0 5%; display: flex; align-items: center; justify-content: space-between; height: 64px; }
-        .site-logo { font-family: var(--font-display); font-size: 20px; color: var(--text); text-decoration: none; letter-spacing: 0.02em; }
-        .site-nav { display: flex; gap: 28px; align-items: center; }
-        .site-nav a { font-size: 12px; font-weight: 500; letter-spacing: 0.09em; text-transform: uppercase; color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
-        .site-nav a:hover { color: var(--text); }
-        .nav-tg { background: var(--btn-bg) !important; color: var(--btn-text) !important; padding: 9px 18px; border-radius: var(--radius); }
+        /* GRAIN OVERLAY */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.35;
+        }
 
-        /* HERO */
-        .hero { display: grid; grid-template-columns: 1fr 1fr; min-height: calc(100vh - 64px); }
-        .hero-img { background: var(--surface); display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .hero-img img { width: 100%; height: 100%; object-fit: cover; }
-        .hero-info { padding: 80px 10%; display: flex; flex-direction: column; justify-content: center; background: var(--bg); }
-        .hero-label { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 24px; }
-        .hero-title { font-family: var(--font-display); font-size: clamp(36px, 5vw, 64px); line-height: 1.05; font-weight: 400; margin-bottom: 24px; }
-        .hero-title em { font-style: italic; color: var(--accent-dark); }
-        .hero-desc { font-size: 15px; color: var(--text-muted); line-height: 1.8; margin-bottom: 40px; max-width: 400px; }
-        .hero-cta { display: inline-block; background: var(--btn-bg); color: var(--btn-text); padding: 18px 36px; border-radius: var(--radius); font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; transition: opacity 0.2s; margin-bottom: 12px; }
-        .hero-cta:hover { opacity: 0.85; }
-        .hero-avito { display: inline-block; color: var(--text-muted); font-size: 13px; text-decoration: none; padding: 12px 0; border-bottom: 1px solid var(--border); transition: color 0.2s; }
-        .hero-avito:hover { color: var(--text); }
+        /* SCROLLBAR */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
 
-        /* PRODUCTS GRID */
-        .section-label { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 40px; padding-top: 4px; border-top: 1px solid var(--border); }
-        .products-section { padding: 80px 5%; }
-        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2px; }
-        .product-card { background: var(--surface); text-decoration: none; color: var(--text); display: flex; flex-direction: column; transition: background 0.2s; }
-        .product-card:hover { background: #f9f6f2; }
-        .card-img { aspect-ratio: 1; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #f0ece6; padding: 32px; }
-        .card-img img { max-width: 100%; max-height: 100%; object-fit: contain; transition: transform 0.4s ease; }
-        .product-card:hover .card-img img { transform: scale(1.04); }
-        .card-info { padding: 20px 24px 28px; }
-        .card-badge { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-dark); background: #f5ead8; display: inline-block; padding: 3px 8px; border-radius: 2px; margin-bottom: 10px; font-weight: 600; }
-        .card-name { font-family: var(--font-display); font-size: 20px; font-weight: 400; margin-bottom: 6px; line-height: 1.2; }
-        .card-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 16px; }
-        .card-bottom { display: flex; justify-content: space-between; align-items: center; }
-        .card-price { font-size: 18px; font-weight: 500; }
-        .card-arrow { font-size: 18px; color: var(--text-muted); transition: transform 0.2s; }
-        .product-card:hover .card-arrow { transform: translateX(4px); }
+        /* ── HEADER ── */
+        .site-header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 5%;
+            height: 72px;
+            background: rgba(10,9,6,0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+        .site-logo {
+            font-family: var(--font-display);
+            font-size: 22px;
+            font-weight: 400;
+            color: var(--text);
+            text-decoration: none;
+            letter-spacing: 0.05em;
+        }
+        .site-logo span { color: var(--gold); }
+        .site-nav {
+            display: flex;
+            gap: 36px;
+            align-items: center;
+        }
+        .site-nav a {
+            font-size: 9px;
+            font-weight: 400;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .site-nav a:hover { color: var(--gold-light); }
+        .nav-tg {
+            border: 1px solid var(--gold) !important;
+            color: var(--gold) !important;
+            padding: 10px 22px !important;
+            letter-spacing: 0.15em !important;
+            transition: background 0.3s, color 0.3s !important;
+        }
+        .nav-tg:hover {
+            background: var(--gold) !important;
+            color: var(--bg) !important;
+        }
 
-        /* SEO */
-        .seo-band { background: var(--text); color: #fff; padding: 80px 5%; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
-        .seo-band h2 { font-family: var(--font-display); font-size: clamp(28px, 4vw, 48px); font-weight: 400; line-height: 1.1; margin-bottom: 20px; color: #fff; }
-        .seo-band p { font-size: 14px; color: #aaa; line-height: 1.9; margin-bottom: 12px; }
-        .seo-band ul { padding-left: 18px; margin-bottom: 12px; }
-        .seo-band ul li { font-size: 14px; color: #aaa; line-height: 1.9; margin-bottom: 4px; }
-        .seo-band h3 { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 500; }
-        .compare-light { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-top: 8px; }
-        .cl-col { background: #111; padding: 24px; }
-        .cl-col h4 { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 14px; color: #666; font-weight: 500; }
-        .cl-col h4.ok { color: var(--accent); }
-        .cl-col ul { list-style: none; }
-        .cl-col ul li { font-size: 13px; color: #777; padding: 5px 0; border-bottom: 1px solid #222; line-height: 1.5; }
-        .cl-col ul li:last-child { border-bottom: none; }
+        /* HAMBURGER */
+        .nav-toggle { display: none; background: none; border: none; cursor: pointer; padding: 8px; flex-direction: column; gap: 5px; }
+        .nav-toggle span { display: block; width: 22px; height: 1.5px; background: var(--gold); transition: all 0.3s; }
+        .nav-toggle.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+        .nav-toggle.open span:nth-child(2) { opacity: 0; }
+        .nav-toggle.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
 
-        /* CTA */
-        .cta-section { padding: 80px 5%; text-align: center; border-top: 1px solid var(--border); }
-        .cta-section h2 { font-family: var(--font-display); font-size: clamp(28px, 4vw, 48px); font-weight: 400; margin-bottom: 12px; }
-        .cta-section p { font-size: 14px; color: var(--text-muted); margin-bottom: 32px; }
-        .cta-section a { display: inline-block; background: var(--btn-bg); color: var(--btn-text); padding: 18px 40px; border-radius: var(--radius); font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; }
+        /* ── HERO ── */
+        .hero {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            padding-top: 72px;
+        }
+        .hero-visual {
+            position: relative;
+            overflow: hidden;
+            background: var(--bg2);
+        }
+        .hero-visual img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.9;
+            transition: transform 8s ease;
+        }
+        .hero-visual:hover img { transform: scale(1.04); }
+        .hero-visual::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, transparent 60%, rgba(201,150,58,0.08) 100%);
+        }
+        .hero-year {
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            font-size: 9px;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--gold);
+            z-index: 2;
+        }
 
-        /* FAQ */
-        .faq-section { padding: 80px 5%; border-top: 1px solid var(--border); max-width: 800px; margin: 0 auto; }
-        .faq-section h2 { font-family: var(--font-display); font-size: clamp(24px, 3vw, 36px); font-weight: 400; margin-bottom: 40px; }
-        .faq-item { border-bottom: 1px solid var(--border); }
-        .faq-q { padding: 20px 0; font-size: 15px; font-weight: 500; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 16px; list-style: none; }
-        .faq-q::after { content: '+'; font-size: 20px; color: var(--text-muted); flex-shrink: 0; transition: transform 0.2s; }
-        details[open] .faq-q::after { transform: rotate(45deg); }
-        .faq-a { font-size: 14px; color: var(--text-muted); line-height: 1.8; padding-bottom: 20px; }
+        .hero-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 80px 8% 80px 10%;
+            background: var(--bg);
+            position: relative;
+        }
+        .hero-content::before {
+            content: '';
+            position: absolute;
+            top: 0; bottom: 0; left: 0;
+            width: 1px;
+            background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+        }
+        .hero-eyebrow {
+            font-size: 9px;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 32px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .hero-eyebrow::before {
+            content: '';
+            display: block;
+            width: 32px;
+            height: 1px;
+            background: var(--gold);
+        }
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: clamp(44px, 5.5vw, 80px);
+            line-height: 1.0;
+            font-weight: 300;
+            margin-bottom: 28px;
+            letter-spacing: -0.01em;
+        }
+        .hero-title em {
+            font-style: italic;
+            color: var(--gold-light);
+            display: block;
+        }
+        .hero-desc {
+            font-size: 11px;
+            color: var(--text-muted);
+            line-height: 2;
+            margin-bottom: 48px;
+            max-width: 360px;
+            letter-spacing: 0.05em;
+        }
+        .hero-actions { display: flex; flex-direction: column; gap: 16px; align-items: flex-start; }
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--gold);
+            color: var(--bg);
+            padding: 18px 36px;
+            font-family: var(--font-body);
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: background 0.3s, transform 0.2s;
+        }
+        .btn-primary:hover { background: var(--gold-light); transform: translateX(4px); }
+        .btn-ghost {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 9px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            text-decoration: none;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            transition: color 0.3s, border-color 0.3s;
+        }
+        .btn-ghost:hover { color: var(--text); border-color: var(--gold); }
 
-        /* FOOTER */
-        .site-footer { border-top: 1px solid var(--border); padding: 56px 5% 32px; display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px; }
-        .footer-brand { font-family: var(--font-display); font-size: 18px; margin-bottom: 10px; }
-        .footer-desc { font-size: 13px; color: var(--text-muted); line-height: 1.7; max-width: 260px; }
-        .footer-col h5 { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 600; margin-bottom: 16px; color: var(--text-muted); }
+        /* STATS BAR */
+        .stats-bar {
+            background: var(--bg2);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+        }
+        .stat-item {
+            padding: 40px 5%;
+            border-right: 1px solid var(--border);
+            text-align: center;
+        }
+        .stat-item:last-child { border-right: none; }
+        .stat-num {
+            font-family: var(--font-display);
+            font-size: 48px;
+            font-weight: 300;
+            color: var(--gold);
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+        .stat-label {
+            font-size: 9px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        /* ── CATALOG ── */
+        .catalog-section { padding: 100px 5%; }
+        .section-header {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            margin-bottom: 60px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+        .section-eyebrow {
+            font-size: 9px;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--gold);
+        }
+        .section-title {
+            font-family: var(--font-display);
+            font-size: clamp(32px, 4vw, 56px);
+            font-weight: 300;
+            line-height: 1.05;
+        }
+        .section-title em { font-style: italic; color: var(--gold-light); }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+            background: var(--border-dim);
+        }
+        .product-card {
+            background: var(--bg2);
+            text-decoration: none;
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            transition: background 0.4s;
+        }
+        .product-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border: 1px solid transparent;
+            transition: border-color 0.4s;
+            pointer-events: none;
+            z-index: 2;
+        }
+        .product-card:hover { background: var(--bg3); }
+        .product-card:hover::before { border-color: var(--gold); }
+        .card-img {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg3);
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        .card-img::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 50% 100%, rgba(201,150,58,0.06), transparent 70%);
+        }
+        .card-img img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            z-index: 1;
+        }
+        .product-card:hover .card-img img { transform: scale(1.06) translateY(-4px); }
+        .card-info { padding: 24px 28px 32px; flex: 1; display: flex; flex-direction: column; }
+        .card-badge {
+            font-size: 8px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card-badge::before {
+            content: '';
+            display: block;
+            width: 16px;
+            height: 1px;
+            background: var(--gold);
+        }
+        .card-name {
+            font-family: var(--font-display);
+            font-size: 24px;
+            font-weight: 400;
+            margin-bottom: 8px;
+            line-height: 1.15;
+        }
+        .card-desc {
+            font-size: 10px;
+            color: var(--text-muted);
+            line-height: 2;
+            letter-spacing: 0.05em;
+            margin-bottom: 24px;
+            flex: 1;
+        }
+        .card-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-dim);
+        }
+        .card-price {
+            font-family: var(--font-display);
+            font-size: 26px;
+            font-weight: 300;
+            color: var(--gold-light);
+        }
+        .card-arrow {
+            width: 36px;
+            height: 36px;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .product-card:hover .card-arrow {
+            border-color: var(--gold);
+            color: var(--gold);
+            background: var(--gold-dim);
+        }
+
+        /* ── COMPARE SECTION ── */
+        .compare-section {
+            padding: 100px 5%;
+            background: var(--bg2);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+        .compare-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 100px;
+            align-items: start;
+        }
+        .compare-text p {
+            font-size: 10px;
+            color: var(--text-muted);
+            line-height: 2.2;
+            letter-spacing: 0.05em;
+            margin-bottom: 16px;
+        }
+        .compare-text strong { color: var(--text); }
+        .compare-table { margin-top: 0; }
+        .compare-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2px;
+            margin-bottom: 2px;
+        }
+        .compare-cell {
+            padding: 18px 24px;
+            font-size: 10px;
+            letter-spacing: 0.08em;
+            line-height: 1.6;
+        }
+        .compare-cell.header {
+            font-size: 8px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            padding: 12px 24px;
+        }
+        .compare-cell.bad {
+            background: rgba(255,255,255,0.03);
+            color: var(--text-muted);
+        }
+        .compare-cell.good {
+            background: var(--gold-dim);
+            color: var(--text);
+        }
+        .compare-cell.header.bad { color: var(--text-muted); }
+        .compare-cell.header.good { color: var(--gold); }
+        .compare-cell.good::before {
+            content: '✓ ';
+            color: var(--gold);
+        }
+
+        /* ── CTA BAND ── */
+        .cta-band {
+            padding: 120px 5%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .cta-band::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(201,150,58,0.06) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .cta-band-eyebrow {
+            font-size: 9px;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 24px;
+        }
+        .cta-band h2 {
+            font-family: var(--font-display);
+            font-size: clamp(40px, 6vw, 88px);
+            font-weight: 300;
+            line-height: 1.0;
+            margin-bottom: 24px;
+        }
+        .cta-band h2 em { font-style: italic; color: var(--gold-light); }
+        .cta-band p {
+            font-size: 10px;
+            color: var(--text-muted);
+            line-height: 2.2;
+            max-width: 400px;
+            margin: 0 auto 48px;
+            letter-spacing: 0.05em;
+        }
+
+        /* ── FAQ ── */
+        .faq-section {
+            padding: 100px 5%;
+            max-width: 860px;
+            margin: 0 auto;
+        }
+        .faq-section .section-header { margin-bottom: 48px; }
+        .faq-item {
+            border-bottom: 1px solid var(--border-dim);
+            overflow: hidden;
+        }
+        .faq-q {
+            padding: 24px 0;
+            font-size: 10px;
+            font-weight: 400;
+            letter-spacing: 0.08em;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 24px;
+            list-style: none;
+            color: var(--text);
+            transition: color 0.3s;
+        }
+        .faq-q:hover { color: var(--gold-light); }
+        .faq-icon {
+            width: 28px;
+            height: 28px;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gold);
+            font-size: 16px;
+            flex-shrink: 0;
+            transition: all 0.3s;
+        }
+        details[open] .faq-icon { transform: rotate(45deg); border-color: var(--gold); }
+        .faq-q::marker, .faq-q::-webkit-details-marker { display: none; }
+        .faq-a {
+            font-size: 10px;
+            color: var(--text-muted);
+            line-height: 2.2;
+            padding-bottom: 28px;
+            letter-spacing: 0.05em;
+        }
+
+        /* ── FOOTER ── */
+        .site-footer {
+            border-top: 1px solid var(--border);
+            padding: 72px 5% 48px;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 60px;
+            background: var(--bg2);
+        }
+        .footer-brand {
+            font-family: var(--font-display);
+            font-size: 24px;
+            font-weight: 300;
+            margin-bottom: 12px;
+            color: var(--text);
+        }
+        .footer-brand span { color: var(--gold); }
+        .footer-desc {
+            font-size: 9px;
+            color: var(--text-muted);
+            line-height: 2;
+            max-width: 240px;
+            letter-spacing: 0.08em;
+        }
+        .footer-col h5 {
+            font-size: 8px;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            font-weight: 400;
+            margin-bottom: 20px;
+            color: var(--gold);
+        }
         .footer-col ul { list-style: none; }
-        .footer-col ul li { margin-bottom: 10px; }
-        .footer-col ul li a { font-size: 13px; color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+        .footer-col ul li { margin-bottom: 12px; }
+        .footer-col ul li a {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-decoration: none;
+            letter-spacing: 0.08em;
+            transition: color 0.3s;
+        }
         .footer-col ul li a:hover { color: var(--text); }
-        .footer-bottom { border-top: 1px solid var(--border); padding: 20px 5%; display: flex; justify-content: space-between; }
-        .footer-bottom p { font-size: 12px; color: var(--text-muted); }
+        .footer-bottom {
+            border-top: 1px solid var(--border-dim);
+            padding: 24px 5%;
+            display: flex;
+            justify-content: space-between;
+            background: var(--bg2);
+        }
+        .footer-bottom p {
+            font-size: 9px;
+            color: var(--text-muted);
+            letter-spacing: 0.12em;
+        }
 
+        /* ANIMATIONS */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .hero-eyebrow { animation: fadeUp 0.8s 0.1s both; }
+        .hero-title { animation: fadeUp 0.8s 0.25s both; }
+        .hero-desc { animation: fadeUp 0.8s 0.4s both; }
+        .hero-actions { animation: fadeUp 0.8s 0.55s both; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 1024px) {
+            .products-grid { grid-template-columns: repeat(2, 1fr); }
+        }
         @media (max-width: 900px) {
             .hero { grid-template-columns: 1fr; }
-            .hero-img { height: 60vw; min-height: 280px; }
-            .hero-info { padding: 48px 5% 60px; }
-            .seo-band { grid-template-columns: 1fr; gap: 40px; }
-            .compare-light { grid-template-columns: 1fr; }
+            .hero-visual { height: 55vw; min-height: 300px; }
+            .hero-content::before { display: none; }
+            .compare-layout { grid-template-columns: 1fr; gap: 48px; }
+            .stats-bar { grid-template-columns: repeat(2, 1fr); }
+            .stats-bar .stat-item:nth-child(2) { border-right: none; }
             .site-footer { grid-template-columns: 1fr 1fr; }
-            .site-nav .nav-tg { display: none; }
+            .site-nav { display: none; }
+            .site-nav.open {
+                display: flex;
+                flex-direction: column;
+                position: fixed;
+                top: 72px; left: 0; right: 0;
+                background: rgba(10,9,6,0.97);
+                backdrop-filter: blur(20px);
+                padding: 40px 5%;
+                border-bottom: 1px solid var(--border);
+                gap: 24px;
+                align-items: flex-start;
+            }
+            .site-nav.open a { font-size: 11px; }
+            .nav-toggle { display: flex; }
         }
         @media (max-width: 600px) {
-            .products-grid { grid-template-columns: 1fr; gap: 1px; }
+            .products-grid { grid-template-columns: 1fr; }
+            .stats-bar { grid-template-columns: 1fr 1fr; }
             .site-footer { grid-template-columns: 1fr; }
             .footer-bottom { flex-direction: column; gap: 8px; }
+            .compare-row { grid-template-columns: 1fr 1fr; }
         }
     </style>
 </head>
 <body>
 
+<!-- HEADER -->
 <header class="site-header">
-    <a href="/" class="site-logo">Ютуб кнопки на заказ</a>
-    <nav class="site-nav">
+    <a href="/" class="site-logo">MIRA <span>&</span> PAPA</a>
+    <nav class="site-nav" id="mainNav">
         <a href="#catalog">Каталог</a>
         <a href="/knopka-youtube-s-nikom.html">С никнеймом</a>
         <a href="/podarok-bloggeru.html">Подарки</a>
         <a href="tg://resolve?domain=+79779662521" class="nav-tg">Telegram</a>
     </nav>
+    <button class="nav-toggle" id="navToggle" aria-label="Меню">
+        <span></span><span></span><span></span>
+    </button>
 </header>
 
 <!-- HERO -->
 <section class="hero">
-    <div class="hero-img">
+    <div class="hero-visual">
+        <span class="hero-year">Москва · с 2014</span>
         <img src="https://timmir1.github.io/gold%20button.png" alt="Золотая кнопка YouTube из металла — купить в Москве">
     </div>
-    <div class="hero-info">
-        <p class="hero-label">Москва · С 2014 года · Металл, не пластик</p>
-        <h1 class="hero-title">Кнопки YouTube<br><em>из настоящего металла</em></h1>
-        <p class="hero-desc">Тяжёлые, полированные вручную, с гравировкой вашего ника. Не пластик с Ozon — настоящий металл 1,8 кг. Готово за 4 часа.</p>
-        <a href="tg://resolve?domain=+79779662521" class="hero-cta">Заказать в Telegram</a>
-        <a href="https://www.avito.ru/moskva/kollektsionirovanie/zolotaya_knopka_youtube_statusnyy_podarok_1954819361" target="_blank" class="hero-avito">Посмотреть на Авито →</a>
+    <div class="hero-content">
+        <p class="hero-eyebrow">Металл, не пластик</p>
+        <h1 class="hero-title">
+            Кнопки YouTube<br>
+            <em>из настоящего металла</em>
+        </h1>
+        <p class="hero-desc">
+            Тяжёлые, полированные вручную, с гравировкой вашего ника. Не пластик с Ozon — настоящий металл 1,8 кг. Готово за 4 часа.
+        </p>
+        <div class="hero-actions">
+            <a href="tg://resolve?domain=+79779662521" class="btn-primary">
+                Заказать в Telegram →
+            </a>
+            <a href="https://www.avito.ru/moskva/kollektsionirovanie/zolotaya_knopka_youtube_statusnyy_podarok_1954819361" target="_blank" class="btn-ghost">
+                Посмотреть на Авито →
+            </a>
+        </div>
     </div>
 </section>
 
+<!-- STATS -->
+<div class="stats-bar">
+    <div class="stat-item">
+        <div class="stat-num">10+</div>
+        <div class="stat-label">Лет на рынке</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-num">1,8</div>
+        <div class="stat-label">кг настоящего металла</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-num">4ч</div>
+        <div class="stat-label">Срок изготовления</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-num">0</div>
+        <div class="stat-label">Пластика в составе</div>
+    </div>
+</div>
+
 <!-- CATALOG -->
-<section class="products-section" id="catalog">
-    <p class="section-label">Каталог</p>
+<section class="catalog-section" id="catalog">
+    <div class="section-header">
+        <p class="section-eyebrow">Каталог наград</p>
+        <h2 class="section-title">Выберите <em>вашу кнопку</em></h2>
+    </div>
     <div class="products-grid">
 
         <a href="/gold-button.html" class="product-card">
@@ -260,12 +829,14 @@
             </div>
         </a>
 
-        <a href="/custom-button.html" class="product-card">
-            <div class="card-img"><img src="https://raw.githubusercontent.com/TimMir1/timmir1.github.io/main/Gucci.png" alt="Индивидуальная кнопка YouTube на заказ"></div>
-            <div class="card-info">
+        <a href="/custom-button.html" class="product-card" style="grid-column: 1 / -1; flex-direction: row; align-items: center;">
+            <div class="card-img" style="width: 260px; flex-shrink: 0; aspect-ratio: auto; height: 200px;">
+                <img src="https://raw.githubusercontent.com/TimMir1/timmir1.github.io/main/Gucci.png" alt="Индивидуальная кнопка YouTube на заказ">
+            </div>
+            <div class="card-info" style="padding: 40px 48px;">
                 <span class="card-badge">Custom</span>
-                <div class="card-name">Индивидуальная кнопка</div>
-                <p class="card-desc">Ваш логотип, ник и дизайн. Любые цвета.</p>
+                <div class="card-name" style="font-size: 32px;">Индивидуальная кнопка</div>
+                <p class="card-desc">Ваш логотип, ник и дизайн. Любые цвета. Делаем под ключ за 4 часа.</p>
                 <div class="card-bottom"><span class="card-price">от 8 100 ₽</span><span class="card-arrow">→</span></div>
             </div>
         </a>
@@ -273,77 +844,108 @@
     </div>
 </section>
 
-<!-- SEO BAND -->
-<section class="seo-band">
-    <div>
-        <h3>Почему не маркетплейс</h3>
-        <h2>Настоящий металл против пластика с Ozon</h2>
-        <p>На Wildberries, Ozon и Яндекс Маркете продают пластиковые копии весом 200–400 г за 1 000–4 000 ₽. Краска облазит, ощущение дешёвой игрушки.</p>
-        <p>Мы делаем из настоящего металла — <strong style="color:#fff;">1,8 кг, гальваника, ручная полировка</strong>. С 2014 года. Гравировка вашего ника включена в цену.</p>
-    </div>
-    <div>
-        <h3 style="margin-top:0;">Сравнение</h3>
-        <div class="compare-light">
-            <div class="cl-col">
-                <h4>Маркетплейс</h4>
-                <ul>
-                    <li>Пластик 200–400 г</li>
-                    <li>Краска облазит</li>
-                    <li>Без гравировки</li>
-                    <li>Как игрушка</li>
-                </ul>
+<!-- COMPARE -->
+<section class="compare-section">
+    <div class="compare-layout">
+        <div class="compare-text">
+            <div class="section-header" style="border-bottom: 1px solid var(--border); margin-bottom: 36px;">
+                <div>
+                    <p class="section-eyebrow" style="margin-bottom: 16px;">Почему не маркетплейс</p>
+                    <h2 class="section-title">Металл против<br><em>пластика с Ozon</em></h2>
+                </div>
             </div>
-            <div class="cl-col">
-                <h4 class="ok">Наша кнопка</h4>
-                <ul>
-                    <li>Металл 1,8 кг</li>
-                    <li>Гальваника навсегда</li>
-                    <li>Гравировка ника</li>
-                    <li>Как настоящая награда</li>
-                </ul>
+            <p>На Wildberries, Ozon и Яндекс Маркете продают пластиковые копии весом 200–400 г за 1 000–4 000 ₽. Краска облазит, ощущение дешёвой игрушки.</p>
+            <p>Мы делаем из настоящего металла — <strong>1,8 кг, гальваника, ручная полировка</strong>. С 2014 года. Гравировка вашего ника включена в цену.</p>
+        </div>
+        <div class="compare-table">
+            <div class="compare-row">
+                <div class="compare-cell header bad">Маркетплейс</div>
+                <div class="compare-cell header good">Наша кнопка</div>
+            </div>
+            <div class="compare-row">
+                <div class="compare-cell bad">Пластик 200–400 г</div>
+                <div class="compare-cell good">Металл 1,8 кг</div>
+            </div>
+            <div class="compare-row">
+                <div class="compare-cell bad">Краска облазит</div>
+                <div class="compare-cell good">Гальваника навсегда</div>
+            </div>
+            <div class="compare-row">
+                <div class="compare-cell bad">Без гравировки</div>
+                <div class="compare-cell good">Гравировка ника</div>
+            </div>
+            <div class="compare-row">
+                <div class="compare-cell bad">Как игрушка</div>
+                <div class="compare-cell good">Как настоящая награда</div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- CTA -->
-<section class="cta-section">
-    <h2>Заказать кнопку YouTube</h2>
-    <p>Напишите ник канала — сделаем с гравировкой за 4 часа. Самовывоз в Москве или доставка по России.</p>
-    <a href="tg://resolve?domain=+79779662521">Написать в Telegram</a>
+<!-- CTA BAND -->
+<section class="cta-band">
+    <p class="cta-band-eyebrow">Готовы к заказу?</p>
+    <h2>Заказать<br><em>за 4 часа</em></h2>
+    <p>Напишите ник канала — сделаем с гравировкой за 4 часа. Самовывоз в Москве или доставка по всей России.</p>
+    <a href="tg://resolve?domain=+79779662521" class="btn-primary" style="margin: 0 auto;">
+        Написать в Telegram →
+    </a>
 </section>
 
 <!-- FAQ -->
 <section class="faq-section">
-    <h2>Вопросы и ответы</h2>
+    <div class="section-header">
+        <div>
+            <p class="section-eyebrow" style="margin-bottom: 16px;">Вопросы</p>
+            <h2 class="section-title">FAQ</h2>
+        </div>
+    </div>
 
     <details class="faq-item">
-        <summary class="faq-q">Из чего сделана кнопка YouTube?</summary>
+        <summary class="faq-q">
+            Из чего сделана кнопка YouTube?
+            <span class="faq-icon">+</span>
+        </summary>
         <p class="faq-a">Цинковый сплав с гальваническим покрытием. Никакого пластика или акрила. Вес золотой кнопки — 1,8 кг, что соответствует ощущению оригинальной награды от YouTube.</p>
     </details>
 
     <details class="faq-item">
-        <summary class="faq-q">Чем лучше, чем на Ozon или Wildberries?</summary>
+        <summary class="faq-q">
+            Чем лучше, чем на Ozon или Wildberries?
+            <span class="faq-icon">+</span>
+        </summary>
         <p class="faq-a">На Ozon и Wildberries продают пластиковые копии за 1 000–6 000 ₽. Мы делаем металлические награды с ручной полировкой. Также можем сделать кнопку с вашим никнеймом — маркетплейсы этого не предлагают.</p>
     </details>
 
     <details class="faq-item">
-        <summary class="faq-q">Сколько стоит золотая кнопка YouTube?</summary>
+        <summary class="faq-q">
+            Сколько стоит золотая кнопка YouTube?
+            <span class="faq-icon">+</span>
+        </summary>
         <p class="faq-a">Золотая — 7 800 ₽. Серебряная — 6 900 ₽. Мини-кнопка с ником — от 3 700 ₽. Гравировка включена в цену.</p>
     </details>
 
     <details class="faq-item">
-        <summary class="faq-q">Как быстро изготавливается кнопка?</summary>
+        <summary class="faq-q">
+            Как быстро изготавливается кнопка?
+            <span class="faq-icon">+</span>
+        </summary>
         <p class="faq-a">Любая кнопка — стандартная или с индивидуальным ником — готова за 4 часа. Самовывоз в Москве или доставка по всей России.</p>
     </details>
 
     <details class="faq-item">
-        <summary class="faq-q">Можно ли заказать с моим никнеймом?</summary>
+        <summary class="faq-q">
+            Можно ли заказать с моим никнеймом?
+            <span class="faq-icon">+</span>
+        </summary>
         <p class="faq-a">Да, любой ник и логотип — делаем за 4 часа. Напишите в Telegram, пришлите текст и изображение — кнопка готова в тот же день.</p>
     </details>
 
     <details class="faq-item">
-        <summary class="faq-q">Есть ли доставка по России?</summary>
+        <summary class="faq-q">
+            Есть ли доставка по России?
+            <span class="faq-icon">+</span>
+        </summary>
         <p class="faq-a">Да, доставляем по всей России. Самовывоз в Москве. Для уточнения стоимости и сроков — напишите в Telegram.</p>
     </details>
 </section>
@@ -351,7 +953,7 @@
 <!-- FOOTER -->
 <footer class="site-footer">
     <div>
-        <div class="footer-brand">Ютуб кнопки на заказ</div>
+        <div class="footer-brand">MIRA <span>&</span> PAPA</div>
         <p class="footer-desc">Изготовление металлических наград YouTube и кастомных плакеток. Москва, с 2014 года.</p>
     </div>
     <div class="footer-col">
@@ -367,10 +969,10 @@
     <div class="footer-col">
         <h5>Контакты</h5>
         <ul>
-            <li><a href="tg://resolve?domain=+79779662521" style="color:#25a244;">Telegram</a></li>
+            <li><a href="tg://resolve?domain=+79779662521" style="color:#4dc36a;">Telegram</a></li>
             <li><a href="https://www.avito.ru/moskva/kollektsionirovanie/serebryanaya_knopka_youtube_premium_kachestvo_2434259570" target="_blank">Авито</a></li>
             <li><a href="tel:+79779662521">+7 977 966 25 21</a></li>
-            <li><span style="color:var(--text-muted); font-size:13px;">Москва, самовывоз и доставка</span></li>
+            <li><span style="color:var(--text-muted); font-size:9px; letter-spacing:0.08em;">Москва, самовывоз и доставка</span></li>
         </ul>
     </div>
 </footer>
@@ -378,6 +980,15 @@
     <p>© 2026 Ютуб кнопки на заказ. Все права защищены.</p>
     <p>Москва · Металл, не пластик · С 2014 года</p>
 </div>
+
+<script>
+    const toggle = document.getElementById('navToggle');
+    const nav = document.getElementById('mainNav');
+    toggle.addEventListener('click', () => {
+        nav.classList.toggle('open');
+        toggle.classList.toggle('open');
+    });
+</script>
 
 </body>
 </html>
