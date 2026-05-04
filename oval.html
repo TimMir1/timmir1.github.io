@@ -3,237 +3,351 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Эксклюзивные Овальные Часы</title>
+    <title>Miyota Signature - Cyber Oval Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --clock-color: #316a73;
+            --c: #316a73; /* Акцентный цвет корпуса */
+            --bg: #f0ede8; /* Основной фон */
         }
         
         body {
-            background: linear-gradient(135deg, #f3f4f6 0%, #d1d5db 100%);
+            background: var(--bg);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0;
             font-family: 'Inter', sans-serif;
+            color: #1a1a1a;
+            position: relative;
+            overflow-x: hidden;
         }
 
-        /* Реалистичный корпус с эффектом металла и фаской */
-        .clock-casing {
-            background-color: var(--clock-color);
-            box-shadow: 
-                /* Внешняя тень */
-                20px 20px 60px rgba(0, 0, 0, 0.2),
-                -5px -5px 20px rgba(255, 255, 255, 0.5),
-                /* Эффект фаски/объема */
-                inset 2px 2px 5px rgba(255, 255, 255, 0.2),
-                inset -2px -2px 5px rgba(0, 0, 0, 0.3);
-            transition: background-color 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /* Циферблат с эффектом глубины */
-        .clock-face {
-            background: radial-gradient(circle at center, #ffffff 0%, #f0f0f0 100%);
-            box-shadow: 
-                inset 0 10px 20px rgba(0, 0, 0, 0.15),
-                inset 0 -5px 10px rgba(255, 255, 255, 0.8),
-                0 2px 5px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(0,0,0,0.05);
-        }
-
-        /* Текстура циферблата (микро-сетка) */
-        .clock-face::before {
+        /* Эффект зернистости (Noise) */
+        body::before {
             content: '';
-            position: absolute;
+            position: fixed;
             inset: 0;
-            border-radius: inherit;
-            background-image: radial-gradient(#000 0.5px, transparent 0.5px);
-            background-size: 10px 10px;
-            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
             pointer-events: none;
+            z-index: 100;
+            opacity: 0.4;
+        }
+
+        /* Корпус часов - Утонченный обод */
+        .clock-casing {
+            background-color: var(--c);
+            box-shadow: 
+                0 30px 60px rgba(0,0,0,0.15),
+                inset 0 2px 4px rgba(255,255,255,0.3),
+                inset 0 -2px 4px rgba(0,0,0,0.2);
+            transition: background-color 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%;
+            max-width: 440px;
+            aspect-ratio: 3 / 1.6;
+            position: relative;
+            z-index: 10;
+            padding: 1.4rem; 
+        }
+
+        .clock-face {
+            background: #ffffff;
+            box-shadow: inset 0 8px 16px rgba(0,0,0,0.1);
+            z-index: 5;
+            width: 100%;
+            height: 100%;
+            border-radius: 90px;
+        }
+
+        .font-cyber { font-family: 'Orbitron', sans-serif; }
+        .font-premium { font-family: 'Playfair Display', serif; }
+
+        /* СТРЕЛКИ */
+        .hands-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            z-index: 60;
         }
 
         .hand {
-            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform-origin: bottom center;
+            border-radius: 10px;
+            transition: none;
+        }
+
+        .hour-hand {
+            background: #111;
+            width: 6px;
+            height: 60px;
+            margin-left: -3px;
+        }
+
+        .minute-hand {
+            background: #222;
+            width: 4px;
+            height: 85px;
+            margin-left: -2px;
+        }
+
+        /* Красная укороченная стрелка */
+        .second-hand {
+            background: #e63946; 
+            width: 2px;
+            height: 78px; 
+            margin-left: -1px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        .second-hand::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 12px;
+            background: inherit;
+            border-radius: 1px;
+        }
+
+        .center-cap {
+            position: absolute;
+            top: -9px;
+            left: -9px;
+            width: 18px;
+            height: 18px;
+            background: #111;
+            border: 2px solid #e63946;
+            border-radius: 50%;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            z-index: 70;
+        }
+
+        /* Резки-вени */
+        .vein-tick {
+            position: absolute;
+            background: #e2e8f0;
+            clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+            transform-origin: bottom center;
+            z-index: 10;
+        }
+
+        .status-pulse {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            position: relative;
+        }
+        .status-pulse::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: inherit;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(3); opacity: 0; }
         }
 
         .color-dot {
-            position: relative;
-            transition: all 0.3s ease;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            z-index: 110;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .color-dot.active {
+            box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--c);
+        }
+
+        .accent-line {
+            width: 40px;
+            height: 3px;
+            background-color: var(--c);
         }
         
-        .color-dot::after {
-            content: '';
-            position: absolute;
-            inset: -4px;
-            border: 2px solid transparent;
-            border-radius: 50%;
-            transition: all 0.3s ease;
-        }
-
-        .color-dot.active::after {
-            border-color: #2AABEE;
-            transform: scale(1.1);
-        }
-
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
+        .interactive { position: relative; z-index: 110; }
     </style>
 </head>
-<body>
+<body class="p-6">
 
-    <div class="flex flex-col items-center gap-8 py-12 px-4 max-w-4xl w-full">
+    <div class="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
         
-        <!-- Заголовок карточки -->
-        <div class="text-center space-y-2">
-            <h1 class="text-4xl font-black text-gray-800 tracking-tighter uppercase font-['Orbitron']">МАТИН ТЫ КОГДА ЧАСЫ ЗАБЕРЕШЬ?</h1>
-            <p class="text-gray-500 font-medium tracking-widest uppercase text-xs">МОЗГОЕБ, БЛДЬ</p>
+        <!-- Левая часть: Часы -->
+        <div class="flex flex-col items-center gap-8">
+            <div class="clock-casing rounded-r-[115px] flex items-center">
+                <div class="clock-face relative flex items-center justify-center overflow-hidden ml-6">
+                    <div id="face-elements" class="w-full h-full relative font-cyber font-black text-gray-900"></div>
+                    
+                    <!-- СТРЕЛКИ -->
+                    <div class="hands-container">
+                        <div class="hand hour-hand"></div>
+                        <div class="hand minute-hand"></div>
+                        <div class="hand second-hand"></div>
+                        <div class="center-cap"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <div id="digital-time" class="font-cyber text-3xl tracking-[0.2em] text-gray-800">00:00:00</div>
+                <div class="text-[9px] uppercase tracking-[0.5em] text-gray-400 mt-2 font-bold">Active Engine Protocol</div>
+            </div>
         </div>
 
-        <!-- Секция товара -->
-        <div class="flex flex-col lg:flex-row items-center justify-center gap-12 w-full">
-            
-            <!-- Визуализация часов -->
-            <div class="relative group">
-                <div id="main-clock" class="clock-casing relative w-[360px] h-[200px] rounded-r-[100px] flex items-center p-[18px]">
-                    <div class="clock-face relative w-full h-full rounded-[82px] ml-4 overflow-hidden">
-                        <div class="face-elements w-full h-full relative font-['Orbitron']"></div>
-                        
-                        <!-- Стекло (блик) -->
-                        <div class="absolute inset-0 pointer-events-none bg-linear-to-tr from-transparent via-white/10 to-white/20 z-20"></div>
-                        
-                        <!-- Стрелки -->
-                        <div class="absolute top-1/2 left-1/2 w-0 h-0 z-30">
-                            <div class="hand hour-hand absolute bg-[#1a1a1a] w-[5px] h-[48px] origin-bottom rounded-full" style="bottom: 0; left: -2.5px;"></div>
-                            <div class="hand minute-hand absolute bg-[#333] w-[3px] h-[65px] origin-bottom rounded-full" style="bottom: 0; left: -1.5px;"></div>
-                            <div class="hand second-hand absolute bg-[#e63946] w-[1.5px] h-[72px] origin-bottom rounded-full" style="bottom: 0; left: -0.75px;"></div>
-                            <div class="absolute bg-[#111] w-[12px] h-[12px] rounded-full shadow-lg border border-white/20" style="top: -6px; left: -6px;"></div>
-                        </div>
-                    </div>
+        <!-- Правая часть: Карточка -->
+        <div class="space-y-10">
+            <div class="space-y-4">
+                <div class="flex items-center gap-3 interactive">
+                    <div class="status-pulse"></div>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-gray-500">В наличии</span>
                 </div>
-                <!-- Тень под часами для реализма -->
-                <div class="absolute -bottom-10 left-1/2 -translate-x-1/2 w-[80%] h-4 bg-black/10 blur-xl rounded-full"></div>
+                <h1 class="text-6xl font-premium leading-none tracking-tight">Miyota <br>Cyber Oval</h1>
+                <div class="accent-line transition-all duration-500"></div>
             </div>
 
-            <!-- Инфо-панель карточки -->
-            <div class="glass-effect p-8 rounded-[2rem] shadow-xl w-full max-w-[380px] space-y-8">
+            <div class="grid grid-cols-2 gap-8 py-6 border-y border-gray-200/50">
                 <div>
-                    <div class="flex items-baseline gap-2">
-                        <span class="text-3xl font-bold text-gray-900">28 900 ₽</span>
-                        <span class="text-gray-400 line-through text-sm">36 000 ₽</span>
+                    <span class="block text-[10px] uppercase tracking-widest text-gray-400 mb-1">Механизм</span>
+                    <span class="font-medium">Quartz</span>
+                </div>
+                <div>
+                    <span class="block text-[10px] uppercase tracking-widest text-gray-400 mb-1">Материал</span>
+                    <span class="font-medium">ФАНЕРА</span>
+                </div>
+                <div>
+                    <span class="block text-[10px] uppercase tracking-widest text-gray-400 mb-1">Размер</span>
+                    <span class="font-medium">430 x 220 х 70 мм</span>
+                </div>
+                <div>
+                    <span class="block text-[10px] uppercase tracking-widest text-gray-400 mb-1">Гарантия</span>
+                    <span class="font-medium">24 Месяца</span>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <div class="flex flex-col gap-4">
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Выберите цвет отделки</span>
+                    <div class="grid grid-cols-6 gap-3 interactive">
+                        <!-- Основные -->
+                        <button onclick="updateC('#316a73', this)" title="Тиффани" class="color-dot active w-8 h-8 rounded-full bg-[#316a73]"></button>
+                        <button onclick="updateC('#1a1a1a', this)" title="Черный матовый" class="color-dot w-8 h-8 rounded-full bg-[#1a1a1a]"></button>
+                        <button onclick="updateC('#4a4a4a', this)" title="Мокрый асфальт" class="color-dot w-8 h-8 rounded-full bg-[#4a4a4a]"></button>
+                        <button onclick="updateC('#a39081', this)" title="Капучино" class="color-dot w-8 h-8 rounded-full bg-[#a39081]"></button>
+                        <button onclick="updateC('#8c8c8c', this)" title="Серый бетон" class="color-dot w-8 h-8 rounded-full bg-[#8c8c8c]"></button>
+                        <button onclick="updateC('#b22222', this)" title="Красный феррари" class="color-dot w-8 h-8 rounded-full bg-[#b22222]"></button>
+                        
+                        <!-- Дополнительные натуральные -->
+                        <button onclick="updateC('#2f4f4f', this)" title="Темный сланец" class="color-dot w-8 h-8 rounded-full bg-[#2f4f4f]"></button>
+                        <button onclick="updateC('#556b2f', this)" title="Олива" class="color-dot w-8 h-8 rounded-full bg-[#556b2f]"></button>
+                        <button onclick="updateC('#7d443a', this)" title="Терракота" class="color-dot w-8 h-8 rounded-full bg-[#7d443a]"></button>
+                        <button onclick="updateC('#bc8f8f', this)" title="Пыльная роза" class="color-dot w-8 h-8 rounded-full bg-[#bc8f8f]"></button>
+                        <button onclick="updateC('#4682b4', this)" title="Стальной синий" class="color-dot w-8 h-8 rounded-full bg-[#4682b4]"></button>
+                        <button onclick="updateC('#ffffff', this)" title="Белый" class="color-dot w-8 h-8 rounded-full bg-[#ffffff] border border-gray-200"></button>
                     </div>
-                    <p class="text-gray-600 text-sm mt-2 leading-relaxed">
-                        Лимитированная серия в матовом корпусе. Японский механизм, бесшумный ход и футуристичный дизайн.
-                    </p>
                 </div>
 
-                <!-- Выбор цвета -->
-                <div class="space-y-4">
-                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest font-['Orbitron']">Цвет корпуса</span>
-                    <div id="color-picker" class="grid grid-cols-5 gap-3">
-                        <button onclick="updateSettings('#316a73', this)" class="color-dot active w-10 h-10 rounded-full bg-[#316a73] border-2 border-white shadow-sm"></button>
-                        <button onclick="updateSettings('#c13034', this)" class="color-dot w-10 h-10 rounded-full bg-[#c13034] border-2 border-white shadow-sm"></button>
-                        <button onclick="updateSettings('#1a1a1a', this)" class="color-dot w-10 h-10 rounded-full bg-[#1a1a1a] border-2 border-white shadow-sm"></button>
-                        <button onclick="updateSettings('#2d3436', this)" class="color-dot w-10 h-10 rounded-full bg-[#2d3436] border-2 border-white shadow-sm"></button>
-                        <button onclick="updateSettings('#0984e3', this)" class="color-dot w-10 h-10 rounded-full bg-[#0984e3] border-2 border-white shadow-sm"></button>
-                        <button onclick="updateSettings('#6c5ce7', this)" class="color-dot w-10 h-10 rounded-full bg-[#6c5ce7] border-2 border-white shadow-sm"></button>
-                        <button onclick="updateSettings('#00b894', this)" class="color-dot w-10 h-10 rounded-full bg-[#00b894] border-2 border-white shadow-sm"></button>
-                        <button onclick="updateSettings('#fdcb6e', this)" class="color-dot w-10 h-10 rounded-full bg-[#fdcb6e] border-2 border-white shadow-sm"></button>
-                        <button onclick="updateSettings('#e17055', this)" class="color-dot w-10 h-10 rounded-full bg-[#e17055] border-2 border-white shadow-sm"></button>
-                        <button onclick="updateSettings('#b2bec3', this)" class="color-dot w-10 h-10 rounded-full bg-[#b2bec3] border-2 border-white shadow-sm"></button>
+                <div class="flex justify-between items-center pt-4">
+                    <div class="space-y-1">
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Стоимость</span>
+                        <div class="text-4xl font-premium">24 900 ₽</div>
                     </div>
+                    <a href="https://t.me/+79779662521" target="_blank" class="interactive flex items-center justify-center px-10 bg-[#1a1a1a] hover:bg-black text-white py-5 rounded-none transition-all font-bold uppercase tracking-widest text-xs shadow-2xl">
+                        Заказать
+                    </a>
                 </div>
-
-                <!-- Кнопка действия -->
-                <a href="https://t.me/+79779662521" target="_blank" class="flex items-center justify-center gap-3 bg-gray-900 hover:bg-black text-white py-5 rounded-2xl transition-all shadow-lg hover:shadow-black/20 font-bold text-lg active:scale-95">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm5.494 8.171l-1.891 8.916c-.143.644-.522.802-1.062.5l-2.88-2.122-1.39 1.338c-.153.153-.282.282-.577.282l.207-2.936 5.344-4.828c.232-.207-.05-.322-.361-.115l-6.604 4.157-2.845-.89c-.618-.193-.63-.618.129-.915l11.116-4.284c.514-.193.964.114.759 1.02z"/></svg>
-                    Купить в Telegram
-                </a>
             </div>
         </div>
     </div>
 
     <script>
-        function updateSettings(color, btn) {
-            document.documentElement.style.setProperty('--clock-color', color);
-            
-            // Обновление активного состояния кнопок
+        function updateC(color, btn) {
+            document.documentElement.style.setProperty('--c', color);
             document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
             btn.classList.add('active');
         }
 
-        function buildClockFaces() {
-            const faces = document.querySelectorAll('.face-elements');
-            faces.forEach(face => {
-                const width = face.offsetWidth;
-                const height = face.offsetHeight;
-                const cx = width / 2;
-                const cy = height / 2;
+        function buildFace() {
+            const face = document.getElementById('face-elements');
+            if (!face) return;
+            face.innerHTML = ''; 
+            
+            const width = face.clientWidth;
+            const height = face.clientHeight;
+            const cx = width / 2;
+            const cy = height / 2;
 
-                const numbers = [12, 3, 6, 9];
-                numbers.forEach(num => {
-                    const angle = num * 30;
-                    const rad = (angle - 90) * Math.PI / 180;
-                    const rx = cx - 35; 
-                    const ry = cy - 30;
-                    const x = cx + rx * Math.cos(rad);
-                    const y = cy + ry * Math.sin(rad);
-
-                    const numEl = document.createElement('div');
-                    numEl.innerText = num;
-                    numEl.className = 'absolute text-3xl text-gray-800 font-black tracking-tighter';
-                    numEl.style.left = `${x}px`;
-                    numEl.style.top = `${y}px`;
-                    numEl.style.transform = 'translate(-50%, -50%)';
-                    face.appendChild(numEl);
-                });
-
-                for (let i = 1; i <= 12; i++) {
-                    if (i % 3 === 0) continue;
-                    const angle = i * 30;
-                    const rad = (angle - 90) * Math.PI / 180;
-                    const rx = cx - 15;
-                    const ry = cy - 15;
-                    const x = cx + rx * Math.cos(rad);
-                    const y = cy + ry * Math.sin(rad);
-
-                    const tick = document.createElement('div');
-                    tick.className = 'absolute w-[2px] h-[12px] bg-gray-400/50 rounded-full';
-                    tick.style.left = `${x}px`;
-                    tick.style.top = `${y}px`;
-                    tick.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
-                    face.appendChild(tick);
-                }
+            // Цифры Orbitron
+            [12, 3, 6, 9].forEach(num => {
+                const angle = (num * 30 - 90) * Math.PI / 180;
+                const rx = cx * 0.72;
+                const ry = cy * 0.62;
+                
+                const el = document.createElement('div');
+                el.innerText = num;
+                el.className = 'absolute text-4xl';
+                el.style.left = `${cx + rx * Math.cos(angle)}px`;
+                el.style.top = `${cy + ry * Math.sin(angle)}px`;
+                el.style.transform = 'translate(-50%, -50%)';
+                face.appendChild(el);
             });
+
+            // "Резанные вены"
+            for (let i = 0; i < 60; i++) {
+                if (i % 15 === 0) continue;
+                const angle = (i * 6 - 90) * Math.PI / 180;
+                const rx = cx * 0.92;
+                const ry = cy * 0.88;
+                
+                const tick = document.createElement('div');
+                const isFive = i % 5 === 0;
+                tick.className = 'vein-tick';
+                tick.style.width = isFive ? '4px' : '2px';
+                tick.style.height = isFive ? '16px' : '9px';
+                tick.style.background = isFive ? '#cbd5e1' : '#e2e8f0';
+                
+                tick.style.left = `${cx + rx * Math.cos(angle)}px`;
+                tick.style.top = `${cy + ry * Math.sin(angle)}px`;
+                tick.style.transform = `translate(-50%, -50%) rotate(${i * 6}deg)`;
+                face.appendChild(tick);
+            }
         }
 
-        function updateClocks() {
+        function updateTime() {
             const now = new Date();
-            const ms = now.getMilliseconds();
-            const s = now.getSeconds();
-            const m = now.getMinutes();
-            const h = now.getHours();
+            const s = now.getSeconds() + now.getMilliseconds() / 1000;
+            const m = now.getMinutes() + s / 60;
+            const h = (now.getHours() % 12) + m / 60;
 
-            const sAngle = (s + ms / 1000) * 6;
-            const mAngle = m * 6 + (s * 0.1);
-            const hAngle = (h % 12) * 30 + (m * 0.5);
+            const hourHand = document.querySelector('.hour-hand');
+            const minuteHand = document.querySelector('.minute-hand');
+            const secondHand = document.querySelector('.second-hand');
 
-            document.querySelector('.hour-hand').style.transform = `rotate(${hAngle}deg)`;
-            document.querySelector('.minute-hand').style.transform = `rotate(${mAngle}deg)`;
-            document.querySelector('.second-hand').style.transform = `rotate(${sAngle}deg)`;
+            if (hourHand) hourHand.style.transform = `rotate(${h * 30}deg)`;
+            if (minuteHand) minuteHand.style.transform = `rotate(${m * 6}deg)`;
+            if (secondHand) secondHand.style.transform = `rotate(${s * 6}deg)`;
 
-            requestAnimationFrame(updateClocks);
+            const digital = document.getElementById('digital-time');
+            if (digital) digital.innerText = now.toLocaleTimeString('ru-RU', { hour12: false });
+
+            requestAnimationFrame(updateTime);
         }
 
         window.onload = () => {
-            buildClockFaces();
-            updateClocks();
+            buildFace();
+            updateTime();
+            window.addEventListener('resize', buildFace);
         };
     </script>
 </body>
