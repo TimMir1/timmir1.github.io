@@ -1,0 +1,211 @@
+export default function WasteRemovalLanding() {
+  const services = [
+    'Вывоз строительного мусора',
+    'Вывоз старой мебели',
+    'Вывоз бытового мусора',
+    'Вывоз хлама после ремонта',
+    'Вывоз окон и дверей',
+    'Вывоз мешков с мусором',
+    'Вывоз мусора Газелью',
+    'Вывоз мусора контейнером',
+  ];
+
+  const seoText = `
+  Вывоз мусора Москва, вывоз мусора Московская область, вывоз строительного мусора Москва,
+  заказать вывоз мусора недорого, вывоз хлама после ремонта, срочный вывоз мусора,
+  вывоз старой мебели, вывоз строительных отходов, услуги грузчиков Москва,
+  вывоз мусора Газель Москва, контейнер для мусора Москва, демонтаж и вывоз мусора,
+  вывоз бытового мусора МО, утилизация мусора Москва и область.
+  `;
+
+  return (
+    <div className="min-h-screen bg-white text-zinc-900">
+      <title>МосЭкоВывоз — Вывоз мусора в Москве и МО</title>
+      <meta
+        name="description"
+        content="Срочный вывоз мусора в Москве и Московской области. Строительный, бытовой мусор, мебель, хлам. Быстрая подача машины. Звоните +7 977 107-38-34"
+      />
+      <meta
+        name="keywords"
+        content={seoText}
+      />
+
+      <header className="bg-zinc-950 text-white">
+        <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-black tracking-tight">МосЭкоВывоз</h1>
+            <p className="text-sm text-zinc-400">Вывоз любого мусора по Москве и МО</p>
+          </div>
+
+          <a
+            href="tel:+79771073834"
+            className="bg-lime-400 hover:bg-lime-300 text-black px-5 py-3 rounded-2xl font-bold transition"
+          >
+            +7 977 107-38-34
+          </a>
+        </div>
+      </header>
+
+      <section className="relative overflow-hidden bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-800 text-white">
+        <div className="max-w-7xl mx-auto px-6 py-20 grid lg:grid-cols-2 gap-12 items-center">
+          <div>
+            <div className="inline-flex items-center gap-2 bg-lime-400/10 border border-lime-400/20 px-4 py-2 rounded-full mb-6">
+              <span className="w-2 h-2 bg-lime-400 rounded-full animate-pulse"></span>
+              <span className="text-lime-300 text-sm">Работаем 24/7</span>
+            </div>
+
+            <h2 className="text-5xl md:text-6xl font-black leading-tight mb-6">
+              Вывоз мусора
+              <span className="block text-lime-400">за 60 минут</span>
+            </h2>
+
+            <p className="text-zinc-300 text-lg leading-relaxed mb-8 max-w-xl">
+              Строительный мусор, старая мебель, бытовой хлам, демонтаж и уборка.
+              Быстро подадим машину по Москве и Московской области.
+            </p>
+
+            <div className="flex flex-wrap gap-4">
+              <a
+                href="tel:+79771073834"
+                className="bg-lime-400 hover:bg-lime-300 text-black px-7 py-4 rounded-2xl font-bold text-lg transition shadow-2xl"
+              >
+                Позвонить сейчас
+              </a>
+
+              <a
+                href="https://wa.me/79771073834"
+                className="border border-zinc-600 hover:border-white px-7 py-4 rounded-2xl font-semibold transition"
+              >
+                WhatsApp
+              </a>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-6 border border-white/10 hover:-translate-y-1 transition">
+              <div className="text-4xl font-black text-lime-400 mb-2">15+</div>
+              <p className="text-zinc-300">машин в автопарке</p>
+            </div>
+
+            <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-6 border border-white/10 hover:-translate-y-1 transition">
+              <div className="text-4xl font-black text-lime-400 mb-2">24/7</div>
+              <p className="text-zinc-300">работаем без выходных</p>
+            </div>
+
+            <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-6 border border-white/10 hover:-translate-y-1 transition">
+              <div className="text-4xl font-black text-lime-400 mb-2">60 мин</div>
+              <p className="text-zinc-300">средняя подача машины</p>
+            </div>
+
+            <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-6 border border-white/10 hover:-translate-y-1 transition">
+              <div className="text-4xl font-black text-lime-400 mb-2">100%</div>
+              <p className="text-zinc-300">официальная утилизация</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="max-w-7xl mx-auto px-6 py-20">
+        <div className="text-center mb-14">
+          <h3 className="text-4xl font-black mb-4">Что вывозим</h3>
+          <p className="text-zinc-500 text-lg">
+            От одного мешка до полного демонтажа объекта.
+          </p>
+        </div>
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {services.map((service) => (
+            <div
+              key={service}
+              className="border border-zinc-200 rounded-3xl p-6 hover:shadow-2xl hover:-translate-y-1 transition bg-white"
+            >
+              <div className="w-14 h-14 rounded-2xl bg-lime-100 flex items-center justify-center mb-5 text-2xl">
+                ♻️
+              </div>
+              <h4 className="font-bold text-xl leading-snug">{service}</h4>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="bg-zinc-100 py-20">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid lg:grid-cols-3 gap-8">
+            <div className="bg-white rounded-3xl p-8 shadow-sm">
+              <div className="text-5xl mb-4">📞</div>
+              <h5 className="font-black text-2xl mb-3">Заявка</h5>
+              <p className="text-zinc-600">
+                Позвоните или напишите в WhatsApp.
+              </p>
+            </div>
+
+            <div className="bg-white rounded-3xl p-8 shadow-sm">
+              <div className="text-5xl mb-4">🚚</div>
+              <h5 className="font-black text-2xl mb-3">Подача машины</h5>
+              <p className="text-zinc-600">
+                Подберём транспорт под ваш объём мусора.
+              </p>
+            </div>
+
+            <div className="bg-white rounded-3xl p-8 shadow-sm">
+              <div className="text-5xl mb-4">🧹</div>
+              <h5 className="font-black text-2xl mb-3">Чистый результат</h5>
+              <p className="text-zinc-600">
+                Всё погрузим и вывезем без лишних хлопот.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="max-w-5xl mx-auto px-6 py-20 text-center">
+        <div className="bg-zinc-950 text-white rounded-[40px] p-10 md:p-16 relative overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(163,230,53,0.2),transparent_40%)]"></div>
+
+          <div className="relative z-10">
+            <h6 className="text-4xl md:text-5xl font-black mb-6">
+              Нужно срочно вывезти мусор?
+            </h6>
+
+            <p className="text-zinc-300 text-lg mb-8 max-w-2xl mx-auto">
+              Работаем по всей Москве и Московской области.
+              Быстрая подача, адекватные цены и нормальный сервис без цирка.
+            </p>
+
+            <a
+              href="tel:+79771073834"
+              className="inline-flex bg-lime-400 hover:bg-lime-300 text-black px-8 py-5 rounded-2xl font-black text-xl transition"
+            >
+              +7 977 107-38-34
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <footer className="border-t border-zinc-200 py-10 px-6">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+          <div>
+            <div className="font-black text-2xl">МосЭкоВывоз</div>
+            <div className="text-zinc-500 mt-1">
+              Вывоз мусора в Москве и МО
+            </div>
+          </div>
+
+          <div className="flex flex-col items-end">
+            <a href="tel:+79771073834" className="font-bold text-xl hover:text-lime-600 transition">
+              +7 977 107-38-34
+            </a>
+            <span className="text-zinc-500 text-sm">Ежедневно · круглосуточно</span>
+          </div>
+        </div>
+
+        <div className="hidden">
+          {seoText}
+          Вывоз мусора Люберцы, Балашиха, Химки, Мытищи, Подольск, Красногорск,
+          Одинцово, Реутов, Видное, Домодедово, Королёв, Щёлково, Жуковский,
+          Раменское, Долгопрудный, Зеленоград, Солнцево, Бутово, Коммунарка.
+        </div>
+      </footer>
+    </div>
+  );
+}
