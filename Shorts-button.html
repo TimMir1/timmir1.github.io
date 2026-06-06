@@ -74,14 +74,58 @@
     <main>
         <article class="max-w-6xl mx-auto px-4 py-8 md:py-20 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
             
-            <!-- Секция с фото -->
+            <!-- Секция с фото (СЛАЙДЕР) -->
             <div class="relative group">
                 <div class="absolute -inset-4 bg-gold/20 rounded-[2rem] blur-2xl opacity-20 group-hover:opacity-40 transition-opacity duration-700"></div>
-                <div class="relative bg-gray-900/50 backdrop-blur-sm border border-gold/20 rounded-3xl p-3 metal-shine shadow-2xl">
-                    <img src="https://raw.githubusercontent.com/TimMir1/timmir1.github.io/main/shorts2.png" 
-                         alt="Золотая кнопка YouTube Shorts" 
-                         class="w-full h-auto object-cover rounded-2xl shadow-inner contrast-110">
-                    <div class="absolute top-8 right-8 bg-gold text-dark font-black px-4 py-1 rounded-full text-xs uppercase tracking-widest shadow-lg">
+                
+                <div class="relative bg-gray-900/50 backdrop-blur-sm border border-gold/20 rounded-3xl p-3 metal-shine shadow-2xl group/slider">
+                    
+                    <!-- Обертка слайдера для скрытия выходящих за края фото -->
+                    <div class="relative overflow-hidden rounded-2xl shadow-inner w-full">
+                        
+                        <!-- Лента со слайдами -->
+                        <div id="slider-track" class="flex transition-transform duration-500 ease-in-out w-full">
+                            
+                            <!-- ========================================== -->
+                            <!-- ВСТАВЬТЕ ССЫЛКУ НА ФОТО №1 ВМЕСТО src="..." -->
+                            <!-- ========================================== -->
+                            <img src="https://raw.githubusercontent.com/TimMir1/timmir1.github.io/main/shorts2.png" 
+                                 alt="Золотая кнопка YouTube Shorts - Фото 1" 
+                                 class="w-full shrink-0 h-auto object-cover contrast-110">
+
+                            <!-- ========================================== -->
+                            <!-- ВСТАВЬТЕ ССЫЛКУ НА ФОТО №2 ВМЕСТО src="..." -->
+                            <!-- ========================================== -->
+                            <img src="https://raw.githubusercontent.com/TimMir1/timmir1.github.io/main/shorts2.png" 
+                                 alt="Золотая кнопка YouTube Shorts - Фото 2" 
+                                 class="w-full shrink-0 h-auto object-cover contrast-110">
+
+                            <!-- ========================================== -->
+                            <!-- ВСТАВЬТЕ ССЫЛКУ НА ФОТО №3 ВМЕСТО src="..." -->
+                            <!-- ========================================== -->
+                            <img src="https://raw.githubusercontent.com/TimMir1/timmir1.github.io/main/shorts2.png" 
+                                 alt="Золотая кнопка YouTube Shorts - Фото 3" 
+                                 class="w-full shrink-0 h-auto object-cover contrast-110">
+
+                        </div>
+
+                        <!-- Кнопки управления слайдером (появляются при наведении) -->
+                        <button onclick="prevSlide()" class="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-black/60 text-white rounded-full hover:bg-gold hover:text-black transition-all opacity-0 group-hover/slider:opacity-100 z-10 backdrop-blur-sm">
+                            &#10094;
+                        </button>
+                        <button onclick="nextSlide()" class="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-black/60 text-white rounded-full hover:bg-gold hover:text-black transition-all opacity-0 group-hover/slider:opacity-100 z-10 backdrop-blur-sm">
+                            &#10095;
+                        </button>
+
+                        <!-- Индикаторы (точки внизу) -->
+                        <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                            <button onclick="goToSlide(0)" class="indicator w-2.5 h-2.5 rounded-full bg-gold transition-colors"></button>
+                            <button onclick="goToSlide(1)" class="indicator w-2.5 h-2.5 rounded-full bg-white/50 transition-colors hover:bg-white/80"></button>
+                            <button onclick="goToSlide(2)" class="indicator w-2.5 h-2.5 rounded-full bg-white/50 transition-colors hover:bg-white/80"></button>
+                        </div>
+                    </div>
+
+                    <div class="absolute top-8 right-8 bg-gold text-dark font-black px-4 py-1 rounded-full text-xs uppercase tracking-widest shadow-lg z-20 pointer-events-none">
                         Shorts Edition
                     </div>
                 </div>
@@ -164,5 +208,46 @@
         </div>
     </footer>
 
+    <!-- Скрипт для работы слайдера -->
+    <script>
+        let currentSlide = 0;
+        const totalSlides = 3;
+        const track = document.getElementById('slider-track');
+        const indicators = document.querySelectorAll('.indicator');
+
+        function updateSlider() {
+            // Сдвигаем ленту фотографий
+            track.style.transform = `translateX(-${currentSlide * 100}%)`;
+            
+            // Обновляем активную точку-индикатор
+            indicators.forEach((ind, index) => {
+                if (index === currentSlide) {
+                    ind.classList.remove('bg-white/50');
+                    ind.classList.add('bg-gold');
+                } else {
+                    ind.classList.remove('bg-gold');
+                    ind.classList.add('bg-white/50');
+                }
+            });
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            updateSlider();
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            updateSlider();
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            updateSlider();
+        }
+
+        // Раскомментируйте код ниже, если хотите чтобы слайдер листался сам (каждые 4 секунды)
+        // setInterval(nextSlide, 4000);
+    </script>
 </body>
 </html>
