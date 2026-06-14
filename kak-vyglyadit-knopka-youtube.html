@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%231a1a1a'/%3E%3Crect x='8' y='8' width='84' height='84' rx='12' fill='%23c8960c'/%3E%3Crect x='12' y='12' width='76' height='76' rx='10' fill='%23f0b429'/%3E%3Crect x='16' y='16' width='68' height='68' rx='8' fill='%23ffd166'/%3E%3Cpolygon points='35,28 35,72 75,50' fill='%231a1a1a'/%3E%3C/svg%3E">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Как выглядит настоящая кнопка YouTube — фото и описание | Ютуб кнопки на заказ</title>
-    <meta name="description" content="Как выглядит оригинальная кнопка YouTube изнутри и снаружи. Размер, вес, материал Gold и Silver Play Button. Фото настоящих наград.">
+    <title>Как выглядит кнопка YouTube — оригинал и реплика из металла: фото, вес, размер</title>
+    <meta name="description" content="Как выглядит Gold Play Button: вес 1,8 кг, размер 40×30 см, металл с гальваникой. Сравнение оригинала, пластиковых копий с Ozon и нашей металлической реплики. Фото, характеристики.">
     <meta name="keywords" content="как выглядит кнопка youtube, кнопка youtube фото, gold play button как выглядит, настоящая кнопка youtube, кнопка youtube размер вес">
     <meta name="robots" content="index, follow">
     <meta name="geo.region" content="RU-MOW">
@@ -72,7 +72,24 @@
         .footer-links a { color: #888; text-decoration: none; font-size: 13px; font-weight: 600; }
         .footer-links a:hover { color: #fff; }
         .footer-copy { border-top: 1px solid #222; padding-top: 16px; text-align: center; color: #555; font-size: 12px; }
-        @media (max-width: 768px) {
+        .photo-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 28px 0 36px; }
+        .photo-card { border-radius: 16px; overflow: hidden; }
+        .photo-card--bad { border: 2px solid #ffcccc; }
+        .photo-card--good { border: 2px solid #b2f5c8; }
+        .photo-slot { position: relative; aspect-ratio: 4/3; background: #f5f5f5; overflow: hidden; }
+        .photo-slot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .photo-placeholder { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+        .photo-slot img + .photo-placeholder { display: none; }
+        .photo-slot img[style*="none"] + .photo-placeholder,
+        .photo-slot:not(:has(img[src])) .photo-placeholder { display: flex; }
+        .photo-placeholder__icon { font-size: 32px; opacity: 0.4; }
+        .photo-placeholder__text { font-size: 13px; font-weight: 700; color: #999; text-align: center; line-height: 1.4; }
+        .photo-placeholder__hint { font-size: 10px; color: #bbb; font-weight: 600; text-align: center; letter-spacing: 0.5px; }
+        .photo-label { padding: 12px 16px; font-size: 13px; font-weight: 800; text-align: center; }
+        .photo-label--bad { background: #fff5f5; color: #cc4444; }
+        .photo-label--good { background: #f0fff4; color: #2a7a4a; }
+        @media (max-width: 500px) { .photo-compare { grid-template-columns: 1fr; } }
+
             .compare-grid { grid-template-columns: 1fr; }
             article { padding: 30px 5% 20px; }
             .article-hero { padding: 40px 5%; }
@@ -130,7 +147,32 @@
     </div>
 </div>
 
-<h2>Что написано на кнопке</h2>
+<div class="photo-compare">
+    <div class="photo-card photo-card--bad">
+        <div class="photo-slot">
+            <img src="PLASTIC.jpg" alt="Пластиковая копия кнопки YouTube" onerror="this.style.display='none'">
+            <div class="photo-placeholder">
+                <span class="photo-placeholder__icon">📷</span>
+                <span class="photo-placeholder__text">Фото пластиковой<br>копии с Ozon</span>
+                <span class="photo-placeholder__hint">замените src на путь к фото</span>
+            </div>
+        </div>
+        <div class="photo-label photo-label--bad">❌ Пластик с Ozon — 200 г</div>
+    </div>
+    <div class="photo-card photo-card--good">
+        <div class="photo-slot">
+            <img src="zol1.jpg" alt="Металлическая реплика кнопки YouTube от MIRA & PAPA" onerror="this.style.display='none'">
+            <div class="photo-placeholder">
+                <span class="photo-placeholder__icon">📷</span>
+                <span class="photo-placeholder__text">Фото нашей<br>металлической реплики</span>
+                <span class="photo-placeholder__hint">замените src на путь к фото</span>
+            </div>
+        </div>
+        <div class="photo-label photo-label--good">✅ Наша реплика — металл 1,8 кг</div>
+    </div>
+</div>
+
+
 <p>На оригинале выгравировано название канала. На наших репликах мы тоже делаем гравировку — ник канала, имя или любой текст. Именно это делает кнопку настоящей наградой, а не просто сувениром.</p>
 
 <div class="highlight-box">
@@ -143,7 +185,28 @@
     <p>Тяжёлая, полированная, с вашим ником. За 4 часа в Москве.</p>
     <a href="tg://resolve?domain=+79779662521" class="cta-btn">🔥 Написать в Telegram</a>
 </div>
-</article>
+<h2>Как отличить металлическую реплику от пластиковой</h2>
+<p>Проще всего — взять в руки. Металлическая реплика весит от 1,8 кг (золотая) или от 1,2 кг (серебряная). Пластик при тех же размерах весит 200–400 г. На ощупь металл холодный и приятный, пластик — лёгкий и немного «пустой». На фото и видео пластик выдаёт себя плоским бликом — металл же даёт живые зеркальные отражения.</p>
+
+<h2>Как хранить и ухаживать за кнопкой</h2>
+<p>Металлическая реплика не требует особого ухода. Достаточно протирать мягкой тканью без абразивов. Не рекомендуем мочить под краном или чистить спиртом — гальваническое покрытие может потускнеть. Лучше всего хранить в вертикальном положении на подставке или повесить на стену — под кнопкой есть крепёжное отверстие.</p>
+
+<h2>Частые вопросы о внешнем виде</h2>
+<ul>
+    <li><strong>Выглядит ли реплика как оригинал на фото?</strong> Да — именно за этим к нам обращаются блогеры для съёмок.</li>
+    <li><strong>Есть ли упаковка?</strong> Да, отправляем в плотной коробке с защитой от царапин.</li>
+    <li><strong>Можно ли вешать на стену?</strong> Да, в комплекте идёт крепёжный элемент.</li>
+    <li><strong>Тускнеет ли золотое покрытие?</strong> При бережном уходе нет — гальваника держится годами.</li>
+</ul>
+
+<h2>Смотрите также</h2>
+<ul>
+    <li><a href="/gold-button.html" style="color:#c8960c; font-weight:700;">Золотая кнопка YouTube — заказать реплику из металла</a></li>
+    <li><a href="/knopka-youtube-s-nikom.html" style="color:#c8960c; font-weight:700;">Кнопка YouTube с гравировкой вашего ника</a></li>
+    <li><a href="/skolko-stoit-knopka-youtube.html" style="color:#c8960c; font-weight:700;">Сколько стоит реплика кнопки YouTube — все цены</a></li>
+</ul>
+
+
 <footer>
     <div class="footer-content">
         <div class="footer-section">
