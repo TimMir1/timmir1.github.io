@@ -4,14 +4,14 @@
 
   <url>
     <loc>https://timmir1.github.io/</loc>
-    <lastmod>2026-03-25</lastmod>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
 
   <url>
     <loc>https://timmir1.github.io/gold-button.html</loc>
-    <lastmod>2026-03-25</lastmod>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
     <image:image>
@@ -22,7 +22,7 @@
 
   <url>
     <loc>https://timmir1.github.io/silver-button.html</loc>
-    <lastmod>2026-03-25</lastmod>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
     <image:image>
@@ -33,84 +33,91 @@
 
   <url>
     <loc>https://timmir1.github.io/shorts-button.html</loc>
-    <lastmod>2026-03-25</lastmod>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://timmir1.github.io/mini-button.html</loc>
-    <lastmod>2026-03-25</lastmod>
+    <loc>https://timmir1.github.io/barcelona.html</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://timmir1.github.io/instagram.html</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
     <loc>https://timmir1.github.io/likee-button.html</loc>
-    <lastmod>2026-03-25</lastmod>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
     <loc>https://timmir1.github.io/chatgpt-button.html</loc>
-    <lastmod>2026-03-25</lastmod>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
     <loc>https://timmir1.github.io/custom-button.html</loc>
-    <lastmod>2026-03-25</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
-    <loc>https://timmir1.github.io/podarok-bloggeru.html</loc>
-    <lastmod>2026-03-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://timmir1.github.io/skolko-stoit-knopka-youtube.html</loc>
-    <lastmod>2026-03-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://timmir1.github.io/zolotaya-vs-serebryanaya.html</loc>
-    <lastmod>2026-03-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
-    <loc>https://timmir1.github.io/kak-vyglyadit-knopka-youtube.html</loc>
-    <lastmod>2026-03-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
-    <loc>https://timmir1.github.io/dostavka-knopki-youtube.html</loc>
-    <lastmod>2026-03-20</lastmod>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
     <loc>https://timmir1.github.io/knopka-youtube-s-nikom.html</loc>
-    <lastmod>2026-03-20</lastmod>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
+    <loc>https://timmir1.github.io/podarok-bloggeru.html</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://timmir1.github.io/kak-vyglyadit-knopka-youtube.html</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://timmir1.github.io/skolko-stoit-knopka-youtube.html</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://timmir1.github.io/zolotaya-vs-serebryanaya.html</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://timmir1.github.io/dostavka-knopki-youtube.html</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
     <loc>https://timmir1.github.io/knopka-youtube-metall-vs-plastik.html</loc>
-    <lastmod>2026-03-20</lastmod>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
