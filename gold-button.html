@@ -1,10 +1,13 @@
+Чтобы код стал «чище» и корректнее для работы (убраны скрытые неразрывные пробелы, которые могли вызывать ошибки, и добавлена оптимизация для работы Tailwind), используйте этот вариант:
+
+```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>Золотая кнопка YouTube купить в Москве — алюминий 1,8 кг | Ютуб кнопки на заказ</title>
+    <title>Золотая кнопка YouTube купить в Москве — Топ 3 подарка | Ютуб кнопки на заказ</title>
     <meta name="description" content="Купить золотую кнопку YouTube из настоящего алюминия 1,8 кг. Точная станочная обработка (ЧПУ), гравировка вашего ника за 4 часа. Дешевле Ozon, WB и Авито. Москва, доставка по России.">
     
     <meta property="og:title" content="Золотая кнопка YouTube из алюминия | На заказ">
@@ -15,100 +18,91 @@
     <link rel="canonical" href="https://timmir1.github.io/gold-button.html">
 
     <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Product",
-  "name": "Золотая кнопка YouTube (реплика), алюминий 1.8 кг",
-  "image": "https://timmir1.github.io/gold%20button.png",
-  "description": "Премиальная реплика золотой кнопки YouTube из алюминия 1.8 кг. Станочная обработка на ЧПУ, гравировка вашего ника за 4 часа.",
-  "brand": {
-    "@type": "Brand",
-    "name": "MIRA & PAPA"
-  },
-  "offers": {
-    "@type": "Offer",
-    "url": "https://timmir1.github.io/gold-button.html",
-    "priceCurrency": "RUB",
-    "price": "7800",
-    "availability": "https://schema.org/InStock",
-    "seller": {
-      "@type": "Organization",
-      "name": "MIRA & PAPA"
+    {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      "name": "Золотая кнопка YouTube (реплика), алюминий 1.8 кг",
+      "image": "https://timmir1.github.io/gold%20button.png",
+      "description": "Премиальная реплика золотой кнопки YouTube из алюминия 1.8 кг. Станочная обработка на ЧПУ, гравировка вашего ника за 4 часа.",
+      "brand": {
+        "@type": "Brand",
+        "name": "MIRA & PAPA"
+      },
+      "offers": {
+        "@type": "Offer",
+        "url": "https://timmir1.github.io/gold-button.html",
+        "priceCurrency": "RUB",
+        "price": "7800",
+        "availability": "https://schema.org/InStock",
+        "seller": {
+          "@type": "Organization",
+          "name": "MIRA & PAPA"
+        }
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "5",
+        "bestRating": "5",
+        "ratingCount": "10"
+      },
+      "review": {
+        "@type": "Review",
+        "reviewBody": "Премиальное качество, гравировка выполнена чётко, вес ощущается солидно. Отличный подарок для блогера!",
+        "author": {
+          "@type": "Person",
+          "name": "Иван Петров"
+        }
+      }
     }
-  },
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "5",
-    "bestRating": "5",
-    "ratingCount": "10"
-  },
-  "review": {
-    "@type": "Review",
-    "reviewBody": "Премиальное качество, гравировка выполнена чётко, вес ощущается солидно. Отличный подарок для блогера!",
-    "author": {
-      "@type": "Person",
-      "name": "Иван Петров"
-    }
-  }
-}
-</script>
+    </script>
 
-
-
-    
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%231a1a1a'/%3E%3Crect x='8' y='8' width='84' height='84' rx='12' fill='%23c8960c'/%3E%3Crect x='12' y='12' width='76' height='76' rx='10' fill='%23f0b429'/%3E%3Crect x='16' y='16' width='68' height='68' rx='8' fill='%23ffd166'/%3E%3Cpolygon points='35,28 35,72 75,50' fill='%231a1a1a'/%3E%3C/svg%3E">
     
     <script src="https://cdn.tailwindcss.com"></script>
+    <style type="text/tailwindcss">
+        @layer base {
+            body { @apply bg-gold-mesh text-gray-200 font-sans antialiased selection:bg-gold selection:text-dark; }
+        }
+        @layer components {
+            .gold-gradient-text {
+                @apply bg-clip-text text-transparent;
+                background: linear-gradient(to right, #FDE047 0%, #EAB308 100%, #fef08a 100%);
+            }
+            .metal-shine {
+                @apply relative overflow-hidden;
+            }
+            .metal-shine::after {
+                content: "";
+                @apply absolute top-[-50%] left-[-50%] w-[200%] h-[200%];
+                background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+                transform: rotate(45deg);
+                animation: shine 4s infinite;
+            }
+            @keyframes shine {
+                0% { transform: translateX(-100%) rotate(45deg); }
+                100% { transform: translateX(100%) rotate(45deg); }
+            }
+            .bg-gold-mesh {
+                background-color: #050505;
+                background-image: radial-gradient(at 0% 0%, rgba(234, 179, 8, 0.15) 0, transparent 50%), 
+                                  radial-gradient(at 100% 100%, rgba(161, 98, 7, 0.1) 0, transparent 50%);
+            }
+        }
+    </style>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        gold: {
-                            light: '#FDE047',
-                            DEFAULT: '#EAB308',
-                            dark: '#A16207',
-                        },
+                        gold: { light: '#FDE047', DEFAULT: '#EAB308', dark: '#A16207' },
                         dark: '#050505'
                     }
                 }
             }
         }
     </script>
-    <style>
-        .gold-gradient-text {
-            background: linear-gradient(to right, #FDE047 0%, #EAB308 100%, #fef08a 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-        .metal-shine {
-            position: relative;
-            overflow: hidden;
-        }
-        .metal-shine::after {
-            content: "";
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
-            transform: rotate(45deg);
-            animation: shine 4s infinite;
-        }
-        @keyframes shine {
-            0% { transform: translateX(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) rotate(45deg); }
-        }
-        .bg-gold-mesh {
-            background-color: #050505;
-            background-image: radial-gradient(at 0% 0%, rgba(234, 179, 8, 0.15) 0, transparent 50%), 
-                              radial-gradient(at 100% 100%, rgba(161, 98, 7, 0.1) 0, transparent 50%);
-        }
-    </style>
 </head>
-<body class="bg-gold-mesh text-gray-200 font-sans antialiased selection:bg-gold selection:text-dark">
+<body>
 
     <header class="border-b border-gold/10 bg-black/95 backdrop-blur sticky top-0 z-50">
         <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
@@ -132,38 +126,22 @@
                     <div class="relative overflow-hidden rounded-2xl shadow-inner w-full bg-white/5">
                         
                         <div id="slider-track" class="flex transition-transform duration-500 ease-in-out w-full items-center">
-                            
-                            <img src="https://timmir1.github.io/zol1.jpg" 
-                                 alt="Золотая кнопка YouTube из металла фронтальный вид" 
-                                 class="w-full shrink-0 h-auto object-cover contrast-110">
-
-                            <img src="https://timmir1.github.io/zol2.jpg" 
-                                 alt="Золотая кнопка YouTube - Вид 2" 
-                                 class="w-full shrink-0 h-auto object-cover contrast-110">
-
-                            <img src="https://timmir1.github.io/zol3.jpg" 
-                                 alt="Золотая кнопка YouTube - Вид 3" 
-                                 class="w-full shrink-0 h-auto object-cover contrast-110">
-
+                            <img src="https://timmir1.github.io/zol1.jpg" alt="Золотая кнопка YouTube из металла фронтальный вид" class="w-full shrink-0 h-auto object-cover contrast-110">
+                            <img src="https://timmir1.github.io/zol2.jpg" alt="Золотая кнопка YouTube - Вид 2" class="w-full shrink-0 h-auto object-cover contrast-110">
+                            <img src="https://timmir1.github.io/zol3.jpg" alt="Золотая кнопка YouTube - Вид 3" class="w-full shrink-0 h-auto object-cover contrast-110">
                         </div>
 
-                        <button onclick="prevSlide()" class="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-black/60 text-white rounded-full hover:bg-gold hover:text-black transition-all opacity-0 group-hover/slider:opacity-100 z-10 backdrop-blur-sm">
-                            &#10094;
-                        </button>
-                        <button onclick="nextSlide()" class="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-black/60 text-white rounded-full hover:bg-gold hover:text-black transition-all opacity-0 group-hover/slider:opacity-100 z-10 backdrop-blur-sm">
-                            &#10095;
-                        </button>
+                        <button aria-label="Предыдущий слайд" onclick="prevSlide()" class="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-black/60 text-white rounded-full hover:bg-gold hover:text-black transition-all opacity-0 group-hover/slider:opacity-100 z-10 backdrop-blur-sm">&#10094;</button>
+                        <button aria-label="Следующий слайд" onclick="nextSlide()" class="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-black/60 text-white rounded-full hover:bg-gold hover:text-black transition-all opacity-0 group-hover/slider:opacity-100 z-10 backdrop-blur-sm">&#10095;</button>
 
                         <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10 bg-black/40 px-3 py-2 rounded-full backdrop-blur-md">
-                            <button onclick="goToSlide(0)" class="indicator w-2.5 h-2.5 rounded-full bg-gold transition-colors"></button>
-                            <button onclick="goToSlide(1)" class="indicator w-2.5 h-2.5 rounded-full bg-white/50 transition-colors hover:bg-white/80"></button>
-                            <button onclick="goToSlide(2)" class="indicator w-2.5 h-2.5 rounded-full bg-white/50 transition-colors hover:bg-white/80"></button>
+                            <button aria-label="Слайд 1" onclick="goToSlide(0)" class="indicator w-2.5 h-2.5 rounded-full bg-gold transition-colors"></button>
+                            <button aria-label="Слайд 2" onclick="goToSlide(1)" class="indicator w-2.5 h-2.5 rounded-full bg-white/50 transition-colors hover:bg-white/80"></button>
+                            <button aria-label="Слайд 3" onclick="goToSlide(2)" class="indicator w-2.5 h-2.5 rounded-full bg-white/50 transition-colors hover:bg-white/80"></button>
                         </div>
                     </div>
 
-                    <div class="absolute top-8 right-8 bg-gold text-dark font-black px-4 py-1 rounded-full text-xs uppercase tracking-widest shadow-lg z-20 pointer-events-none">
-                        Classic Edition
-                    </div>
+                    <div class="absolute top-8 right-8 bg-gold text-dark font-black px-4 py-1 rounded-full text-xs uppercase tracking-widest shadow-lg z-20 pointer-events-none">Classic Edition</div>
                 </div>
             </div>
 
@@ -198,35 +176,16 @@
                     </a>
 
                     <div class="grid grid-cols-2 gap-4">
-                        <a href="/" 
-                           class="bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold py-4 rounded-xl transition-colors text-center text-sm md:text-base">
-                            На основной сайт
-                        </a>
-                        <a href="https://www.avito.ru/moskva/kollektsionirovanie/zolotaya_knopka_youtube_statusnyy_podarok_1954819361" 
-                           target="_blank"
-                           class="bg-[#00AAFF]/10 hover:bg-[#00AAFF]/20 border border-[#00AAFF]/30 text-[#00AAFF] font-bold py-4 rounded-xl transition-colors text-center text-sm md:text-base">
-                            Купить на Авито
-                        </a>
+                        <a href="/" class="bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold py-4 rounded-xl transition-colors text-center text-sm md:text-base">На основной сайт</a>
+                        <a href="https://www.avito.ru/moskva/kollektsionirovanie/zolotaya_knopka_youtube_statusnyy_podarok_1954819361" target="_blank" class="bg-[#00AAFF]/10 hover:bg-[#00AAFF]/20 border border-[#00AAFF]/30 text-[#00AAFF] font-bold py-4 rounded-xl transition-colors text-center text-sm md:text-base">Купить на Авито</a>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-6 pt-8 border-t border-gold/10">
-                    <div>
-                        <h4 class="text-gold font-bold text-xs uppercase tracking-widest mb-2">Вес изделия</h4>
-                        <p class="text-white font-medium">1.8 кг (Алюминий)</p>
-                    </div>
-                    <div>
-                        <h4 class="text-gold font-bold text-xs uppercase tracking-widest mb-2">Производство</h4>
-                        <p class="text-white font-medium">На станках с ЧПУ</p>
-                    </div>
-                    <div>
-                        <h4 class="text-gold font-bold text-xs uppercase tracking-widest mb-2">Формат</h4>
-                        <p class="text-white font-medium">Классический YouTube</p>
-                    </div>
-                    <div>
-                        <h4 class="text-gold font-bold text-xs uppercase tracking-widest mb-2">Срок</h4>
-                        <p class="text-white font-medium">Готовность 4 часа</p>
-                    </div>
+                    <div><h4 class="text-gold font-bold text-xs uppercase tracking-widest mb-2">Вес изделия</h4><p class="text-white font-medium">1.8 кг (Алюминий)</p></div>
+                    <div><h4 class="text-gold font-bold text-xs uppercase tracking-widest mb-2">Производство</h4><p class="text-white font-medium">На станках с ЧПУ</p></div>
+                    <div><h4 class="text-gold font-bold text-xs uppercase tracking-widest mb-2">Формат</h4><p class="text-white font-medium">Классический YouTube</p></div>
+                    <div><h4 class="text-gold font-bold text-xs uppercase tracking-widest mb-2">Срок</h4><p class="text-white font-medium">Готовность 4 часа</p></div>
                 </div>
             </div>
         </article>
@@ -250,32 +209,16 @@
 
         function updateSlider() {
             track.style.transform = `translateX(-${currentSlide * 100}%)`;
-            
             indicators.forEach((ind, index) => {
-                if (index === currentSlide) {
-                    ind.classList.remove('bg-white/50');
-                    ind.classList.add('bg-gold');
-                } else {
-                    ind.classList.remove('bg-gold');
-                    ind.classList.add('bg-white/50');
-                }
+                ind.classList.toggle('bg-gold', index === currentSlide);
+                ind.classList.toggle('bg-white/50', index !== currentSlide);
             });
         }
-
-        function nextSlide() {
-            currentSlide = (currentSlide + 1) % totalSlides;
-            updateSlider();
-        }
-
-        function prevSlide() {
-            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
-            updateSlider();
-        }
-
-        function goToSlide(index) {
-            currentSlide = index;
-            updateSlider();
-        }
+        function nextSlide() { currentSlide = (currentSlide + 1) % totalSlides; updateSlider(); }
+        function prevSlide() { currentSlide = (currentSlide - 1 + totalSlides) % totalSlides; updateSlider(); }
+        function goToSlide(index) { currentSlide = index; updateSlider(); }
     </script>
 </body>
 </html>
+
+```
