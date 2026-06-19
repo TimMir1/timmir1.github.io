@@ -99,6 +99,42 @@
             background-image: radial-gradient(at 0% 0%, rgba(203, 213, 225, 0.1) 0, transparent 50%), 
                               radial-gradient(at 100% 100%, rgba(100, 116, 139, 0.1) 0, transparent 50%);
         }
+
+        /* ===== LIGHTBOX ===== */
+        #lightbox {
+            position: fixed;
+            inset: 0;
+            z-index: 999;
+            background: rgba(0,0,0,0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            touch-action: none;
+        }
+        #lightbox.open {
+            display: flex;
+        }
+        #lightbox-track {
+            display: flex;
+            height: 100%;
+            width: 100%;
+            transition: transform 0.4s ease-in-out;
+        }
+        #lightbox-track img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            flex-shrink: 0;
+            user-select: none;
+            -webkit-user-drag: none;
+            padding: 1rem;
+        }
+        @media (min-width: 768px) {
+            #lightbox-track img { padding: 3rem 6rem; }
+        }
+        .cursor-zoom {
+            cursor: zoom-in;
+        }
     </style>
 </head>
 <body class="bg-silver-mesh text-gray-200 font-sans antialiased selection:bg-silver selection:text-dark">
@@ -128,15 +164,18 @@
                             
                             <img src="https://timmir1.github.io/ser11.png" 
                                  alt="Серебряная кнопка YouTube из металла - лучший подарок блогеру" 
-                                 class="w-full shrink-0 h-auto object-cover contrast-110">
+                                 class="w-full shrink-0 h-auto object-cover contrast-110 cursor-zoom"
+                                 onclick="openLightbox(0)">
 
                             <img src="https://timmir1.github.io/ser21.png" 
                                  alt="Silver Play Button - оригинальный подарок начинающему ютуберу" 
-                                 class="w-full shrink-0 h-auto object-cover contrast-110">
+                                 class="w-full shrink-0 h-auto object-cover contrast-110 cursor-zoom"
+                                 onclick="openLightbox(1)">
 
                             <img src="https://timmir1.github.io/ser3.jpg" 
                                  alt="Кнопка ютуб на заказ с гравировкой ника - подарок стримеру" 
-                                 class="w-full shrink-0 h-auto object-cover contrast-110">
+                                 class="w-full shrink-0 h-auto object-cover contrast-110 cursor-zoom"
+                                 onclick="openLightbox(2)">
 
                         </div>
 
@@ -272,7 +311,34 @@
         </div>
     </footer>
 
+    <!-- ===== LIGHTBOX MARKUP ===== -->
+    <div id="lightbox">
+        <button onclick="closeLightbox()" aria-label="Закрыть" class="absolute top-4 right-4 md:top-6 md:right-6 w-11 h-11 flex items-center justify-center bg-white/10 hover:bg-white/20 text-white rounded-full text-2xl z-20 backdrop-blur-sm">
+            &times;
+        </button>
+
+        <button onclick="lbPrev()" aria-label="Назад" class="absolute left-2 md:left-6 top-1/2 -translate-y-1/2 w-11 h-11 md:w-14 md:h-14 flex items-center justify-center bg-white/10 hover:bg-white/20 text-white rounded-full text-2xl z-20 backdrop-blur-sm">
+            &#10094;
+        </button>
+        <button onclick="lbNext()" aria-label="Вперед" class="absolute right-2 md:right-6 top-1/2 -translate-y-1/2 w-11 h-11 md:w-14 md:h-14 flex items-center justify-center bg-white/10 hover:bg-white/20 text-white rounded-full text-2xl z-20 backdrop-blur-sm">
+            &#10095;
+        </button>
+
+        <div id="lightbox-track">
+            <img src="https://timmir1.github.io/ser11.png" alt="Серебряная кнопка YouTube из металла">
+            <img src="https://timmir1.github.io/ser21.png" alt="Silver Play Button оригинальный подарок">
+            <img src="https://timmir1.github.io/ser3.jpg" alt="Кнопка ютуб на заказ с гравировкой">
+        </div>
+
+        <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-20 bg-black/40 px-3 py-2 rounded-full backdrop-blur-md">
+            <button onclick="lbGoTo(0)" class="lb-indicator w-2.5 h-2.5 rounded-full bg-white transition-colors"></button>
+            <button onclick="lbGoTo(1)" class="lb-indicator w-2.5 h-2.5 rounded-full bg-white/40 transition-colors hover:bg-white/70"></button>
+            <button onclick="lbGoTo(2)" class="lb-indicator w-2.5 h-2.5 rounded-full bg-white/40 transition-colors hover:bg-white/70"></button>
+        </div>
+    </div>
+
     <script>
+        /* ===== Маленький слайдер на карточке товара ===== */
         let currentSlide = 0;
         const totalSlides = 3;
         const track = document.getElementById('slider-track');
@@ -280,6 +346,127 @@
 
         function updateSlider() {
             track.style.transform = `translateX(-${currentSlide * 100}%)`;
-            
             indicators.forEach((ind, index) => {
-                if (index === currentSlide)
+                if (index === currentSlide) {
+                    ind.classList.remove('bg-white/50');
+                    ind.classList.add('bg-silver');
+                } else {
+                    ind.classList.remove('bg-silver');
+                    ind.classList.add('bg-white/50');
+                }
+            });
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            updateSlider();
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            updateSlider();
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            updateSlider();
+        }
+
+        updateSlider();
+
+        /* ===== Лайтбокс (полноэкранный просмотр) ===== */
+        const lightbox = document.getElementById('lightbox');
+        const lbTrack = document.getElementById('lightbox-track');
+        const lbIndicators = document.querySelectorAll('.lb-indicator');
+        let lbCurrent = 0;
+        const lbTotal = 3;
+
+        function updateLightbox(animate = true) {
+            lbTrack.style.transition = animate ? 'transform 0.4s ease-in-out' : 'none';
+            lbTrack.style.transform = `translateX(-${lbCurrent * 100}%)`;
+            lbIndicators.forEach((ind, index) => {
+                if (index === lbCurrent) {
+                    ind.classList.remove('bg-white/40');
+                    ind.classList.add('bg-white');
+                } else {
+                    ind.classList.remove('bg-white');
+                    ind.classList.add('bg-white/40');
+                }
+            });
+        }
+
+        function openLightbox(index) {
+            lbCurrent = index;
+            updateLightbox(false);
+            lightbox.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            lightbox.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        function lbNext() {
+            lbCurrent = (lbCurrent + 1) % lbTotal;
+            updateLightbox();
+        }
+
+        function lbPrev() {
+            lbCurrent = (lbCurrent - 1 + lbTotal) % lbTotal;
+            updateLightbox();
+        }
+
+        function lbGoTo(index) {
+            lbCurrent = index;
+            updateLightbox();
+        }
+
+        // Закрытие по клику на фон (не по картинке/кнопкам)
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) closeLightbox();
+        });
+
+        // Клавиатура: стрелки и Esc
+        document.addEventListener('keydown', (e) => {
+            if (!lightbox.classList.contains('open')) return;
+            if (e.key === 'ArrowRight') lbNext();
+            if (e.key === 'ArrowLeft') lbPrev();
+            if (e.key === 'Escape') closeLightbox();
+        });
+
+        // Свайп пальцем (touch)
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        lbTrack.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        lbTrack.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            const diff = touchStartX - touchEndX;
+            if (Math.abs(diff) > 40) {
+                if (diff > 0) lbNext();
+                else lbPrev();
+            }
+        }, { passive: true });
+
+        // Свайп мышкой (drag) для десктопа, на всякий случай
+        let dragStartX = null;
+        lbTrack.addEventListener('mousedown', (e) => {
+            dragStartX = e.clientX;
+        });
+        lbTrack.addEventListener('mouseup', (e) => {
+            if (dragStartX === null) return;
+            const diff = dragStartX - e.clientX;
+            if (Math.abs(diff) > 60) {
+                if (diff > 0) lbNext();
+                else lbPrev();
+            }
+            dragStartX = null;
+        });
+    </script>
+
+</body>
+</html>
