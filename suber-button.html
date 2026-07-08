@@ -304,10 +304,11 @@
                     </div>
                 </div>
 
-                <!-- КОНТЕЙНЕР ДЛЯ ВИДЕО С ГИТХАБА -->
+                <!-- КОНТЕЙНЕР ДЛЯ ВИДЕО С ГИТХАБА С КНОПКОЙ PLAY OVERLAY -->
                 <div class="lg:w-2/3 w-full">
-                    <div class="relative rounded-2xl overflow-hidden bg-black aspect-video shadow-[0_0_35px_rgba(117,170,219,0.2)] border border-gray-800 group">
+                    <div class="relative rounded-2xl overflow-hidden bg-black aspect-video shadow-[0_0_35px_rgba(117,170,219,0.2)] border border-gray-800 group" id="video-wrapper">
                         <video 
+                            id="product-video"
                             controls 
                             controlsList="nodownload" 
                             preload="metadata" 
@@ -317,6 +318,16 @@
                             <source src="https://raw.githubusercontent.com/TimMir1/timmir1.github.io/main/gravirovka.mp4" type="video/mp4">
                             <p class="text-white p-4">К сожалению, ваш браузер не поддерживает воспроизведение видео.</p>
                         </video>
+                        
+                        <!-- Кастомная кнопка воспроизведения (Play Button Overlay) -->
+                        <button id="video-play-btn" class="absolute inset-0 flex items-center justify-center bg-black/40 hover:bg-black/50 transition-all duration-300 z-20 cursor-pointer" aria-label="Воспроизвести видео">
+                            <div class="w-20 h-20 bg-vipGold hover:bg-vipGoldDark text-obsidian rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(212,175,55,0.6)] transform transition-transform hover:scale-110 duration-300">
+                                <!-- Премиальная иконка плей -->
+                                <svg class="w-10 h-10 ml-1.5 fill-current text-obsidian" viewBox="0 0 24 24">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                            </div>
+                        </button>
                     </div>
                 </div>
 
@@ -596,7 +607,7 @@
             }, 300);
             
             // Остановка видео при закрытии лайтбокса
-            const video = document.querySelector('video');
+            const video = document.getElementById('product-video');
             if(video && !video.paused) video.pause();
         }
 
@@ -625,6 +636,34 @@
         const lbArea = document.getElementById('lightbox-touch-area');
         lbArea.addEventListener('touchstart', handleTouchStart, {passive: true});
         lbArea.addEventListener('touchend', handleTouchEnd, {passive: true});
+
+        // --- Управление воспроизведением видео ---
+        const video = document.getElementById('product-video');
+        const playBtn = document.getElementById('video-play-btn');
+
+        if (video && playBtn) {
+            playBtn.addEventListener('click', () => {
+                if (video.paused) {
+                    video.play();
+                    playBtn.classList.add('hidden');
+                }
+            });
+
+            // На случай, если видео запустили через нативные контроллеры
+            video.addEventListener('play', () => {
+                playBtn.classList.add('hidden');
+            });
+
+            // Появление кнопки при паузе
+            video.addEventListener('pause', () => {
+                playBtn.classList.remove('hidden');
+            });
+
+            // Появление кнопки при завершении воспроизведения
+            video.addEventListener('ended', () => {
+                playBtn.classList.remove('hidden');
+            });
+        }
 
         initGallery();
     </script>
