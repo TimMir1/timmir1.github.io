@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <title>Смета на ремонтные работы — редактор</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
   :root{
     --paper:#EFEBE2;
@@ -431,7 +430,9 @@ document.querySelectorAll('.add-line').forEach(btn=>{
 
 document.getElementById('dateStamp').textContent = 'Дата: ' + new Date().toLocaleDateString('ru-RU');
 
-// ---- Excel export ----
+// ---- Excel export (styled HTML-based .xls: keeps fonts, wide wrapping cells, A4 portrait pages) ----
+function esc(s){ return String(s===undefined||s===null? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
 document.getElementById('downloadBtn').addEventListener('click', ()=>{
   syncStateFromDOM();
 
@@ -444,56 +445,122 @@ document.getElementById('downloadBtn').addEventListener('click', ()=>{
   const guarantee = document.getElementById('guarantee').value;
   const closing = document.getElementById('closing').value;
   const area = Number(document.getElementById('area').value)||0;
+  const grandTotal = state.stages.reduce((s,st)=>s+(Number(st.total)||0),0);
 
-  const rows = [];
-  const push = (a,b,c) => rows.push([a===undefined?null:a, b===undefined?null:b, c===undefined?null:c]);
-
-  push(title);
-  push(subtitle);
-  push('');
-  push('Объект:', object);
-  push('Заказчик:', client);
-  push('Телефон:', phone);
-  push('');
-  push(intro);
-  push('');
-  push('');
-  push('ЭТАПЫ РАБОТ И СТОИМОСТЬ');
-  push('');
-
+  let stagesHtml = '';
   state.stages.forEach((st, idx)=>{
-    push(st.title);
-    push(st.subtitle);
-    push('Наименование работ', 'Оплата', 'Примечание');
-    st.items.forEach(it=> push(it.name, it.pay, it.note));
-    push(`ИТОГО ЗА ЭТАП ${idx+1}`, null, st.total);
-    push('');
+    const itemsRows = st.items.map(it => `
+      <tr>
+        <td class="col-name">${esc(it.name)}</td>
+        <td class="col-pay">${esc(it.pay)}</td>
+        <td class="col-note">${esc(it.note)}</td>
+      </tr>`).join('');
+
+    stagesHtml += `
+      <div class="stage-block${idx>0?' page-break':''}">
+        <table>
+          <tr><td colspan="3" class="stage-title">${esc(st.title)}</td></tr>
+          <tr><td colspan="3" class="stage-sub">${esc(st.subtitle)}</td></tr>
+          <tr>
+            <th class="col-name">Наименование работ</th>
+            <th class="col-pay">Оплата</th>
+            <th class="col-note">Примечание</th>
+          </tr>
+          ${itemsRows}
+          <tr class="total-row">
+            <td colspan="2">ИТОГО ЗА ЭТАП ${idx+1}</td>
+            <td>${fmt(st.total)} ₽</td>
+          </tr>
+        </table>
+      </div>`;
   });
 
-  const grandTotal = state.stages.reduce((s,st)=>s+(Number(st.total)||0),0);
-  push('ВСЕГО ЗА ПРОЕКТ', null, grandTotal);
-  if(area>0){
-    push(`Площадь ${area} м² × ${Math.round(grandTotal/area)} руб./м²`);
-  }
-  push('');
-  push('Условия оплаты');
-  state.payment.forEach(p=> push('◆ ' + p));
-  push('');
-  push('Гарантия');
-  push(guarantee);
-  push('');
-  push('В стоимость не входит');
-  state.excluded.forEach(p=> push('◆ ' + p));
-  push('');
-  push(closing);
+  const paymentHtml = state.payment.map(p=>`<tr><td>◆ ${esc(p)}</td></tr>`).join('');
+  const excludedHtml = state.excluded.map(p=>`<tr><td>◆ ${esc(p)}</td></tr>`).join('');
 
-  const ws = XLSX.utils.aoa_to_sheet(rows);
-  ws['!cols'] = [{wch:55},{wch:22},{wch:45}];
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Смета');
+  const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+<meta charset="utf-8">
+<!--[if gte mso 9]><xml>
+<x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>
+<x:Name>Смета</x:Name>
+<x:WorksheetOptions>
+<x:PageSetup>
+<x:Layout x:Orientation="Portrait"/>
+<x:PageMargins x:Bottom="1.5" x:Left="1.5" x:Right="1.5" x:Top="1.5" x:Header="0.7" x:Footer="0.7"/>
+</x:PageSetup>
+<x:Print><x:FitWidth>1</x:FitWidth><x:FitHeight>0</x:FitHeight></x:Print>
+<x:PaperSizeIndex>9</x:PaperSizeIndex>
+<x:DoNotDisplayGridlines/>
+</x:WorksheetOptions>
+</x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook>
+</xml><![endif]-->
+<style>
+  @page { size: 21cm 29.7cm; margin: 1.5cm; mso-page-orientation: portrait; }
+  body { font-family: Arial, sans-serif; font-size: 16pt; color:#222; }
+  table { border-collapse: collapse; width: 100%; table-layout: fixed; margin-bottom: 14pt; }
+  td, th { border: 1px solid #999; padding: 8px 10px; vertical-align: top; word-wrap: break-word; white-space: normal; font-size: 16pt; text-align:left; }
+  .col-name { width: 55%; }
+  .col-pay { width: 18%; }
+  .col-note { width: 27%; }
+  th { background:#EFEBE2; font-weight:bold; }
+  .stage-title { font-size: 18pt; font-weight:bold; background:#1B3444; color:#ffffff; }
+  .stage-sub { font-size: 14pt; font-style:italic; color:#555; }
+  .total-row td { font-weight:bold; font-size: 16pt; background:#FBF9F4; }
+  .page-break { page-break-before: always; mso-break-type: page-break; }
+  h1 { font-size: 22pt; margin-bottom:2pt; }
+  h2 { font-size: 16pt; font-style:italic; color:#555; margin-top:0; }
+  .meta-table td { font-size:16pt; border:none; padding:4px 10px; }
+  .meta-label { color:#555; width:20%; }
+  .intro-block { font-size:16pt; line-height:1.5; margin: 10pt 0 16pt; }
+  .section-h { font-size:18pt; font-weight:bold; color:#1B3444; margin: 18pt 0 8pt; }
+  .grand-table td { font-size:18pt; font-weight:bold; background:#1B3444; color:#fff; padding:10px; }
+  .plain-table td { border:none; font-size:16pt; padding:2px 0; }
+</style>
+</head>
+<body>
 
+  <h1>${esc(title)}</h1>
+  <h2>${esc(subtitle)}</h2>
+
+  <table class="meta-table">
+    <tr><td class="meta-label">Объект:</td><td>${esc(object)}</td></tr>
+    <tr><td class="meta-label">Заказчик:</td><td>${esc(client)}</td></tr>
+    <tr><td class="meta-label">Телефон:</td><td>${esc(phone)}</td></tr>
+  </table>
+
+  <div class="intro-block">${esc(intro)}</div>
+
+  <div class="section-h">Этапы работ и стоимость</div>
+  ${stagesHtml}
+
+  <table class="grand-table page-break">
+    <tr><td colspan="2">ВСЕГО ЗА ПРОЕКТ</td><td>${fmt(grandTotal)} ₽</td></tr>
+  </table>
+  ${area>0 ? `<div style="font-size:16pt;margin-top:8pt;">Площадь ${area} м² × ${fmt(Math.round(grandTotal/area))} руб./м²</div>` : ''}
+
+  <div class="section-h">Условия оплаты</div>
+  <table class="plain-table">${paymentHtml}</table>
+
+  <div class="section-h">Гарантия</div>
+  <div class="intro-block">${esc(guarantee)}</div>
+
+  <div class="section-h">В стоимость не входит</div>
+  <table class="plain-table">${excludedHtml}</table>
+
+  <div class="intro-block" style="font-style:italic;margin-top:16pt;">${esc(closing)}</div>
+
+</body>
+</html>`;
+
+  const blob = new Blob(['\ufeff' + html], { type: 'application/vnd.ms-excel;charset=utf-8' });
   const safeClient = (client||'Смета').replace(/[\\/:*?"<>|]/g,'').trim() || 'Смета';
-  XLSX.writeFile(wb, `Смета_${safeClient}.xlsx`);
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `Смета_${safeClient}.xls`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 
   const note = document.getElementById('savedNote');
   note.textContent = 'Файл сохранён ✓';
