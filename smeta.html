@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Смета на ремонтные работы — редактор</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  :root{
+    --paper:#EFEBE2;
+    --paper-line:#DCD5C4;
+    --ink:#26241F;
+    --ink-soft:#5B564A;
+    --blue:#2E5266;
+    --blue-deep:#1B3444;
+    --clay:#B5502E;
+    --tape:#E3A63B;
+    --card:#F8F6F0;
+    --ok:#4C7A5A;
+    --danger:#A6402E;
+    --radius:3px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(46,82,102,0.045) 28px),
+      var(--paper);
+    color:var(--ink);
+    font-family:'Georgia','PT Serif',serif;
+    padding:28px 14px 80px;
+  }
+  .sheet{
+    max-width:880px;
+    margin:0 auto;
+    background:var(--card);
+    border:1px solid var(--paper-line);
+    box-shadow:0 1px 0 rgba(0,0,0,0.03), 0 18px 40px -24px rgba(27,52,68,0.35);
+    position:relative;
+  }
+  .sheet::before{
+    content:"";
+    position:absolute;
+    top:0;left:0;right:0;height:8px;
+    background:repeating-linear-gradient(90deg,var(--tape) 0 22px, transparent 22px 30px);
+    opacity:.55;
+  }
+  .inner{padding:44px 46px 40px;}
+  @media (max-width:640px){ .inner{padding:26px 18px 30px;} }
+
+  .masthead{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;border-bottom:2px solid var(--blue-deep);padding-bottom:18px;margin-bottom:22px;}
+  .brand{font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);}
+  .eyebrow{font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--clay);margin-bottom:6px;}
+  h1{font-size:28px;margin:0 0 6px;color:var(--blue-deep);font-weight:700;line-height:1.15;}
+  .stamp{font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;color:var(--ink-soft);text-align:right;white-space:nowrap;}
+
+  .edit{
+    border:none;background:transparent;font:inherit;color:inherit;
+    width:100%;padding:2px 4px;border-radius:var(--radius);
+    border-bottom:1px dashed transparent;
+  }
+  .edit:hover{border-bottom-color:var(--paper-line);}
+  .edit:focus{outline:none;border-bottom:1px dashed var(--blue);background:rgba(46,82,102,0.06);}
+  input.edit{font-family:'Helvetica Neue',Arial,sans-serif;}
+  textarea.edit{resize:vertical;font-family:Georgia,serif;line-height:1.55;}
+
+  .subtitle-input{font-size:15px;color:var(--ink-soft);font-style:italic;}
+
+  .facts{display:grid;grid-template-columns:120px 1fr;gap:8px 14px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:14px;margin:18px 0 22px;background:rgba(46,82,102,0.05);border-left:3px solid var(--blue);padding:14px 16px;}
+  .facts label{color:var(--ink-soft);font-size:11px;letter-spacing:.08em;text-transform:uppercase;align-self:center;}
+
+  .intro textarea{width:100%;min-height:64px;font-size:15px;line-height:1.6;}
+
+  .section-title{font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--blue-deep);border-bottom:1px solid var(--paper-line);padding-bottom:6px;margin:32px 0 16px;}
+
+  .stage{border:1px solid var(--paper-line);border-radius:4px;margin-bottom:18px;overflow:hidden;background:#fff;}
+  .stage-head{background:var(--blue-deep);color:#F3EFE4;padding:14px 18px;display:flex;gap:14px;align-items:flex-start;}
+  .stage-num{font-family:'Helvetica Neue',Arial,sans-serif;font-weight:700;font-size:22px;color:var(--tape);min-width:34px;}
+  .stage-head .edit{color:#F3EFE4;}
+  .stage-head input.edit{font-size:17px;font-weight:700;}
+  .stage-head textarea.edit{font-size:13px;color:#D9D2C0;font-style:italic;min-height:20px;}
+  .stage-head .edit:focus{background:rgba(255,255,255,0.08);}
+  .stage-head .edit:hover{border-bottom-color:rgba(255,255,255,0.3);}
+
+  table.items{width:100%;border-collapse:collapse;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13.5px;}
+  table.items th{text-align:left;background:#F0EDE3;color:var(--ink-soft);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;padding:8px 10px;border-bottom:1px solid var(--paper-line);}
+  table.items td{padding:6px 10px;border-bottom:1px solid #EFEDE6;vertical-align:top;}
+  table.items tr:last-child td{border-bottom:none;}
+  .col-name{width:52%;}
+  .col-pay{width:20%;}
+  .col-note{width:22%;}
+  .col-del{width:6%;text-align:center;}
+  .del-btn{border:none;background:none;color:#B7ACA0;cursor:pointer;font-size:15px;padding:2px 6px;border-radius:3px;}
+  .del-btn:hover{color:var(--danger);background:rgba(166,64,46,0.08);}
+
+  .add-item{display:flex;justify-content:flex-start;padding:8px 10px 12px;}
+  .add-item button{font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;color:var(--blue);background:none;border:1px dashed var(--blue);border-radius:3px;padding:5px 10px;cursor:pointer;}
+  .add-item button:hover{background:rgba(46,82,102,0.07);}
+
+  .stage-total{display:flex;justify-content:space-between;align-items:center;background:#FBF9F4;border-top:1px solid var(--paper-line);padding:10px 18px;font-family:'Helvetica Neue',Arial,sans-serif;}
+  .stage-total .label{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);}
+  .stage-total .sum-wrap{display:flex;align-items:center;gap:4px;font-weight:700;color:var(--blue-deep);font-size:16px;}
+  .stage-total input.edit{width:130px;text-align:right;font-weight:700;font-size:16px;color:var(--blue-deep);}
+  .stage-remove{font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;color:var(--danger);background:none;border:none;cursor:pointer;text-decoration:underline;opacity:.7;}
+  .stage-remove:hover{opacity:1;}
+
+  .add-stage{width:100%;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:var(--blue-deep);background:repeating-linear-gradient(135deg,#fff,#fff 10px,#F4F1E9 10px,#F4F1E9 20px);border:2px dashed var(--blue);border-radius:4px;padding:12px;cursor:pointer;margin-bottom:8px;}
+  .add-stage:hover{background:rgba(46,82,102,0.07);}
+
+  .grand{margin-top:26px;background:var(--blue-deep);color:#F3EFE4;padding:20px 24px;border-radius:4px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+  .grand .cap{font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#C7C0AC;}
+  .grand .val{font-size:30px;font-weight:700;color:var(--tape);font-family:'Helvetica Neue',Arial,sans-serif;}
+  .grand .permeter{font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;color:#D9D2C0;}
+  .area-field{display:inline-flex;align-items:center;gap:6px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;color:#D9D2C0;}
+  .area-field input.edit{width:52px;color:#F3EFE4;text-align:right;}
+
+  .lines{font-size:14px;line-height:1.8;}
+  .line-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:2px;}
+  .line-row .bullet{color:var(--clay);margin-top:2px;}
+  .line-row .del-btn{margin-top:1px;}
+  .add-line{font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;color:var(--blue);background:none;border:none;cursor:pointer;text-decoration:underline;padding:4px 0;}
+
+  .guarantee textarea{font-size:14.5px;line-height:1.65;min-height:70px;}
+  .closing textarea{font-size:15px;font-style:italic;color:var(--ink-soft);min-height:30px;}
+
+  .toolbar{max-width:880px;margin:0 auto 14px;display:flex;justify-content:flex-end;gap:10px;font-family:'Helvetica Neue',Arial,sans-serif;}
+  .toolbar button{font-size:13px;padding:10px 18px;border-radius:4px;cursor:pointer;border:1px solid var(--blue-deep);background:var(--blue-deep);color:#F3EFE4;display:flex;align-items:center;gap:8px;}
+  .toolbar button:hover{background:var(--blue);}
+  .toolbar .saved-note{font-size:11px;color:var(--ink-soft);align-self:center;}
+
+  ::selection{background:rgba(227,166,59,0.4);}
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <span class="saved-note" id="savedNote"></span>
+  <button id="downloadBtn">⬇ Скачать в Excel</button>
+</div>
+
+<div class="sheet">
+  <div class="inner">
+
+    <div class="masthead">
+      <div style="flex:1">
+        <div class="brand">Коммерческая смета</div>
+        <input class="edit" id="title" type="text" value="СМЕТА НА РЕМОНТНЫЕ РАБОТЫ" style="font-size:26px;font-weight:700;color:var(--blue-deep);font-family:Georgia,serif;">
+        <input class="edit subtitle-input" id="subtitle" type="text" value="Комплексный ремонт «под ключ» · 70 м²">
+      </div>
+      <div class="stamp" id="dateStamp"></div>
+    </div>
+
+    <div class="facts">
+      <label>Объект</label><input class="edit" id="object" type="text" value="Московская обл., г. Красногорск, мкр. Опалиха, ул. Пришвина, д. 14">
+      <label>Заказчик</label><input class="edit" id="client" type="text" value="Валентина">
+      <label>Телефон</label><input class="edit" id="phone" type="text" value="+7 926 147-10-36">
+    </div>
+
+    <div class="intro">
+      <textarea class="edit" id="intro">Уважаемая Валентина! Перед вами подробная смета на комплексный ремонт вашей квартиры площадью 70 м². Работы разбиты на три логичных этапа — от инженерной подготовки до финишной отделки — с прозрачной стоимостью и оплатой строго по факту приёмки каждого этапа.</textarea>
+    </div>
+
+    <div class="section-title">Этапы работ и стоимость</div>
+    <div id="stagesWrap"></div>
+    <button class="add-stage" id="addStageBtn">+ Добавить этап</button>
+
+    <div class="grand">
+      <div>
+        <div class="cap">Всего за проект</div>
+        <div class="val" id="grandTotal">0 ₽</div>
+      </div>
+      <div style="text-align:right">
+        <div class="permeter" id="permeterLine">—</div>
+        <div class="area-field">Площадь, м²: <input class="edit" id="area" type="number" value="70"></div>
+      </div>
+    </div>
+
+    <div class="section-title">Условия оплаты</div>
+    <div class="lines" id="paymentWrap"></div>
+    <button class="add-line" data-target="payment">+ добавить условие</button>
+
+    <div class="section-title">Гарантия</div>
+    <div class="guarantee">
+      <textarea class="edit" id="guarantee">Мы предоставляем гарантию на все виды выполненных работ. Скрытые инженерные системы монтируются с запасом надёжности, а каждый этап принимается заказчиком лично перед переходом к следующему — это ваша дополнительная защита и уверенность в результате.</textarea>
+    </div>
+
+    <div class="section-title">В стоимость не входит</div>
+    <div class="lines" id="excludedWrap"></div>
+    <button class="add-line" data-target="excluded">+ добавить пункт</button>
+
+    <div class="closing" style="margin-top:26px;">
+      <textarea class="edit" id="closing">Готовы обсудить детали и согласовать даты начала работ.</textarea>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let stageSeq = 0, itemSeq = 0;
+
+let state = {
+  stages: [
+    {
+      id: ++stageSeq,
+      title: "ЭТАП 1 · Инженерный и подготовительный",
+      subtitle: "Фундамент качественного ремонта — всё, что скрыто, но определяет надёжность на десятилетия",
+      total: 500000,
+      items: [
+        {id:++itemSeq, name:"Демонтаж оконного блока на лоджии", pay:"Индивидуально", note:"Стоимость обговаривается по месту после осмотра"},
+        {id:++itemSeq, name:"Сборка и расключение электрического щитка", pay:"—", note:"Входит в стоимость этапа"},
+        {id:++itemSeq, name:"Черновая разводка труб водоснабжения и канализации", pay:"—", note:"Входит в стоимость этапа"},
+        {id:++itemSeq, name:"Монтаж инсталляции и скрытых сантехнических систем", pay:"—", note:"Входит в стоимость этапа"},
+        {id:++itemSeq, name:"Сборка коллекторной системы", pay:"—", note:"Входит в стоимость этапа"},
+        {id:++itemSeq, name:"Локальное исправление недоделанных участков штукатурки", pay:"—", note:"Входит в стоимость этапа"},
+        {id:++itemSeq, name:"Гидроизоляция мокрых зон", pay:"—", note:"Входит в стоимость этапа"}
+      ]
+    },
+    {
+      id: ++stageSeq,
+      title: "ЭТАП 2 · Предчистовая отделка и плитка",
+      subtitle: "Подготовка поверхностей и укладка плитки — точность на этом этапе определяет итоговый результат",
+      total: 600000,
+      items: [
+        {id:++itemSeq, name:"Грунтование всех поверхностей", pay:"—", note:"Входит в стоимость этапа"},
+        {id:++itemSeq, name:"Монтаж ГКЛ коробов для скрытия коммуникаций", pay:"—", note:"Входит в стоимость этапа"},
+        {id:++itemSeq, name:"Шпатлевание стен под финишное покрытие", pay:"—", note:"Входит в стоимость этапа"},
+        {id:++itemSeq, name:"Укладка плитки / керамогранита (санузлы, фартук, пол)", pay:"—", note:"Входит в стоимость этапа"},
+        {id:++itemSeq, name:"Затирка межплиточных швов", pay:"—", note:"Входит в стоимость этапа"},
+        {id:++itemSeq, name:"Монтаж подоконников и подготовка откосов", pay:"—", note:"Входит в стоимость этапа"}
+      ]
+    },
+    {
+      id: ++stageSeq,
+      title: "ЭТАП 3 · Чистовая отделка",
+      subtitle: "Финальный образ квартиры — то, что вы будете видеть и чем пользоваться каждый день",
+      total: 440000,
+      items: [
+        {id:++itemSeq, name:"Укладка финишного напольного покрытия", pay:"—", note:"Входит в стоимость этапа"},
+        {id:++itemSeq, name:"Заливка наливного пола по маякам (исправление неровности стяжки)", pay:"—", note:"Входит в стоимость этапа"},
+        {id:++itemSeq, name:"Финишная отделка стен (обои/покраска)", pay:"—", note:"Входит в стоимость этапа"},
+        {id:++itemSeq, name:"Установка чистовой сантехники (ванна, раковина, унитаз, смесители)", pay:"—", note:"Входит в стоимость этапа"},
+        {id:++itemSeq, name:"Установка чистовой электрики (розетки, выключатели, светильники)", pay:"—", note:"Входит в стоимость этапа"},
+        {id:++itemSeq, name:"Монтаж напольного плинтуса", pay:"—", note:"Входит в стоимость этапа"},
+        {id:++itemSeq, name:"Финальная уборка помещения", pay:"—", note:"Входит в стоимость этапа"}
+      ]
+    }
+  ],
+  payment: [
+    "Оплата производится по завершении и приёмке каждого этапа — без предоплаты за будущие этапы",
+    "Стоимость демонтажа оконного блока на лоджии обсуждается индивидуально после осмотра объекта",
+    "Итоговая сумма проекта указана без учёта демонтажа лоджии"
+  ],
+  excluded: [
+    "Вынос мусора",
+    "Подъём материалов",
+    "Установка межкомнатных дверей",
+    "Натяжные потолки",
+    "Монтаж светильников",
+    "Сборка мебели"
+  ]
+};
+
+function fmt(n){
+  n = Number(n)||0;
+  return n.toLocaleString('ru-RU');
+}
+
+function syncStateFromDOM(){
+  state.stages.forEach(st=>{
+    const head = document.querySelector(`.stage[data-id="${st.id}"]`);
+    if(!head) return;
+    st.title = head.querySelector('.st-title').value;
+    st.subtitle = head.querySelector('.st-subtitle').value;
+    st.total = Number(head.querySelector('.st-total').value)||0;
+    st.items.forEach(it=>{
+      const row = head.querySelector(`tr[data-item="${it.id}"]`);
+      if(!row) return;
+      it.name = row.querySelector('.it-name').value;
+      it.pay = row.querySelector('.it-pay').value;
+      it.note = row.querySelector('.it-note').value;
+    });
+  });
+  document.querySelectorAll('#paymentWrap .line-text').forEach((el,i)=>{ if(state.payment[i]!==undefined) state.payment[i]=el.value; });
+  document.querySelectorAll('#excludedWrap .line-text').forEach((el,i)=>{ if(state.excluded[i]!==undefined) state.excluded[i]=el.value; });
+}
+
+function updateGrandTotal(){
+  const total = state.stages.reduce((s,st)=>s+(Number(st.total)||0),0);
+  document.getElementById('grandTotal').textContent = fmt(total) + ' ₽';
+  const area = Number(document.getElementById('area').value)||0;
+  const permeterEl = document.getElementById('permeterLine');
+  if(area>0){
+    permeterEl.textContent = `Площадь ${area} м² × ${fmt(Math.round(total/area))} руб./м²`;
+  } else {
+    permeterEl.textContent = '—';
+  }
+}
+
+function renderLines(containerId, arrName){
+  const wrap = document.getElementById(containerId);
+  wrap.innerHTML = '';
+  state[arrName].forEach((text, idx)=>{
+    const row = document.createElement('div');
+    row.className = 'line-row';
+    row.innerHTML = `<span class="bullet">◆</span>
+      <input class="edit line-text" type="text" value="${escapeHtml(text)}" style="flex:1">
+      <button class="del-btn" title="Удалить">✕</button>`;
+    row.querySelector('.line-text').addEventListener('input', ()=>{ state[arrName][idx] = row.querySelector('.line-text').value; });
+    row.querySelector('.del-btn').addEventListener('click', ()=>{
+      syncStateFromDOM();
+      state[arrName].splice(idx,1);
+      renderLines(containerId, arrName);
+    });
+    wrap.appendChild(row);
+  });
+}
+
+function escapeHtml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function renderStages(){
+  const wrap = document.getElementById('stagesWrap');
+  wrap.innerHTML = '';
+  state.stages.forEach((st, sIdx)=>{
+    const el = document.createElement('div');
+    el.className = 'stage';
+    el.setAttribute('data-id', st.id);
+
+    const itemsRows = st.items.map(it => `
+      <tr data-item="${it.id}">
+        <td class="col-name"><input class="edit it-name" type="text" value="${escapeHtml(it.name)}"></td>
+        <td class="col-pay"><input class="edit it-pay" type="text" value="${escapeHtml(it.pay)}"></td>
+        <td class="col-note"><input class="edit it-note" type="text" value="${escapeHtml(it.note)}"></td>
+        <td class="col-del"><button class="del-btn item-del" title="Удалить работу">✕</button></td>
+      </tr>`).join('');
+
+    el.innerHTML = `
+      <div class="stage-head">
+        <div class="stage-num">${String(sIdx+1).padStart(2,'0')}</div>
+        <div style="flex:1">
+          <input class="edit st-title" type="text" value="${escapeHtml(st.title)}">
+          <textarea class="edit st-subtitle" rows="1">${escapeHtml(st.subtitle)}</textarea>
+        </div>
+        <button class="stage-remove" title="Удалить этап">Удалить этап</button>
+      </div>
+      <table class="items">
+        <thead><tr>
+          <th class="col-name">Наименование работ</th>
+          <th class="col-pay">Оплата</th>
+          <th class="col-note">Примечание</th>
+          <th class="col-del"></th>
+        </tr></thead>
+        <tbody>${itemsRows}</tbody>
+      </table>
+      <div class="add-item"><button class="item-add-btn">+ добавить работу</button></div>
+      <div class="stage-total">
+        <span class="label">Итого за этап</span>
+        <span class="sum-wrap"><input class="edit st-total" type="number" value="${st.total}"> ₽</span>
+      </div>
+    `;
+
+    el.querySelector('.st-title').addEventListener('input', ()=>{ st.title = el.querySelector('.st-title').value; });
+    el.querySelector('.st-subtitle').addEventListener('input', ()=>{ st.subtitle = el.querySelector('.st-subtitle').value; });
+    el.querySelector('.st-total').addEventListener('input', ()=>{ st.total = Number(el.querySelector('.st-total').value)||0; updateGrandTotal(); });
+
+    el.querySelectorAll('tbody tr').forEach(row=>{
+      const itemId = Number(row.getAttribute('data-item'));
+      const item = st.items.find(i=>i.id===itemId);
+      row.querySelector('.it-name').addEventListener('input', e=>{ item.name = e.target.value; });
+      row.querySelector('.it-pay').addEventListener('input', e=>{ item.pay = e.target.value; });
+      row.querySelector('.it-note').addEventListener('input', e=>{ item.note = e.target.value; });
+      row.querySelector('.item-del').addEventListener('click', ()=>{
+        syncStateFromDOM();
+        st.items = st.items.filter(i=>i.id!==itemId);
+        renderStages();
+      });
+    });
+
+    el.querySelector('.item-add-btn').addEventListener('click', ()=>{
+      syncStateFromDOM();
+      st.items.push({id:++itemSeq, name:"Новая работа", pay:"—", note:"Входит в стоимость этапа"});
+      renderStages();
+    });
+
+    el.querySelector('.stage-remove').addEventListener('click', ()=>{
+      syncStateFromDOM();
+      state.stages = state.stages.filter(s=>s.id!==st.id);
+      renderStages();
+      updateGrandTotal();
+    });
+
+    wrap.appendChild(el);
+  });
+  updateGrandTotal();
+}
+
+document.getElementById('addStageBtn').addEventListener('click', ()=>{
+  syncStateFromDOM();
+  const n = state.stages.length + 1;
+  state.stages.push({
+    id: ++stageSeq,
+    title: `ЭТАП ${n} · Новый этап`,
+    subtitle: "Краткое описание этапа",
+    total: 0,
+    items: [{id:++itemSeq, name:"Наименование работы", pay:"—", note:"Входит в стоимость этапа"}]
+  });
+  renderStages();
+});
+
+document.getElementById('area').addEventListener('input', updateGrandTotal);
+
+document.querySelectorAll('.add-line').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    syncStateFromDOM();
+    const target = btn.getAttribute('data-target');
+    state[target].push('Новый пункт');
+    renderLines(target==='payment'?'paymentWrap':'excludedWrap', target);
+  });
+});
+
+document.getElementById('dateStamp').textContent = 'Дата: ' + new Date().toLocaleDateString('ru-RU');
+
+// ---- Excel export ----
+document.getElementById('downloadBtn').addEventListener('click', ()=>{
+  syncStateFromDOM();
+
+  const title = document.getElementById('title').value;
+  const subtitle = document.getElementById('subtitle').value;
+  const object = document.getElementById('object').value;
+  const client = document.getElementById('client').value;
+  const phone = document.getElementById('phone').value;
+  const intro = document.getElementById('intro').value;
+  const guarantee = document.getElementById('guarantee').value;
+  const closing = document.getElementById('closing').value;
+  const area = Number(document.getElementById('area').value)||0;
+
+  const rows = [];
+  const push = (a,b,c) => rows.push([a===undefined?null:a, b===undefined?null:b, c===undefined?null:c]);
+
+  push(title);
+  push(subtitle);
+  push('');
+  push('Объект:', object);
+  push('Заказчик:', client);
+  push('Телефон:', phone);
+  push('');
+  push(intro);
+  push('');
+  push('');
+  push('ЭТАПЫ РАБОТ И СТОИМОСТЬ');
+  push('');
+
+  state.stages.forEach((st, idx)=>{
+    push(st.title);
+    push(st.subtitle);
+    push('Наименование работ', 'Оплата', 'Примечание');
+    st.items.forEach(it=> push(it.name, it.pay, it.note));
+    push(`ИТОГО ЗА ЭТАП ${idx+1}`, null, st.total);
+    push('');
+  });
+
+  const grandTotal = state.stages.reduce((s,st)=>s+(Number(st.total)||0),0);
+  push('ВСЕГО ЗА ПРОЕКТ', null, grandTotal);
+  if(area>0){
+    push(`Площадь ${area} м² × ${Math.round(grandTotal/area)} руб./м²`);
+  }
+  push('');
+  push('Условия оплаты');
+  state.payment.forEach(p=> push('◆ ' + p));
+  push('');
+  push('Гарантия');
+  push(guarantee);
+  push('');
+  push('В стоимость не входит');
+  state.excluded.forEach(p=> push('◆ ' + p));
+  push('');
+  push(closing);
+
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols'] = [{wch:55},{wch:22},{wch:45}];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Смета');
+
+  const safeClient = (client||'Смета').replace(/[\\/:*?"<>|]/g,'').trim() || 'Смета';
+  XLSX.writeFile(wb, `Смета_${safeClient}.xlsx`);
+
+  const note = document.getElementById('savedNote');
+  note.textContent = 'Файл сохранён ✓';
+  setTimeout(()=> note.textContent = '', 2500);
+});
+
+renderStages();
+renderLines('paymentWrap', 'payment');
+renderLines('excludedWrap', 'excluded');
+</script>
+</body>
+</html>
