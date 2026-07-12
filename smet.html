@@ -1,0 +1,124 @@
+import React, { useState } from 'react';
+import { Download, Plus, Trash2, Building2, User, Phone, MapPin } from 'lucide-react';
+
+const initialData = {
+  client: "Валентина",
+  address: "Московская обл., г. Красногорск, мкр. Опалиха, ул. Пришвина, д. 14",
+  phone: "+7 926 147-10-36",
+  area: 70,
+  stages: [
+    {
+      id: 1,
+      title: "ЭТАП 1 · Инженерный и подготовительный",
+      items: [
+        { id: 11, name: "Демонтаж оконного блока на лоджии", payment: "Индивидуально", note: "Стоимость обговаривается по месту после осмотра" },
+        { id: 12, name: "Сборка и расключение электрического щитка", payment: "—", note: "Входит в стоимость этапа" },
+        { id: 13, name: "Черновая разводка труб водоснабжения и канализации", payment: "—", note: "Входит в стоимость этапа" },
+        { id: 14, name: "Монтаж инсталляции и скрытых сантехнических систем", payment: "—", note: "Входит в стоимость этапа" },
+        { id: 15, name: "Сборка коллекторной системы", payment: "—", note: "Входит в стоимость этапа" },
+        { id: 16, name: "Локальное исправление недоделанных участков штукатурки", payment: "—", note: "Входит в стоимость этапа" },
+        { id: 17, name: "Гидроизоляция санузлов", payment: "—", note: "Входит в стоимость этапа" }
+      ]
+    },
+    {
+      id: 2,
+      title: "ЭТАП 2 · Предчистовая отделка и плитка",
+      items: [
+        { id: 21, name: "Грунтование всех поверхностей", payment: "—", note: "Входит в стоимость этапа" },
+        { id: 22, name: "Монтаж ГКЛ коробов для коммуникаций", payment: "—", note: "Входит в стоимость этапа" },
+        { id: 23, name: "Шпатлевание стен под финишное покрытие", payment: "—", note: "Входит в стоимость этапа" },
+        { id: 24, name: "Укладка плитки / керамогранита", payment: "—", note: "Входит в стоимость этапа" }
+      ]
+    },
+    {
+      id: 3,
+      title: "ЭТАП 3 · Чистовая отделка",
+      items: [
+        { id: 31, name: "Укладка финишного напольного покрытия", payment: "—", note: "Входит в стоимость этапа" },
+        { id: 32, name: "Заливка наливного пола по маякам", payment: "—", note: "Входит в стоимость этапа" },
+        { id: 33, name: "Финишная отделка стен (обои/покраска)", payment: "—", note: "Входит в стоимость этапа" },
+        { id: 34, name: "Установка чистовой сантехники", payment: "—", note: "Входит в стоимость этапа" },
+        { id: 35, name: "Установка чистовой электрики", payment: "—", note: "Входит в стоимость этапа" },
+        { id: 36, name: "Монтаж напольного плинтуса", payment: "—", note: "Входит в стоимость этапа" },
+        { id: 37, name: "Финальная уборка помещения", payment: "—", note: "Входит в стоимость этапа" }
+      ]
+    }
+  ]
+};
+
+export default function App() {
+  const [data, setData] = useState(initialData);
+
+  const updateField = (field, value) => setData(prev => ({ ...prev, [field]: value }));
+
+  const handleItemChange = (stageId, itemId, field, value) => {
+    setData(prev => ({
+      ...prev,
+      stages: prev.stages.map(stage => stage.id === stageId 
+        ? { ...stage, items: stage.items.map(i => i.id === itemId ? { ...i, [field]: value } : i) }
+        : stage)
+    }));
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 text-gray-800 p-4 md:p-8 font-sans">
+      <main className="max-w-5xl mx-auto space-y-8">
+        <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+          <div>
+            <h1 className="text-3xl font-extrabold text-gray-900 flex items-center gap-3">
+              <Building2 className="text-[#00B074]" size={32} /> Смета на ремонт
+            </h1>
+            <div className="mt-2 flex items-center gap-2">
+              <input value={data.area} onChange={(e) => updateField('area', e.target.value)} className="w-12 font-bold text-gray-900 bg-gray-100 rounded px-1 outline-none" />
+              <span className="text-gray-500">м²</span>
+            </div>
+          </div>
+          <button className="bg-[#2ECC71] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#27AE60] flex items-center gap-2">
+            <Download size={20} /> Экспорт в Excel
+          </button>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-4">
+          <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex items-center gap-3">
+            <User className="text-[#1B365D]" /> 
+            <input value={data.client} onChange={(e) => updateField('client', e.target.value)} className="font-bold w-full outline-none" />
+          </div>
+          <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex items-center gap-3">
+            <Phone className="text-[#1B365D]" /> 
+            <input value={data.phone} onChange={(e) => updateField('phone', e.target.value)} className="font-bold w-full outline-none" />
+          </div>
+          <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex items-center gap-3">
+            <MapPin className="text-[#1B365D]" /> 
+            <input value={data.address} onChange={(e) => updateField('address', e.target.value)} className="font-bold text-sm w-full outline-none" />
+          </div>
+        </div>
+
+        {data.stages.map((stage) => (
+          <div key={stage.id} className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="p-6 bg-gray-50 border-b border-gray-100">
+              <input value={stage.title} onChange={(e) => setData(prev => ({...prev, stages: prev.stages.map(s => s.id === stage.id ? {...s, title: e.target.value} : s)}))} className="text-lg font-bold text-[#1B365D] bg-transparent w-full outline-none" />
+            </div>
+            <table className="w-full border-collapse text-sm">
+              <thead className="bg-gray-100 text-[10px] uppercase text-gray-500">
+                <tr><th className="p-4 w-1/2">Работа</th><th className="p-4 w-1/6">Оплата</th><th className="p-4 w-1/4">Примечание</th><th className="p-4"></th></tr>
+              </thead>
+              <tbody>
+                {stage.items.map((item, idx) => (
+                  <tr key={item.id} className={`${idx % 2 === 0 ? 'bg-white' : 'bg-blue-50'} border-b border-gray-100 group`}>
+                    <td className="p-4"><input value={item.name} onChange={(e) => handleItemChange(stage.id, item.id, 'name', e.target.value)} className="w-full bg-transparent outline-none" /></td>
+                    <td className="p-4"><input value={item.payment} onChange={(e) => handleItemChange(stage.id, item.id, 'payment', e.target.value)} className="w-full bg-transparent outline-none" /></td>
+                    <td className="p-4"><input value={item.note} onChange={(e) => handleItemChange(stage.id, item.id, 'note', e.target.value)} className="w-full bg-transparent outline-none" /></td>
+                    <td className="p-4 text-center"><button onClick={() => setData(prev => ({...prev, stages: prev.stages.map(s => s.id === stage.id ? {...s, items: s.items.filter(i => i.id !== item.id)} : s)}))} className="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100"><Trash2 size={16} /></button></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <button onClick={() => setData(prev => ({...prev, stages: prev.stages.map(s => s.id === stage.id ? {...s, items: [...s.items, {id: Date.now(), name: "Новая работа", payment: "-", note: "-"}]} : s)}))} className="m-6 text-[#00B074] font-bold flex items-center gap-2 text-sm hover:underline">
+              <Plus size={18} /> Добавить работу
+            </button>
+          </div>
+        ))}
+      </main>
+    </div>
+  );
+}
