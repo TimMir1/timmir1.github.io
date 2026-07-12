@@ -1,124 +1,530 @@
-import React, { useState } from 'react';
-import { Download, Plus, Trash2, Building2, User, Phone, MapPin } from 'lucide-react';
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Интерактивная Смета (Полная редакция)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Базовые цвета на случай долгой загрузки Tailwind */
+        body { background-color: #F8F9FA; color: #1F2937; }
+        
+        /* Стили для текстовых полей */
+        textarea, input {
+            font-family: inherit;
+            color: inherit;
+            box-sizing: border-box;
+        }
+        textarea {
+            resize: none;
+            overflow: hidden;
+            background: transparent;
+            outline: none;
+            width: 100%;
+            min-height: 28px; /* Гарантируем, что текст всегда будет видно */
+            transition: background-color 0.2s, box-shadow 0.2s;
+            border-radius: 4px;
+            display: block;
+        }
+        /* Подсветка при наведении, чтобы было понятно, что текст можно менять */
+        textarea:hover:not(:focus), input[type=text]:hover:not(:focus), input[type=number]:hover:not(:focus) {
+            background-color: rgba(0, 0, 0, 0.04);
+            box-shadow: 0 0 0 2px rgba(0,0,0,0.04);
+        }
+        textarea:focus, input[type=text]:focus, input[type=number]:focus {
+            background-color: #ffffff;
+            box-shadow: 0 0 0 2px #2ECC71;
+            color: #111827; /* При фокусе текст всегда контрастный черный */
+        }
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+        
+        .editable-block {
+            padding: 2px 4px;
+            margin: -2px -4px;
+        }
+    </style>
+</head>
+<body class="bg-[#F8F9FA] text-gray-800 font-sans p-4 md:p-8 min-h-screen">
 
-const initialData = {
-  client: "Валентина",
-  address: "Московская обл., г. Красногорск, мкр. Опалиха, ул. Пришвина, д. 14",
-  phone: "+7 926 147-10-36",
-  area: 70,
-  stages: [
-    {
-      id: 1,
-      title: "ЭТАП 1 · Инженерный и подготовительный",
-      items: [
-        { id: 11, name: "Демонтаж оконного блока на лоджии", payment: "Индивидуально", note: "Стоимость обговаривается по месту после осмотра" },
-        { id: 12, name: "Сборка и расключение электрического щитка", payment: "—", note: "Входит в стоимость этапа" },
-        { id: 13, name: "Черновая разводка труб водоснабжения и канализации", payment: "—", note: "Входит в стоимость этапа" },
-        { id: 14, name: "Монтаж инсталляции и скрытых сантехнических систем", payment: "—", note: "Входит в стоимость этапа" },
-        { id: 15, name: "Сборка коллекторной системы", payment: "—", note: "Входит в стоимость этапа" },
-        { id: 16, name: "Локальное исправление недоделанных участков штукатурки", payment: "—", note: "Входит в стоимость этапа" },
-        { id: 17, name: "Гидроизоляция санузлов", payment: "—", note: "Входит в стоимость этапа" }
-      ]
-    },
-    {
-      id: 2,
-      title: "ЭТАП 2 · Предчистовая отделка и плитка",
-      items: [
-        { id: 21, name: "Грунтование всех поверхностей", payment: "—", note: "Входит в стоимость этапа" },
-        { id: 22, name: "Монтаж ГКЛ коробов для коммуникаций", payment: "—", note: "Входит в стоимость этапа" },
-        { id: 23, name: "Шпатлевание стен под финишное покрытие", payment: "—", note: "Входит в стоимость этапа" },
-        { id: 24, name: "Укладка плитки / керамогранита", payment: "—", note: "Входит в стоимость этапа" }
-      ]
-    },
-    {
-      id: 3,
-      title: "ЭТАП 3 · Чистовая отделка",
-      items: [
-        { id: 31, name: "Укладка финишного напольного покрытия", payment: "—", note: "Входит в стоимость этапа" },
-        { id: 32, name: "Заливка наливного пола по маякам", payment: "—", note: "Входит в стоимость этапа" },
-        { id: 33, name: "Финишная отделка стен (обои/покраска)", payment: "—", note: "Входит в стоимость этапа" },
-        { id: 34, name: "Установка чистовой сантехники", payment: "—", note: "Входит в стоимость этапа" },
-        { id: 35, name: "Установка чистовой электрики", payment: "—", note: "Входит в стоимость этапа" },
-        { id: 36, name: "Монтаж напольного плинтуса", payment: "—", note: "Входит в стоимость этапа" },
-        { id: 37, name: "Финальная уборка помещения", payment: "—", note: "Входит в стоимость этапа" }
-      ]
-    }
-  ]
-};
-
-export default function App() {
-  const [data, setData] = useState(initialData);
-
-  const updateField = (field, value) => setData(prev => ({ ...prev, [field]: value }));
-
-  const handleItemChange = (stageId, itemId, field, value) => {
-    setData(prev => ({
-      ...prev,
-      stages: prev.stages.map(stage => stage.id === stageId 
-        ? { ...stage, items: stage.items.map(i => i.id === itemId ? { ...i, [field]: value } : i) }
-        : stage)
-    }));
-  };
-
-  return (
-    <div className="min-h-screen bg-gray-50 text-gray-800 p-4 md:p-8 font-sans">
-      <main className="max-w-5xl mx-auto space-y-8">
-        <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-          <div>
-            <h1 className="text-3xl font-extrabold text-gray-900 flex items-center gap-3">
-              <Building2 className="text-[#00B074]" size={32} /> Смета на ремонт
-            </h1>
-            <div className="mt-2 flex items-center gap-2">
-              <input value={data.area} onChange={(e) => updateField('area', e.target.value)} className="w-12 font-bold text-gray-900 bg-gray-100 rounded px-1 outline-none" />
-              <span className="text-gray-500">м²</span>
-            </div>
-          </div>
-          <button className="bg-[#2ECC71] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#27AE60] flex items-center gap-2">
-            <Download size={20} /> Экспорт в Excel
-          </button>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-4">
-          <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex items-center gap-3">
-            <User className="text-[#1B365D]" /> 
-            <input value={data.client} onChange={(e) => updateField('client', e.target.value)} className="font-bold w-full outline-none" />
-          </div>
-          <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex items-center gap-3">
-            <Phone className="text-[#1B365D]" /> 
-            <input value={data.phone} onChange={(e) => updateField('phone', e.target.value)} className="font-bold w-full outline-none" />
-          </div>
-          <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex items-center gap-3">
-            <MapPin className="text-[#1B365D]" /> 
-            <input value={data.address} onChange={(e) => updateField('address', e.target.value)} className="font-bold text-sm w-full outline-none" />
-          </div>
-        </div>
-
-        {data.stages.map((stage) => (
-          <div key={stage.id} className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-            <div className="p-6 bg-gray-50 border-b border-gray-100">
-              <input value={stage.title} onChange={(e) => setData(prev => ({...prev, stages: prev.stages.map(s => s.id === stage.id ? {...s, title: e.target.value} : s)}))} className="text-lg font-bold text-[#1B365D] bg-transparent w-full outline-none" />
-            </div>
-            <table className="w-full border-collapse text-sm">
-              <thead className="bg-gray-100 text-[10px] uppercase text-gray-500">
-                <tr><th className="p-4 w-1/2">Работа</th><th className="p-4 w-1/6">Оплата</th><th className="p-4 w-1/4">Примечание</th><th className="p-4"></th></tr>
-              </thead>
-              <tbody>
-                {stage.items.map((item, idx) => (
-                  <tr key={item.id} className={`${idx % 2 === 0 ? 'bg-white' : 'bg-blue-50'} border-b border-gray-100 group`}>
-                    <td className="p-4"><input value={item.name} onChange={(e) => handleItemChange(stage.id, item.id, 'name', e.target.value)} className="w-full bg-transparent outline-none" /></td>
-                    <td className="p-4"><input value={item.payment} onChange={(e) => handleItemChange(stage.id, item.id, 'payment', e.target.value)} className="w-full bg-transparent outline-none" /></td>
-                    <td className="p-4"><input value={item.note} onChange={(e) => handleItemChange(stage.id, item.id, 'note', e.target.value)} className="w-full bg-transparent outline-none" /></td>
-                    <td className="p-4 text-center"><button onClick={() => setData(prev => ({...prev, stages: prev.stages.map(s => s.id === stage.id ? {...s, items: s.items.filter(i => i.id !== item.id)} : s)}))} className="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100"><Trash2 size={16} /></button></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <button onClick={() => setData(prev => ({...prev, stages: prev.stages.map(s => s.id === stage.id ? {...s, items: [...s.items, {id: Date.now(), name: "Новая работа", payment: "-", note: "-"}]} : s)}))} className="m-6 text-[#00B074] font-bold flex items-center gap-2 text-sm hover:underline">
-              <Plus size={18} /> Добавить работу
-            </button>
-          </div>
-        ))}
-      </main>
+    <!-- Кнопка скачивания плавающая сверху -->
+    <div class="fixed top-4 right-4 z-50">
+        <button onclick="exportToExcel()" class="bg-[#2ECC71] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#27AE60] shadow-lg flex items-center gap-2 transform hover:scale-105 transition-all">
+            <i class="fa-solid fa-file-excel"></i> Скачать в Excel
+        </button>
     </div>
-  );
-}
+
+    <main class="max-w-5xl mx-auto space-y-6 pb-20" id="app-container">
+        <!-- Контент рендерится через JS -->
+    </main>
+
+    <script>
+        // Полный слепок данных, как в вашем оригинальном документе
+        let state = {
+            docTitle: "СМЕТА НА РЕМОНТНЫЕ РАБОТЫ",
+            docSubtitle: "Комплексный ремонт «под ключ»",
+            area: 70,
+            pricePerSqm: 22000,
+            client: "Валентина",
+            phone: "+7 926 147-10-36",
+            address: "Московская обл., г. Красногорск, мкр. Опалиха, ул. Пришвина, д. 14",
+            introText: "Уважаемый заказчик! Перед вами подробная смета на комплексный ремонт квартиры. Работы разбиты на три логичных этапа — от инженерной подготовки до финишной отделки — с прозрачной стоимостью и оплатой строго по факту приёмки каждого этапа. Это исключает переплаты и даёт вам полный контроль над ходом и качеством работ на каждом шаге.",
+            benefitsTitle: "Почему это выгодно и надёжно для вас",
+            benefits: [
+                { id: 1, text: "Оплата поэтапно — вы платите только после приёмки результата, а не авансом за весь проект" },
+                { id: 2, text: "Фиксированная стоимость этапов 2 и 3 — никаких скрытых доплат и сюрпризов в процессе" },
+                { id: 3, text: "Полный цикл «под ключ» — от чернового инженерного этапа до финальной уборки" },
+                { id: 4, text: "Скрытые системы (сантехника, электрика, гидроизоляция) выполняются с гарантией долговечности" }
+            ],
+            stages: [
+                {
+                    id: 1,
+                    title: "ЭТАП 1 · Инженерный и подготовительный",
+                    subtitle: "Фундамент качественного ремонта — всё, что скрыто, но определяет надёжность на десятилетия",
+                    total: 500000,
+                    items: [
+                        { id: 11, name: "Демонтаж оконного блока на лоджии", payment: "Индивидуально", note: "Стоимость обговаривается по месту после осмотра" },
+                        { id: 12, name: "Сборка и расключение электрического щитка", payment: "—", note: "Входит в стоимость этапа" },
+                        { id: 13, name: "Черновая разводка труб водоснабжения и канализации", payment: "—", note: "Входит в стоимость этапа" },
+                        { id: 14, name: "Монтаж инсталляции и скрытых сантехнических систем", payment: "—", note: "Входит в стоимость этапа" },
+                        { id: 15, name: "Сборка коллекторной системы", payment: "—", note: "Входит в стоимость этапа" },
+                        { id: 16, name: "Локальное исправление недоделанных участков штукатурки", payment: "—", note: "Входит в стоимость этапа" },
+                        { id: 17, name: "Гидроизоляция мокрых зон", payment: "—", note: "Входит в стоимость этапа" }
+                    ]
+                },
+                {
+                    id: 2,
+                    title: "ЭТАП 2 · Предчистовая отделка и плитка",
+                    subtitle: "Подготовка поверхностей и укладка плитки — точность на этом этапе определяет итоговый результат",
+                    total: 600000,
+                    items: [
+                        { id: 21, name: "Грунтование всех поверхностей", payment: "—", note: "Входит в стоимость этапа" },
+                        { id: 22, name: "Монтаж ГКЛ коробов для скрытия коммуникаций", payment: "—", note: "Входит в стоимость этапа" },
+                        { id: 23, name: "Шпатлевание стен под финишное покрытие", payment: "—", note: "Входит в стоимость этапа" },
+                        { id: 24, name: "Укладка плитки / керамогранита (санузлы, фартук, пол)", payment: "—", note: "Входит в стоимость этапа" },
+                        { id: 25, name: "Затирка межплиточных швов", payment: "—", note: "Входит в стоимость этапа" },
+                        { id: 26, name: "Монтаж подоконников и подготовка откосов", payment: "—", note: "Входит в стоимость этапа" }
+                    ]
+                },
+                {
+                    id: 3,
+                    title: "ЭТАП 3 · Чистовая отделка",
+                    subtitle: "Финальный образ квартиры — то, что вы будете видеть и чем пользоваться каждый день",
+                    total: 440000,
+                    items: [
+                        { id: 31, name: "Укладка финишного напольного покрытия", payment: "—", note: "Входит в стоимость этапа" },
+                        { id: 32, name: "Заливка наливного пола по маякам (исправление неровности стяжки)", payment: "—", note: "Входит в стоимость этапа" },
+                        { id: 33, name: "Финишная отделка стен (обои/покраска)", payment: "—", note: "Входит в стоимость этапа" },
+                        { id: 34, name: "Установка чистовой сантехники (ванна, раковина, унитаз, смесители)", payment: "—", note: "Входит в стоимость этапа" },
+                        { id: 35, name: "Установка чистовой электрики (розетки, выключатели, светильники)", payment: "—", note: "Входит в стоимость этапа" },
+                        { id: 36, name: "Монтаж напольного плинтуса", payment: "—", note: "Входит в стоимость этапа" },
+                        { id: 37, name: "Финальная уборка помещения", payment: "—", note: "Входит в стоимость этапа" }
+                    ]
+                }
+            ],
+            conditionsTitle: "Условия оплаты",
+            conditions: [
+                { id: 1, text: "Оплата производится по завершении и приёмке каждого этапа — без предоплаты за будущие этапы" },
+                { id: 2, text: "Стоимость демонтажа оконного блока на лоджии обсуждается индивидуально после осмотра объекта" }
+            ],
+            warrantyTitle: "Гарантия",
+            warrantyText: "Мы предоставляем гарантию на все виды выполненных работ. Скрытые инженерные системы монтируются с запасом надёжности, а каждый этап принимается заказчиком лично перед переходом к следующему — это ваша дополнительная защита и уверенность в результате.",
+            notIncludedTitle: "В стоимость не входит",
+            notIncludedText: "Для прозрачности сразу отмечаем виды работ, которые не включены в данную смету и рассчитываются отдельно:",
+            notIncluded: [
+                { id: 1, text: "Вынос мусора" },
+                { id: 2, text: "Подъём материалов" },
+                { id: 3, text: "Установка межкомнатных дверей" },
+                { id: 4, text: "Натяжные потолки" },
+                { id: 5, text: "Монтаж светильников" },
+                { id: 6, text: "Сборка мебели" }
+            ],
+            footerNote: "Готовы обсудить детали и согласовать даты начала работ."
+        };
+
+        const formatCurrency = (num) => new Intl.NumberFormat('ru-RU').format(num) + ' ₽';
+        const getGrandTotal = () => state.stages.reduce((acc, stage) => acc + stage.total, 0);
+
+        // Вспомогательная функция для генерации HTML-кода редактируемого текста
+        function createTextarea(value, dataPath, classes = "", rows = 1) {
+            return `<textarea rows="${rows}" data-path="${dataPath}" oninput="updateState(this); autoResize(this)" class="editable-block ${classes}">${value}</textarea>`;
+        }
+        function createInput(value, dataPath, type = "text", classes = "") {
+            return `<input type="${type}" data-path="${dataPath}" value="${value}" oninput="updateState(this)" class="editable-block bg-transparent outline-none ${classes}">`;
+        }
+
+        // Основная функция отрисовки интерфейса
+        function render() {
+            const container = document.getElementById('app-container');
+            
+            let html = `
+                <!-- Заголовок -->
+                <div class="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm">
+                    <div class="text-3xl md:text-5xl font-black text-gray-900 mb-2">
+                        ${createTextarea(state.docTitle, 'docTitle', 'font-black leading-tight')}
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2 text-lg md:text-xl font-bold text-[#1B365D]">
+                        <div class="w-full md:w-auto">${createTextarea(state.docSubtitle, 'docSubtitle')}</div>
+                        <span class="hidden md:inline text-gray-300">·</span>
+                        <div class="flex items-center gap-1 w-full md:w-auto">
+                            ${createInput(state.area, 'area', 'number', 'w-16 text-center bg-gray-100 rounded px-1')}
+                            <span>м² ×</span>
+                            ${createInput(state.pricePerSqm, 'pricePerSqm', 'number', 'w-24 text-center bg-gray-100 rounded px-1')}
+                            <span>₽/м²</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Блок с клиентом -->
+                <div class="grid md:grid-cols-3 gap-4">
+                    <div class="bg-white p-5 rounded-xl border border-gray-200 flex gap-4 shadow-sm">
+                        <i class="fa-solid fa-user text-[#00B074] text-2xl mt-1"></i>
+                        <div class="w-full">
+                            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">Объект / Заказчик</p>
+                            ${createInput(state.client, 'client', 'text', 'font-bold text-gray-900 w-full')}
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl border border-gray-200 flex gap-4 shadow-sm">
+                        <i class="fa-solid fa-phone text-[#00B074] text-2xl mt-1"></i>
+                        <div class="w-full">
+                            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">Телефон</p>
+                            ${createInput(state.phone, 'phone', 'text', 'font-bold text-gray-900 w-full')}
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl border border-gray-200 flex gap-4 shadow-sm md:col-span-1">
+                        <i class="fa-solid fa-map-location-dot text-[#00B074] text-2xl mt-1"></i>
+                        <div class="w-full">
+                            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">Адрес объекта</p>
+                            ${createTextarea(state.address, 'address', 'font-bold text-sm text-gray-900 w-full')}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Вводный текст и преимущества -->
+                <div class="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm">
+                    ${createTextarea(state.introText, 'introText', 'text-gray-700 leading-relaxed mb-6')}
+                    
+                    <div class="mt-6">
+                        <div class="text-lg font-bold text-[#1B365D] mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-shield-halved text-[#00B074]"></i>
+                            ${createTextarea(state.benefitsTitle, 'benefitsTitle')}
+                        </div>
+                        <ul class="space-y-2 text-gray-800">
+                            ${state.benefits.map((b, idx) => `
+                                <li class="flex items-start gap-2 group">
+                                    <span class="text-[#00B074] mt-1">◆</span>
+                                    ${createTextarea(b.text, `benefits.${idx}.text`, 'text-sm')}
+                                    <button onclick="removeItem('benefits', ${b.id})" class="text-red-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-xmark"></i></button>
+                                </li>
+                            `).join('')}
+                        </ul>
+                        <button onclick="addItem('benefits')" class="mt-3 text-xs text-[#00B074] font-bold hover:underline">+ Добавить пункт</button>
+                    </div>
+                </div>
+            `;
+
+            // Отрисовка Этапов
+            html += `<div class="space-y-6">`;
+            state.stages.forEach((stage, sIdx) => {
+                html += `
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="p-6 bg-[#F8F9FA] border-b border-gray-200">
+                        ${createTextarea(stage.title, `stages.${sIdx}.title`, 'text-xl font-bold text-[#1B365D] uppercase')}
+                        ${createTextarea(stage.subtitle, `stages.${sIdx}.subtitle`, 'text-sm text-gray-500 mt-1')}
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm min-w-[600px]">
+                            <thead class="bg-gray-50 text-[10px] uppercase text-gray-500 tracking-wider">
+                                <tr>
+                                    <th class="p-4 w-1/2 text-left">Наименование работ</th>
+                                    <th class="p-4 w-1/6 text-left">Оплата</th>
+                                    <th class="p-4 w-1/4 text-left">Примечание</th>
+                                    <th class="p-4 w-10"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                stage.items.forEach((item, iIdx) => {
+                    const rowClass = iIdx % 2 === 0 ? 'bg-white' : 'bg-gray-50/50';
+                    html += `
+                                <tr class="${rowClass} border-b border-gray-100 group hover:bg-[#F8F9FA] transition-colors">
+                                    <td class="p-4 align-top text-gray-900">
+                                        ${createTextarea(item.name, `stages.${sIdx}.items.${iIdx}.name`, 'font-medium')}
+                                    </td>
+                                    <td class="p-4 align-top text-gray-800">
+                                        ${createTextarea(item.payment, `stages.${sIdx}.items.${iIdx}.payment`)}
+                                    </td>
+                                    <td class="p-4 align-top text-gray-500">
+                                        ${createTextarea(item.note, `stages.${sIdx}.items.${iIdx}.note`, 'text-xs')}
+                                    </td>
+                                    <td class="p-4 text-center align-middle">
+                                        <button onclick="removeStageItem(${sIdx}, ${item.id})" class="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" title="Удалить строку">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                    `;
+                });
+
+                html += `
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="p-4 flex justify-between items-center bg-[#F8F9FA] border-t border-gray-200">
+                        <button onclick="addStageItem(${sIdx})" class="text-[#00B074] font-bold text-sm hover:underline flex items-center gap-1">
+                            <i class="fa-solid fa-plus"></i> Добавить строку
+                        </button>
+                        <div class="flex items-center gap-3 bg-white px-4 py-2 rounded-xl border border-gray-200 shadow-sm">
+                            <span class="text-xs uppercase text-gray-400 font-bold">Итого за этап:</span>
+                            ${createInput(stage.total, `stages.${sIdx}.total`, 'number', 'font-black text-xl text-[#1B365D] w-32 text-right stage-total-input')}
+                            <span class="font-black text-xl text-[#1B365D]">₽</span>
+                        </div>
+                    </div>
+                </div>
+                `;
+            });
+            html += `</div>`;
+
+            // Итоговая сумма по всему проекту
+            html += `
+                <div class="bg-gradient-to-r from-[#1B365D] to-[#122540] text-white p-8 rounded-2xl shadow-xl flex flex-col md:flex-row justify-between items-center gap-6 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl -mr-20 -mt-20"></div>
+                    <div class="relative z-10 w-full md:w-auto text-center md:text-left">
+                        <h3 class="text-2xl font-black mb-1">ВСЕГО ЗА ПРОЕКТ</h3>
+                        <p class="text-sm text-gray-300 opacity-90" id="grand-total-desc">Площадь ${state.area} м² × ${state.pricePerSqm} руб./м²</p>
+                    </div>
+                    <div class="text-4xl md:text-5xl font-black text-[#2ECC71] relative z-10" id="grand-total-text">
+                        ${formatCurrency(getGrandTotal())}
+                    </div>
+                </div>
+            `;
+
+            // Условия, Гарантия и "В стоимость не входит"
+            html += `
+                <div class="grid md:grid-cols-2 gap-6 text-gray-800">
+                    <!-- Гарантия и Условия -->
+                    <div class="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm space-y-6">
+                        <div>
+                            <div class="text-lg font-bold text-[#1B365D] mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-file-contract text-[#00B074]"></i>
+                                ${createTextarea(state.conditionsTitle, 'conditionsTitle')}
+                            </div>
+                            <ul class="space-y-2">
+                                ${state.conditions.map((c, idx) => `
+                                    <li class="flex items-start gap-2 group">
+                                        <span class="text-[#00B074] mt-1">◆</span>
+                                        ${createTextarea(c.text, `conditions.${idx}.text`, 'text-sm')}
+                                        <button onclick="removeItem('conditions', ${c.id})" class="text-red-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><i class="fa-solid fa-xmark"></i></button>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                            <button onclick="addItem('conditions')" class="mt-2 text-xs text-[#00B074] font-bold hover:underline">+ Добавить пункт</button>
+                        </div>
+                        <hr class="border-gray-100">
+                        <div>
+                            <div class="text-lg font-bold text-[#1B365D] mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-award text-[#00B074]"></i>
+                                ${createTextarea(state.warrantyTitle, 'warrantyTitle')}
+                            </div>
+                            ${createTextarea(state.warrantyText, 'warrantyText', 'text-sm text-gray-700 leading-relaxed')}
+                        </div>
+                    </div>
+
+                    <!-- В стоимость не входит -->
+                    <div class="bg-[#F8F9FA] p-8 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <div class="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-circle-exclamation text-amber-500"></i>
+                                ${createTextarea(state.notIncludedTitle, 'notIncludedTitle')}
+                            </div>
+                            ${createTextarea(state.notIncludedText, 'notIncludedText', 'text-sm text-gray-600 mb-4')}
+                            
+                            <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                ${state.notIncluded.map((n, idx) => `
+                                    <li class="flex items-center gap-2 group">
+                                        <div class="w-1.5 h-1.5 rounded-full bg-amber-500"></div>
+                                        ${createTextarea(n.text, `notIncluded.${idx}.text`, 'text-sm')}
+                                        <button onclick="removeItem('notIncluded', ${n.id})" class="text-red-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity ml-auto"><i class="fa-solid fa-xmark"></i></button>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                            <button onclick="addItem('notIncluded')" class="mt-4 text-xs text-amber-600 font-bold hover:underline">+ Добавить пункт</button>
+                        </div>
+                        <div class="mt-8 pt-4 border-t border-gray-200 font-medium text-gray-700">
+                            ${createTextarea(state.footerNote, 'footerNote', 'text-center')}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            container.innerHTML = html;
+            
+            // Надежный расчет высоты после полного рендера браузером
+            setTimeout(() => {
+                document.querySelectorAll('textarea').forEach(el => autoResize(el));
+            }, 50);
+        }
+
+        // --- ФУНКЦИИ ЛОГИКИ И РАСЧЕТОВ ---
+
+        function autoResize(textarea) {
+            // Приравниваем к 1px на долю секунды, чтобы вычислить реальную высоту (без этого поле может не уменьшаться при удалении текста)
+            textarea.style.height = '1px';
+            textarea.style.height = (textarea.scrollHeight) + 'px';
+        }
+
+        // Глубокое обновление объекта state по пути
+        function setNestedProperty(obj, path, value) {
+            const keys = path.split('.');
+            let current = obj;
+            for (let i = 0; i < keys.length - 1; i++) {
+                current = current[keys[i]];
+            }
+            current[keys[keys.length - 1]] = value;
+        }
+
+        function updateState(element) {
+            const path = element.dataset.path;
+            const isNumber = element.type === 'number';
+            const value = isNumber ? (parseFloat(element.value) || 0) : element.value;
+
+            setNestedProperty(state, path, value);
+
+            // Обработка математики
+            if (path === 'area' || path === 'pricePerSqm') {
+                recalculateStagesFromTotal();
+                updateCalculationsUI();
+            }
+            if (path.includes('total')) { // если вручную изменили сумму этапа
+                recalculateTotalFromStages();
+                updateCalculationsUI();
+            }
+        }
+
+        // Пересчет этапов при изменении Площади или Цены
+        function recalculateStagesFromTotal() {
+            const newGrandTotal = state.area * state.pricePerSqm;
+            const currentGrandTotal = getGrandTotal();
+
+            if (currentGrandTotal > 0 && newGrandTotal > 0) {
+                const ratio = newGrandTotal / currentGrandTotal;
+                let distributedTotal = 0;
+                
+                state.stages.forEach((stage, index) => {
+                    if (index === state.stages.length - 1) {
+                        stage.total = Math.round(newGrandTotal - distributedTotal);
+                    } else {
+                        const newStageTotal = Math.round(stage.total * ratio);
+                        distributedTotal += newStageTotal;
+                        stage.total = newStageTotal;
+                    }
+                });
+            }
+        }
+
+        // Пересчет цены за м² при изменении суммы этапа
+        function recalculateTotalFromStages() {
+            const newGrandTotal = getGrandTotal();
+            state.pricePerSqm = state.area > 0 ? Math.round(newGrandTotal / state.area) : 0;
+        }
+
+        // Обновляем только числа в DOM без полной перерисовки
+        function updateCalculationsUI() {
+            const gtText = document.getElementById('grand-total-text');
+            const gtDesc = document.getElementById('grand-total-desc');
+            if(gtText) gtText.innerText = formatCurrency(getGrandTotal());
+            if(gtDesc) gtDesc.innerText = `Площадь ${state.area} м² × ${state.pricePerSqm} руб./м²`;
+
+            document.querySelectorAll('input[data-path="pricePerSqm"]').forEach(el => { if(document.activeElement !== el) el.value = state.pricePerSqm; });
+            document.querySelectorAll('input[data-path="area"]').forEach(el => { if(document.activeElement !== el) el.value = state.area; });
+            
+            state.stages.forEach((stage, idx) => {
+                const el = document.querySelector(`input[data-path="stages.${idx}.total"]`);
+                if (el && document.activeElement !== el) el.value = stage.total;
+            });
+        }
+
+        // --- УПРАВЛЕНИЕ СПИСКАМИ ---
+        function addItem(listName) {
+            state[listName].push({ id: Date.now(), text: "Новый пункт (нажмите чтобы изменить)" });
+            render();
+        }
+        function removeItem(listName, id) {
+            state[listName] = state[listName].filter(item => item.id !== id);
+            render();
+        }
+        function addStageItem(stageIdx) {
+            state.stages[stageIdx].items.push({ id: Date.now(), name: "Название работы", payment: "—", note: "Примечание" });
+            render();
+        }
+        function removeStageItem(stageIdx, itemId) {
+            state.stages[stageIdx].items = state.stages[stageIdx].items.filter(i => i.id !== itemId);
+            render();
+        }
+
+        // --- ЭКСПОРТ В EXCEL ---
+        function exportToExcel() {
+            const escapeCsv = (str) => `"${String(str).replace(/"/g, '""')}"`;
+            let csvContent = '\uFEFF'; // BOM for UTF-8 Excel
+
+            csvContent += `${escapeCsv(state.docTitle)}\n`;
+            csvContent += `${escapeCsv(state.docSubtitle)} · ${state.area} м²\n\n`;
+            csvContent += `Объект:,${escapeCsv(state.address)}\n`;
+            csvContent += `Заказчик:,${escapeCsv(state.client)}\n`;
+            csvContent += `Телефон:,${escapeCsv(state.phone)}\n\n`;
+
+            csvContent += `${escapeCsv(state.introText)}\n\n`;
+            
+            csvContent += `${escapeCsv(state.benefitsTitle)}\n`;
+            state.benefits.forEach(b => csvContent += `◆ ${escapeCsv(b.text)}\n`);
+            csvContent += `\n`;
+
+            state.stages.forEach(stage => {
+                csvContent += `${escapeCsv(stage.title)}\n`;
+                csvContent += `${escapeCsv(stage.subtitle)}\n`;
+                csvContent += `Наименование работ,Оплата,Примечание\n`;
+                stage.items.forEach(item => {
+                    csvContent += `${escapeCsv(item.name)},${escapeCsv(item.payment)},${escapeCsv(item.note)}\n`;
+                });
+                csvContent += `ИТОГО ЗА ЭТАП,${stage.total} руб.\n\n`;
+            });
+
+            csvContent += `ВСЕГО ЗА ПРОЕКТ (Площадь ${state.area} м² × ${state.pricePerSqm} руб./м²),,${getGrandTotal()} руб.\n\n`;
+
+            csvContent += `${escapeCsv(state.conditionsTitle)}\n`;
+            state.conditions.forEach(c => csvContent += `◆ ${escapeCsv(c.text)}\n`);
+            csvContent += `\n`;
+
+            csvContent += `${escapeCsv(state.warrantyTitle)}\n`;
+            csvContent += `${escapeCsv(state.warrantyText)}\n\n`;
+
+            csvContent += `${escapeCsv(state.notIncludedTitle)}\n`;
+            csvContent += `${escapeCsv(state.notIncludedText)}\n`;
+            state.notIncluded.forEach(n => csvContent += `◆ ${escapeCsv(n.text)}\n`);
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `Смета_${state.client.replace(/\s+/g, '_')}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Выполняем отрисовку и еще раз проверяем размеры полей при изменении размера окна
+        window.addEventListener('resize', () => {
+            document.querySelectorAll('textarea').forEach(el => autoResize(el));
+        });
+
+        // Запуск
+        render();
+
+    </script>
+</body>
+</html>
