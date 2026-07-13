@@ -120,4 +120,14 @@
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
+  <url>
+    <loc>https://timmir1.github.io/how-its-made.html</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://timmir1.github.io/kak.jpg</image:loc>
+      <image:title>Как делают кнопки YouTube из металла — процесс производства</image:title>
+    </image:image>
+  </url>
 </urlset>
