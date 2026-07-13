@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>Смета на ремонтные работы — редактор</title>
 <style>
   :root{
@@ -48,7 +49,6 @@
 
   .masthead{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;border-bottom:2px solid var(--blue-deep);padding-bottom:18px;margin-bottom:22px;}
   .brand{font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);}
-  .eyebrow{font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--clay);margin-bottom:6px;}
   h1{font-size:28px;margin:0 0 6px;color:var(--blue-deep);font-weight:700;line-height:1.15;}
   .stamp{font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;color:var(--ink-soft);text-align:right;white-space:nowrap;}
 
@@ -61,6 +61,7 @@
   .edit:focus{outline:none;border-bottom:1px dashed var(--blue);background:rgba(46,82,102,0.06);}
   input.edit{font-family:'Helvetica Neue',Arial,sans-serif;}
   textarea.edit{resize:vertical;font-family:Georgia,serif;line-height:1.55;}
+  .edit[readonly]{cursor:default;}
 
   .subtitle-input{font-size:15px;color:var(--ink-soft);font-style:italic;}
 
@@ -71,9 +72,12 @@
 
   .section-title{font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--blue-deep);border-bottom:1px solid var(--paper-line);padding-bottom:6px;margin:32px 0 16px;}
 
-  .stage{border:1px solid var(--paper-line);border-radius:4px;margin-bottom:18px;overflow:hidden;background:#fff;}
-  .stage-head{background:var(--blue-deep);color:#F3EFE4;padding:14px 18px;display:flex;gap:14px;align-items:flex-start;}
-  .stage-num{font-family:'Helvetica Neue',Arial,sans-serif;font-weight:700;font-size:22px;color:var(--tape);min-width:34px;}
+  .stage{border:1px solid var(--paper-line);border-radius:4px;margin-bottom:18px;overflow:hidden;background:#fff;transition:box-shadow .15s;}
+  .stage.drag-over{box-shadow:0 0 0 2px var(--tape) inset;}
+  .stage-head{background:var(--blue-deep);color:#F3EFE4;padding:14px 18px;display:flex;gap:12px;align-items:flex-start;}
+  .drag-handle{cursor:grab;color:#8CA3B0;font-size:16px;line-height:1;padding:4px 2px;user-select:none;}
+  .drag-handle:active{cursor:grabbing;}
+  .stage-num{font-family:'Helvetica Neue',Arial,sans-serif;font-weight:700;font-size:22px;color:var(--tape);min-width:30px;}
   .stage-head .edit{color:#F3EFE4;}
   .stage-head input.edit{font-size:17px;font-weight:700;}
   .stage-head textarea.edit{font-size:13px;color:#D9D2C0;font-style:italic;min-height:20px;}
@@ -84,33 +88,50 @@
   table.items th{text-align:left;background:#F0EDE3;color:var(--ink-soft);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;padding:8px 10px;border-bottom:1px solid var(--paper-line);}
   table.items td{padding:6px 10px;border-bottom:1px solid #EFEDE6;vertical-align:top;}
   table.items tr:last-child td{border-bottom:none;}
-  .col-name{width:52%;}
+  .col-drag{width:24px;text-align:center;}
+  .col-name{width:48%;}
   .col-pay{width:20%;}
   .col-note{width:22%;}
   .col-del{width:6%;text-align:center;}
   .del-btn{border:none;background:none;color:#B7ACA0;cursor:pointer;font-size:15px;padding:2px 6px;border-radius:3px;}
   .del-btn:hover{color:var(--danger);background:rgba(166,64,46,0.08);}
+  .item-drag-handle{cursor:grab;color:#C6BFAF;font-size:14px;}
 
   .add-item{display:flex;justify-content:flex-start;padding:8px 10px 12px;}
   .add-item button{font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;color:var(--blue);background:none;border:1px dashed var(--blue);border-radius:3px;padding:5px 10px;cursor:pointer;}
   .add-item button:hover{background:rgba(46,82,102,0.07);}
 
-  .stage-total{display:flex;justify-content:space-between;align-items:center;background:#FBF9F4;border-top:1px solid var(--paper-line);padding:10px 18px;font-family:'Helvetica Neue',Arial,sans-serif;}
+  .stage-total{display:flex;justify-content:space-between;align-items:center;background:#FBF9F4;border-top:1px solid var(--paper-line);padding:10px 18px;font-family:'Helvetica Neue',Arial,sans-serif;flex-wrap:wrap;gap:8px;}
+  .stage-total.zero-total{background:#FBF0EC;}
   .stage-total .label{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);}
   .stage-total .sum-wrap{display:flex;align-items:center;gap:4px;font-weight:700;color:var(--blue-deep);font-size:16px;}
   .stage-total input.edit{width:130px;text-align:right;font-weight:700;font-size:16px;color:var(--blue-deep);}
+  .total-warn{font-size:11px;color:var(--danger);font-family:'Helvetica Neue',Arial,sans-serif;}
   .stage-remove{font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;color:var(--danger);background:none;border:none;cursor:pointer;text-decoration:underline;opacity:.7;}
   .stage-remove:hover{opacity:1;}
 
-  .add-stage{width:100%;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:var(--blue-deep);background:repeating-linear-gradient(135deg,#fff,#fff 10px,#F4F1E9 10px,#F4F1E9 20px);border:2px dashed var(--blue);border-radius:4px;padding:12px;cursor:pointer;margin-bottom:8px;}
-  .add-stage:hover{background:rgba(46,82,102,0.07);}
+  .stage-add-row{display:flex;gap:10px;margin-bottom:8px;flex-wrap:wrap;}
+  .add-stage, .add-stage-template{flex:1;min-width:200px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:var(--blue-deep);background:repeating-linear-gradient(135deg,#fff,#fff 10px,#F4F1E9 10px,#F4F1E9 20px);border:2px dashed var(--blue);border-radius:4px;padding:12px;cursor:pointer;}
+  .add-stage:hover, .add-stage-template:hover{background:rgba(46,82,102,0.07);}
 
   .grand{margin-top:26px;background:var(--blue-deep);color:#F3EFE4;padding:20px 24px;border-radius:4px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
   .grand .cap{font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#C7C0AC;}
   .grand .val{font-size:30px;font-weight:700;color:var(--tape);font-family:'Helvetica Neue',Arial,sans-serif;}
+  .grand-original{font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;color:#B9AF9B;text-decoration:line-through;margin-top:2px;}
   .grand .permeter{font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;color:#D9D2C0;}
   .area-field{display:inline-flex;align-items:center;gap:6px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;color:#D9D2C0;}
   .area-field input.edit{width:52px;color:#F3EFE4;text-align:right;}
+
+  .finance-extra{margin-top:10px;background:#F4F1E9;border:1px solid var(--paper-line);border-radius:4px;padding:12px 16px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;}
+  .finance-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:5px 0;}
+  .finance-row label{display:flex;align-items:center;gap:6px;color:var(--ink-soft);font-size:12.5px;min-width:120px;}
+  .finance-row .money-input{width:90px;background:#fff;border:1px solid var(--paper-line);}
+  .finance-row select{border:1px solid var(--paper-line);background:#fff;border-radius:3px;padding:3px 6px;font-family:inherit;font-size:12.5px;}
+  .finance-result{font-weight:600;color:var(--blue-deep);font-size:12.5px;}
+
+  .requisites-block{margin-top:14px;}
+  .requisites-block textarea{font-size:13.5px;min-height:50px;background:#fff;border:1px solid var(--paper-line);border-radius:4px;padding:8px;}
+  .toggle-line{display:flex;align-items:center;gap:8px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12.5px;color:var(--ink-soft);margin-bottom:6px;}
 
   .lines{font-size:14px;line-height:1.8;}
   .line-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:2px;}
@@ -121,18 +142,110 @@
   .guarantee textarea{font-size:14.5px;line-height:1.65;min-height:70px;}
   .closing textarea{font-size:15px;font-style:italic;color:var(--ink-soft);min-height:30px;}
 
-  .toolbar{max-width:880px;margin:0 auto 14px;display:flex;justify-content:flex-end;gap:10px;font-family:'Helvetica Neue',Arial,sans-serif;}
-  .toolbar button{font-size:13px;padding:10px 18px;border-radius:4px;cursor:pointer;border:1px solid var(--blue-deep);background:var(--blue-deep);color:#F3EFE4;display:flex;align-items:center;gap:8px;}
+  .toolbar{max-width:880px;margin:0 auto 14px;display:flex;justify-content:flex-end;align-items:center;gap:8px;font-family:'Helvetica Neue',Arial,sans-serif;flex-wrap:wrap;}
+  .toolbar button{font-size:12.5px;padding:9px 14px;border-radius:4px;cursor:pointer;border:1px solid var(--blue-deep);background:var(--blue-deep);color:#F3EFE4;display:flex;align-items:center;gap:6px;white-space:nowrap;}
   .toolbar button:hover{background:var(--blue);}
-  .toolbar .saved-note{font-size:11px;color:var(--ink-soft);align-self:center;}
+  .toolbar button.secondary{background:#fff;color:var(--blue-deep);}
+  .toolbar button.secondary:hover{background:#F0EDE3;}
+  .toolbar .client-toggle{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-soft);background:#fff;border:1px solid var(--paper-line);border-radius:4px;padding:9px 12px;}
+  .toolbar .saved-note{font-size:11px;color:var(--ink-soft);}
+
+  /* client mode: hide all editing chrome, keep read-only look */
+  body.client-mode .del-btn,
+  body.client-mode .item-add-btn,
+  body.client-mode .add-item,
+  body.client-mode .stage-add-row,
+  body.client-mode .stage-remove,
+  body.client-mode .add-line,
+  body.client-mode .drag-handle,
+  body.client-mode .item-drag-handle,
+  body.client-mode .col-drag,
+  body.client-mode .col-del{ display:none !important; }
+  body.client-mode input.edit, body.client-mode textarea.edit{ cursor:default; }
+  body.client-mode input.edit:hover, body.client-mode textarea.edit:hover{ border-bottom-color:transparent; }
+
+  /* template modal */
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(20,20,15,0.5);z-index:50;align-items:center;justify-content:center;padding:20px;}
+  .modal-overlay.open{display:flex;}
+  .modal-box{background:#fff;border-radius:6px;max-width:480px;width:100%;max-height:80vh;overflow:auto;padding:22px;font-family:'Helvetica Neue',Arial,sans-serif;}
+  .modal-box h3{margin:0 0 4px;font-size:16px;color:var(--blue-deep);}
+  .modal-box p{margin:0 0 16px;font-size:12.5px;color:var(--ink-soft);}
+  .template-item{display:block;width:100%;text-align:left;border:1px solid var(--paper-line);border-radius:4px;padding:12px 14px;margin-bottom:8px;background:#F8F6F0;cursor:pointer;font-family:inherit;}
+  .template-item:hover{border-color:var(--blue);background:#F0EDE3;}
+  .template-item .t-name{font-weight:700;color:var(--blue-deep);font-size:13.5px;}
+  .template-item .t-count{font-size:11.5px;color:var(--ink-soft);margin-top:2px;}
+  .modal-close{margin-top:10px;font-size:12.5px;color:var(--blue);background:none;border:none;cursor:pointer;text-decoration:underline;}
 
   ::selection{background:rgba(227,166,59,0.4);}
+
+  @media (max-width:640px){
+    body{padding:14px 8px 60px;}
+    .inner{padding:20px 14px 24px;}
+    h1{font-size:21px;}
+    .masthead{flex-direction:column;gap:6px;}
+    .stamp{text-align:left;}
+    .facts{grid-template-columns:1fr;gap:2px 0;}
+    .facts label{margin-top:8px;}
+
+    .toolbar{justify-content:center;gap:6px;margin-bottom:12px;}
+    .toolbar button, .toolbar .client-toggle{flex:1 1 calc(50% - 6px);justify-content:center;font-size:11.5px;padding:10px 8px;}
+    .toolbar .saved-note{flex-basis:100%;text-align:center;}
+
+    .stage-head{padding:12px 10px;gap:8px;}
+    .stage-num{font-size:18px;min-width:22px;}
+    .stage-head input.edit{font-size:15px;}
+    .drag-handle{padding:2px;}
+
+    /* items table becomes horizontally scrollable so columns stay readable */
+    table.items{display:block;}
+    table.items thead{display:none;}
+    table.items tbody{display:block;}
+    table.items tr{display:grid;grid-template-columns:20px 1fr;grid-template-areas:"drag name" "del pay" "del note";gap:2px 8px;padding:10px;border-bottom:1px solid #EFEDE6;position:relative;}
+    table.items td{padding:2px 0;border:none;display:block;}
+    table.items td.col-drag{grid-area:drag;}
+    table.items td.col-name{grid-area:name;}
+    table.items td.col-pay{grid-area:pay;}
+    table.items td.col-pay input::before{content:"Оплата: ";}
+    table.items td.col-note{grid-area:note;}
+    table.items td.col-del{grid-area:del;align-self:start;}
+    table.items td.col-pay, table.items td.col-note{font-size:12px;color:var(--ink-soft);}
+    table.items td.col-pay input, table.items td.col-note input{font-size:12px;}
+
+    .stage-total{padding:10px 12px;}
+    .stage-total input.edit{width:110px;font-size:15px;}
+
+    .grand{flex-direction:column;align-items:flex-start;padding:16px;}
+    .grand > div:last-child{text-align:left;width:100%;}
+    .grand .val{font-size:24px;}
+    .area-field{margin-top:6px;}
+
+    .finance-row{flex-direction:column;align-items:flex-start;gap:6px;}
+    .finance-row label{min-width:auto;}
+
+    .modal-box{padding:16px;}
+  }
+
+  @media print{
+    .toolbar, .modal-overlay{display:none !important;}
+    body{background:#fff;padding:0;}
+    .sheet{box-shadow:none;border:none;max-width:100%;}
+    .sheet::before{display:none;}
+    .del-btn, .item-add-btn, .add-item, .stage-add-row, .stage-remove, .add-line, .drag-handle, .item-drag-handle, .col-drag, .col-del{display:none !important;}
+    input.edit, textarea.edit{border:none !important;background:transparent !important;}
+    .stage{page-break-inside:avoid;border:1px solid #999;}
+    .finance-extra{background:#fff;border:1px solid #999;}
+  }
 </style>
 </head>
 <body>
 
 <div class="toolbar">
   <span class="saved-note" id="savedNote"></span>
+  <label class="client-toggle"><input type="checkbox" id="clientModeToggle"> Режим клиента</label>
+  <button class="secondary" id="printBtn">🖨 Печать / PDF</button>
+  <button class="secondary" id="exportJsonBtn">💾 Экспорт черновика</button>
+  <button class="secondary" id="importJsonBtn">📂 Импорт черновика</button>
+  <input type="file" id="importJsonFile" accept="application/json" style="display:none">
   <button id="downloadBtn">⬇ Скачать в Excel</button>
 </div>
 
@@ -160,17 +273,49 @@
 
     <div class="section-title">Этапы работ и стоимость</div>
     <div id="stagesWrap"></div>
-    <button class="add-stage" id="addStageBtn">+ Добавить этап</button>
+    <div class="stage-add-row">
+      <button class="add-stage" id="addStageBtn">+ Добавить пустой этап</button>
+      <button class="add-stage-template" id="addTemplateBtn">📋 Вставить типовой этап</button>
+    </div>
 
     <div class="grand">
       <div>
         <div class="cap">Всего за проект</div>
         <div class="val" id="grandTotal">0 ₽</div>
+        <div class="grand-original" id="grandOriginal" style="display:none;"></div>
       </div>
       <div style="text-align:right">
         <div class="permeter" id="permeterLine">—</div>
         <div class="area-field">Площадь, м²: <input class="edit" id="area" type="number" value="70"></div>
       </div>
+    </div>
+
+    <div class="finance-extra">
+      <div class="finance-row">
+        <label><input type="checkbox" id="discountEnabled"> Скидка</label>
+        <input class="edit money-input" id="discountValue" type="text" inputmode="numeric" value="">
+        <select id="discountType">
+          <option value="percent">%</option>
+          <option value="amount">₽</option>
+        </select>
+        <span class="finance-result" id="discountResult"></span>
+      </div>
+      <div class="finance-row">
+        <label><input type="checkbox" id="prepayEnabled"> Предоплата</label>
+        <input class="edit money-input" id="prepayValue" type="text" inputmode="numeric" value="">
+        <select id="prepayType">
+          <option value="percent">%</option>
+          <option value="amount">₽</option>
+        </select>
+        <span class="finance-result" id="prepayResult"></span>
+      </div>
+    </div>
+
+    <div class="requisites-block">
+      <div class="toggle-line"><input type="checkbox" id="requisitesEnabled"> Показать реквизиты для оплаты</div>
+      <textarea class="edit" id="requisitesText" style="display:none;" placeholder="Например: Т-Банк, номер карты / счёт, получатель...">Получатель: MIRA &amp; PAPA
+Карта / счёт: —
+Назначение платежа: оплата по смете</textarea>
     </div>
 
     <div class="section-title">Условия оплаты</div>
@@ -193,8 +338,84 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="templateModal">
+  <div class="modal-box">
+    <h3>Вставить типовой этап</h3>
+    <p>Этап добавится в конец списка со стандартным набором работ — дальше его можно перетащить в нужное место и отредактировать.</p>
+    <div id="templateList"></div>
+    <button class="modal-close" id="templateModalClose">Отмена</button>
+  </div>
+</div>
+
 <script>
 let stageSeq = 0, itemSeq = 0;
+let draggedStageId = null;
+let draggedItem = null; // {stageId, itemId}
+
+const STAGE_TEMPLATES = [
+  {
+    name: "Демонтаж",
+    subtitle: "Подготовка объекта к ремонту",
+    items: [
+      {name:"Демонтаж старых напольных покрытий", pay:"—", note:"Входит в стоимость этапа"},
+      {name:"Демонтаж сантехники и старой электрики", pay:"—", note:"Входит в стоимость этапа"},
+      {name:"Демонтаж перегородок (при наличии проекта)", pay:"—", note:"Входит в стоимость этапа"},
+      {name:"Вывоз строительного мусора", pay:"Индивидуально", note:"Оплачивается отдельно"}
+    ]
+  },
+  {
+    name: "Черновые работы",
+    subtitle: "Формирование планировки и базовая подготовка поверхностей",
+    items: [
+      {name:"Монтаж перегородок по проекту/согласованию", pay:"—", note:"Входит в стоимость этапа"},
+      {name:"Штукатурка стен и откосов", pay:"—", note:"Входит в стоимость этапа"},
+      {name:"Стяжка пола", pay:"—", note:"Входит в стоимость этапа"}
+    ]
+  },
+  {
+    name: "Инженерный и подготовительный",
+    subtitle: "Фундамент качественного ремонта — всё, что скрыто, но определяет надёжность на десятилетия",
+    items: [
+      {name:"Сборка и расключение электрического щитка", pay:"—", note:"Входит в стоимость этапа"},
+      {name:"Черновая разводка труб водоснабжения и канализации", pay:"—", note:"Входит в стоимость этапа"},
+      {name:"Монтаж инсталляции и скрытых сантехнических систем", pay:"—", note:"Входит в стоимость этапа"},
+      {name:"Сборка коллекторной системы", pay:"—", note:"Входит в стоимость этапа"},
+      {name:"Гидроизоляция мокрых зон", pay:"—", note:"Входит в стоимость этапа"}
+    ]
+  },
+  {
+    name: "Электрика",
+    subtitle: "Монтаж и разводка электрики по проекту",
+    items: [
+      {name:"Штробление под кабель-каналы", pay:"—", note:"Входит в стоимость этапа"},
+      {name:"Прокладка кабеля по помещениям", pay:"—", note:"Входит в стоимость этапа"},
+      {name:"Установка автоматов и УЗО в щитке", pay:"—", note:"Входит в стоимость этапа"}
+    ]
+  },
+  {
+    name: "Предчистовая отделка и плитка",
+    subtitle: "Подготовка поверхностей и укладка плитки — точность на этом этапе определяет итоговый результат",
+    items: [
+      {name:"Грунтование всех поверхностей", pay:"—", note:"Входит в стоимость этапа"},
+      {name:"Монтаж ГКЛ коробов для скрытия коммуникаций", pay:"—", note:"Входит в стоимость этапа"},
+      {name:"Шпатлевание стен под финишное покрытие", pay:"—", note:"Входит в стоимость этапа"},
+      {name:"Укладка плитки / керамогранита (санузлы, фартук, пол)", pay:"—", note:"Входит в стоимость этапа"},
+      {name:"Затирка межплиточных швов", pay:"—", note:"Входит в стоимость этапа"}
+    ]
+  },
+  {
+    name: "Чистовая отделка",
+    subtitle: "Финальный образ квартиры — то, что вы будете видеть и чем пользоваться каждый день",
+    items: [
+      {name:"Укладка финишного напольного покрытия", pay:"—", note:"Входит в стоимость этапа"},
+      {name:"Финишная отделка стен (обои/покраска)", pay:"—", note:"Входит в стоимость этапа"},
+      {name:"Установка чистовой сантехники", pay:"—", note:"Входит в стоимость этапа"},
+      {name:"Установка чистовой электрики (розетки, выключатели, светильники)", pay:"—", note:"Входит в стоимость этапа"},
+      {name:"Монтаж напольного плинтуса", pay:"—", note:"Входит в стоимость этапа"},
+      {name:"Финальная уборка помещения", pay:"—", note:"Входит в стоимость этапа"}
+    ]
+  }
+];
 
 let state = {
   stages: [
@@ -273,6 +494,19 @@ function fmt(n){
   n = Number(n)||0;
   return n.toLocaleString('ru-RU');
 }
+function digitsOnly(v){ return String(v||'').replace(/[^\d]/g,''); }
+function escapeHtml(s){
+  return String(s===undefined||s===null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function bindMoneyInput(el, onChange){
+  el.addEventListener('input', ()=>{
+    const digits = digitsOnly(el.value);
+    el.dataset.raw = digits;
+    el.value = digits ? Number(digits).toLocaleString('ru-RU') : '';
+    onChange(Number(digits)||0);
+  });
+}
 
 function syncStateFromDOM(){
   state.stages.forEach(st=>{
@@ -280,7 +514,8 @@ function syncStateFromDOM(){
     if(!head) return;
     st.title = head.querySelector('.st-title').value;
     st.subtitle = head.querySelector('.st-subtitle').value;
-    st.total = Number(head.querySelector('.st-total').value)||0;
+    const totalEl = head.querySelector('.st-total');
+    st.total = Number(totalEl.dataset.raw || digitsOnly(totalEl.value)) || 0;
     st.items.forEach(it=>{
       const row = head.querySelector(`tr[data-item="${it.id}"]`);
       if(!row) return;
@@ -293,16 +528,56 @@ function syncStateFromDOM(){
   document.querySelectorAll('#excludedWrap .line-text').forEach((el,i)=>{ if(state.excluded[i]!==undefined) state.excluded[i]=el.value; });
 }
 
+function updateStageWarn(el, st){
+  const warn = el.querySelector('.total-warn');
+  const totalWrap = el.querySelector('.stage-total');
+  if(!warn || !totalWrap) return;
+  if(st.total>0){ warn.style.display='none'; totalWrap.classList.remove('zero-total'); }
+  else { warn.style.display='inline'; totalWrap.classList.add('zero-total'); }
+}
+
 function updateGrandTotal(){
   const total = state.stages.reduce((s,st)=>s+(Number(st.total)||0),0);
-  document.getElementById('grandTotal').textContent = fmt(total) + ' ₽';
+
+  const discEnabled = document.getElementById('discountEnabled').checked;
+  const discType = document.getElementById('discountType').value;
+  const discValEl = document.getElementById('discountValue');
+  const discRaw = Number(discValEl.dataset.raw || digitsOnly(discValEl.value)) || 0;
+  let discountAmount = 0;
+  if(discEnabled){
+    discountAmount = discType==='percent' ? Math.round(total*discRaw/100) : discRaw;
+    discountAmount = Math.min(discountAmount, total);
+  }
+  const afterDiscount = total - discountAmount;
+
+  const prepEnabled = document.getElementById('prepayEnabled').checked;
+  const prepType = document.getElementById('prepayType').value;
+  const prepValEl = document.getElementById('prepayValue');
+  const prepRaw = Number(prepValEl.dataset.raw || digitsOnly(prepValEl.value)) || 0;
+  let prepayAmount = 0;
+  if(prepEnabled){
+    prepayAmount = prepType==='percent' ? Math.round(afterDiscount*prepRaw/100) : prepRaw;
+    prepayAmount = Math.min(prepayAmount, afterDiscount);
+  }
+  const remainder = afterDiscount - prepayAmount;
+
+  document.getElementById('grandTotal').textContent = fmt(afterDiscount) + ' ₽';
+  const origEl = document.getElementById('grandOriginal');
+  if(discEnabled && discountAmount>0){
+    origEl.style.display='block';
+    origEl.textContent = 'Без скидки: ' + fmt(total) + ' ₽';
+  } else {
+    origEl.style.display='none';
+  }
+  document.getElementById('discountResult').textContent = (discEnabled && discountAmount>0) ? `−${fmt(discountAmount)} ₽` : '';
+  document.getElementById('prepayResult').textContent = (prepEnabled && prepayAmount>0) ? `сейчас: ${fmt(prepayAmount)} ₽ · остаток: ${fmt(remainder)} ₽` : '';
+
   const area = Number(document.getElementById('area').value)||0;
   const permeterEl = document.getElementById('permeterLine');
-  if(area>0){
-    permeterEl.textContent = `Площадь ${area} м² × ${fmt(Math.round(total/area))} руб./м²`;
-  } else {
-    permeterEl.textContent = '—';
-  }
+  permeterEl.textContent = area>0 ? `Площадь ${area} м² × ${fmt(Math.round(total/area))} руб./м²` : '—';
+
+  state.discount = {enabled:discEnabled, type:discType, value:discRaw};
+  state.prepay = {enabled:prepEnabled, type:prepType, value:prepRaw};
 }
 
 function renderLines(containerId, arrName){
@@ -322,10 +597,7 @@ function renderLines(containerId, arrName){
     });
     wrap.appendChild(row);
   });
-}
-
-function escapeHtml(s){
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  applyClientMode();
 }
 
 function renderStages(){
@@ -337,7 +609,8 @@ function renderStages(){
     el.setAttribute('data-id', st.id);
 
     const itemsRows = st.items.map(it => `
-      <tr data-item="${it.id}">
+      <tr data-item="${it.id}" draggable="true">
+        <td class="col-drag"><span class="item-drag-handle">⠿</span></td>
         <td class="col-name"><input class="edit it-name" type="text" value="${escapeHtml(it.name)}"></td>
         <td class="col-pay"><input class="edit it-pay" type="text" value="${escapeHtml(it.pay)}"></td>
         <td class="col-note"><input class="edit it-note" type="text" value="${escapeHtml(it.note)}"></td>
@@ -346,6 +619,7 @@ function renderStages(){
 
     el.innerHTML = `
       <div class="stage-head">
+        <span class="drag-handle" title="Перетащить этап">⠿</span>
         <div class="stage-num">${String(sIdx+1).padStart(2,'0')}</div>
         <div style="flex:1">
           <input class="edit st-title" type="text" value="${escapeHtml(st.title)}">
@@ -355,6 +629,7 @@ function renderStages(){
       </div>
       <table class="items">
         <thead><tr>
+          <th class="col-drag"></th>
           <th class="col-name">Наименование работ</th>
           <th class="col-pay">Оплата</th>
           <th class="col-note">Примечание</th>
@@ -365,13 +640,17 @@ function renderStages(){
       <div class="add-item"><button class="item-add-btn">+ добавить работу</button></div>
       <div class="stage-total">
         <span class="label">Итого за этап</span>
-        <span class="sum-wrap"><input class="edit st-total" type="number" value="${st.total}"> ₽</span>
+        <span class="total-warn">⚠ сумма не указана</span>
+        <span class="sum-wrap"><input class="edit st-total" type="text" inputmode="numeric" value="${st.total?fmt(st.total):''}"> ₽</span>
       </div>
     `;
 
+    const totalInput = el.querySelector('.st-total');
+    totalInput.dataset.raw = st.total || 0;
+    bindMoneyInput(totalInput, (val)=>{ st.total = val; updateGrandTotal(); updateStageWarn(el, st); });
+
     el.querySelector('.st-title').addEventListener('input', ()=>{ st.title = el.querySelector('.st-title').value; });
     el.querySelector('.st-subtitle').addEventListener('input', ()=>{ st.subtitle = el.querySelector('.st-subtitle').value; });
-    el.querySelector('.st-total').addEventListener('input', ()=>{ st.total = Number(el.querySelector('.st-total').value)||0; updateGrandTotal(); });
 
     el.querySelectorAll('tbody tr').forEach(row=>{
       const itemId = Number(row.getAttribute('data-item'));
@@ -382,6 +661,22 @@ function renderStages(){
       row.querySelector('.item-del').addEventListener('click', ()=>{
         syncStateFromDOM();
         st.items = st.items.filter(i=>i.id!==itemId);
+        renderStages();
+      });
+
+      row.addEventListener('dragstart', ()=>{ draggedItem = {stageId: st.id, itemId: itemId}; });
+      row.addEventListener('dragover', e=>{ e.preventDefault(); });
+      row.addEventListener('drop', e=>{
+        e.preventDefault();
+        if(!draggedItem || draggedItem.stageId!==st.id || draggedItem.itemId===itemId) return;
+        syncStateFromDOM();
+        const items = st.items;
+        const fromIdx = items.findIndex(i=>i.id===draggedItem.itemId);
+        const toIdx = items.findIndex(i=>i.id===itemId);
+        if(fromIdx<0||toIdx<0) return;
+        const [moved] = items.splice(fromIdx,1);
+        items.splice(toIdx,0,moved);
+        draggedItem = null;
         renderStages();
       });
     });
@@ -396,12 +691,32 @@ function renderStages(){
       syncStateFromDOM();
       state.stages = state.stages.filter(s=>s.id!==st.id);
       renderStages();
-      updateGrandTotal();
     });
 
+    const handle = el.querySelector('.drag-handle');
+    handle.setAttribute('draggable','true');
+    handle.addEventListener('dragstart', ()=>{ draggedStageId = st.id; });
+    el.addEventListener('dragover', e=>{ e.preventDefault(); el.classList.add('drag-over'); });
+    el.addEventListener('dragleave', ()=>{ el.classList.remove('drag-over'); });
+    el.addEventListener('drop', e=>{
+      e.preventDefault();
+      el.classList.remove('drag-over');
+      if(draggedStageId===null || draggedStageId===st.id) return;
+      syncStateFromDOM();
+      const fromIdx = state.stages.findIndex(s=>s.id===draggedStageId);
+      const toIdx = state.stages.findIndex(s=>s.id===st.id);
+      if(fromIdx<0||toIdx<0) return;
+      const [moved] = state.stages.splice(fromIdx,1);
+      state.stages.splice(toIdx,0,moved);
+      draggedStageId = null;
+      renderStages();
+    });
+
+    updateStageWarn(el, st);
     wrap.appendChild(el);
   });
   updateGrandTotal();
+  applyClientMode();
 }
 
 document.getElementById('addStageBtn').addEventListener('click', ()=>{
@@ -430,6 +745,155 @@ document.querySelectorAll('.add-line').forEach(btn=>{
 
 document.getElementById('dateStamp').textContent = 'Дата: ' + new Date().toLocaleDateString('ru-RU');
 
+// ---- Discount / prepayment bindings ----
+bindMoneyInput(document.getElementById('discountValue'), updateGrandTotal);
+bindMoneyInput(document.getElementById('prepayValue'), updateGrandTotal);
+['discountEnabled','discountType','prepayEnabled','prepayType'].forEach(id=>{
+  document.getElementById(id).addEventListener('change', updateGrandTotal);
+});
+
+// ---- Requisites toggle ----
+document.getElementById('requisitesEnabled').addEventListener('change', (e)=>{
+  document.getElementById('requisitesText').style.display = e.target.checked ? 'block' : 'none';
+});
+
+// ---- Template modal ----
+const templateModal = document.getElementById('templateModal');
+const templateList = document.getElementById('templateList');
+STAGE_TEMPLATES.forEach(tpl=>{
+  const btn = document.createElement('button');
+  btn.className = 'template-item';
+  btn.innerHTML = `<div class="t-name">${escapeHtml(tpl.name)}</div><div class="t-count">${tpl.items.length} работ(ы) · нажмите, чтобы добавить</div>`;
+  btn.addEventListener('click', ()=>{
+    syncStateFromDOM();
+    const n = state.stages.length + 1;
+    state.stages.push({
+      id: ++stageSeq,
+      title: `ЭТАП ${n} · ${tpl.name}`,
+      subtitle: tpl.subtitle,
+      total: 0,
+      items: tpl.items.map(it => ({id: ++itemSeq, name: it.name, pay: it.pay, note: it.note}))
+    });
+    renderStages();
+    templateModal.classList.remove('open');
+  });
+  templateList.appendChild(btn);
+});
+document.getElementById('addTemplateBtn').addEventListener('click', ()=> templateModal.classList.add('open'));
+document.getElementById('templateModalClose').addEventListener('click', ()=> templateModal.classList.remove('open'));
+templateModal.addEventListener('click', (e)=>{ if(e.target===templateModal) templateModal.classList.remove('open'); });
+
+// ---- Client mode ----
+function applyClientMode(){
+  const on = document.getElementById('clientModeToggle').checked;
+  document.querySelectorAll('input.edit, textarea.edit').forEach(el=>{ el.readOnly = on; });
+}
+document.getElementById('clientModeToggle').addEventListener('change', ()=>{
+  document.body.classList.toggle('client-mode', document.getElementById('clientModeToggle').checked);
+  applyClientMode();
+});
+
+// ---- Print ----
+document.getElementById('printBtn').addEventListener('click', ()=>{ window.print(); });
+
+// ---- JSON export / import (draft save & continue later) ----
+document.getElementById('exportJsonBtn').addEventListener('click', ()=>{
+  syncStateFromDOM();
+  const draft = {
+    header: {
+      title: document.getElementById('title').value,
+      subtitle: document.getElementById('subtitle').value,
+      object: document.getElementById('object').value,
+      client: document.getElementById('client').value,
+      phone: document.getElementById('phone').value,
+      intro: document.getElementById('intro').value,
+      area: document.getElementById('area').value,
+      guarantee: document.getElementById('guarantee').value,
+      closing: document.getElementById('closing').value,
+      requisitesEnabled: document.getElementById('requisitesEnabled').checked,
+      requisitesText: document.getElementById('requisitesText').value
+    },
+    stages: state.stages,
+    payment: state.payment,
+    excluded: state.excluded,
+    discount: state.discount,
+    prepay: state.prepay
+  };
+  const blob = new Blob([JSON.stringify(draft, null, 2)], {type:'application/json'});
+  const client = document.getElementById('client').value || 'Смета';
+  const safeClient = client.replace(/[\\/:*?"<>|]/g,'').trim() || 'Смета';
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `Черновик_${safeClient}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  const note = document.getElementById('savedNote');
+  note.textContent = 'Черновик сохранён ✓';
+  setTimeout(()=> note.textContent = '', 2500);
+});
+
+document.getElementById('importJsonBtn').addEventListener('click', ()=> document.getElementById('importJsonFile').click());
+document.getElementById('importJsonFile').addEventListener('change', (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev)=>{
+    try{
+      const draft = JSON.parse(ev.target.result);
+      const h = draft.header || {};
+      document.getElementById('title').value = h.title || '';
+      document.getElementById('subtitle').value = h.subtitle || '';
+      document.getElementById('object').value = h.object || '';
+      document.getElementById('client').value = h.client || '';
+      document.getElementById('phone').value = h.phone || '';
+      document.getElementById('intro').value = h.intro || '';
+      document.getElementById('area').value = h.area || 70;
+      document.getElementById('guarantee').value = h.guarantee || '';
+      document.getElementById('closing').value = h.closing || '';
+      document.getElementById('requisitesEnabled').checked = !!h.requisitesEnabled;
+      document.getElementById('requisitesText').value = h.requisitesText || '';
+      document.getElementById('requisitesText').style.display = h.requisitesEnabled ? 'block' : 'none';
+
+      state.stages = (draft.stages || []).map(st=>({
+        ...st,
+        id: ++stageSeq,
+        items: (st.items||[]).map(it=>({...it, id: ++itemSeq}))
+      }));
+      state.payment = draft.payment || [];
+      state.excluded = draft.excluded || [];
+
+      if(draft.discount){
+        document.getElementById('discountEnabled').checked = !!draft.discount.enabled;
+        document.getElementById('discountType').value = draft.discount.type || 'percent';
+        const dv = document.getElementById('discountValue');
+        dv.dataset.raw = draft.discount.value || 0;
+        dv.value = draft.discount.value ? fmt(draft.discount.value) : '';
+      }
+      if(draft.prepay){
+        document.getElementById('prepayEnabled').checked = !!draft.prepay.enabled;
+        document.getElementById('prepayType').value = draft.prepay.type || 'percent';
+        const pv = document.getElementById('prepayValue');
+        pv.dataset.raw = draft.prepay.value || 0;
+        pv.value = draft.prepay.value ? fmt(draft.prepay.value) : '';
+      }
+
+      renderStages();
+      renderLines('paymentWrap', 'payment');
+      renderLines('excludedWrap', 'excluded');
+      updateGrandTotal();
+
+      const note = document.getElementById('savedNote');
+      note.textContent = 'Черновик загружен ✓';
+      setTimeout(()=> note.textContent = '', 2500);
+    }catch(err){
+      alert('Не удалось прочитать файл черновика. Убедитесь, что это тот же .json, что был экспортирован из этого инструмента.');
+    }
+    e.target.value = '';
+  };
+  reader.readAsText(file);
+});
+
 // ---- Excel export (styled HTML-based .xls: keeps fonts, wide wrapping cells, A4 portrait pages) ----
 function esc(s){ return String(s===undefined||s===null? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
@@ -445,7 +909,24 @@ document.getElementById('downloadBtn').addEventListener('click', ()=>{
   const guarantee = document.getElementById('guarantee').value;
   const closing = document.getElementById('closing').value;
   const area = Number(document.getElementById('area').value)||0;
-  const grandTotal = state.stages.reduce((s,st)=>s+(Number(st.total)||0),0);
+  const grandTotalRaw = state.stages.reduce((s,st)=>s+(Number(st.total)||0),0);
+
+  const discEnabled = document.getElementById('discountEnabled').checked;
+  const discType = document.getElementById('discountType').value;
+  const discRaw = Number(document.getElementById('discountValue').dataset.raw || 0);
+  let discountAmount = 0;
+  if(discEnabled){ discountAmount = discType==='percent' ? Math.round(grandTotalRaw*discRaw/100) : discRaw; discountAmount = Math.min(discountAmount, grandTotalRaw); }
+  const afterDiscount = grandTotalRaw - discountAmount;
+
+  const prepEnabled = document.getElementById('prepayEnabled').checked;
+  const prepType = document.getElementById('prepayType').value;
+  const prepRaw = Number(document.getElementById('prepayValue').dataset.raw || 0);
+  let prepayAmount = 0;
+  if(prepEnabled){ prepayAmount = prepType==='percent' ? Math.round(afterDiscount*prepRaw/100) : prepRaw; prepayAmount = Math.min(prepayAmount, afterDiscount); }
+  const remainder = afterDiscount - prepayAmount;
+
+  const requisitesEnabled = document.getElementById('requisitesEnabled').checked;
+  const requisitesText = document.getElementById('requisitesText').value;
 
   let stagesHtml = '';
   state.stages.forEach((st, idx)=>{
@@ -516,6 +997,7 @@ document.getElementById('downloadBtn').addEventListener('click', ()=>{
   .section-h { font-size:18pt; font-weight:bold; color:#1B3444; margin: 18pt 0 8pt; }
   .grand-table td { font-size:18pt; font-weight:bold; background:#1B3444; color:#fff; padding:10px; }
   .plain-table td { border:none; font-size:16pt; padding:2px 0; }
+  .finance-line { font-size:16pt; margin:4pt 0; }
 </style>
 </head>
 <body>
@@ -535,9 +1017,11 @@ document.getElementById('downloadBtn').addEventListener('click', ()=>{
   ${stagesHtml}
 
   <table class="grand-table page-break">
-    <tr><td colspan="2">ВСЕГО ЗА ПРОЕКТ</td><td>${fmt(grandTotal)} ₽</td></tr>
+    <tr><td colspan="2">${discEnabled && discountAmount>0 ? 'ИТОГО СО СКИДКОЙ' : 'ВСЕГО ЗА ПРОЕКТ'}</td><td>${fmt(afterDiscount)} ₽</td></tr>
   </table>
-  ${area>0 ? `<div style="font-size:16pt;margin-top:8pt;">Площадь ${area} м² × ${fmt(Math.round(grandTotal/area))} руб./м²</div>` : ''}
+  ${discEnabled && discountAmount>0 ? `<div class="finance-line">Без скидки: ${fmt(grandTotalRaw)} ₽ · скидка: −${fmt(discountAmount)} ₽</div>` : ''}
+  ${prepEnabled && prepayAmount>0 ? `<div class="finance-line">Предоплата: ${fmt(prepayAmount)} ₽ · остаток к оплате: ${fmt(remainder)} ₽</div>` : ''}
+  ${area>0 ? `<div class="finance-line">Площадь ${area} м² × ${fmt(Math.round(grandTotalRaw/area))} руб./м²</div>` : ''}
 
   <div class="section-h">Условия оплаты</div>
   <table class="plain-table">${paymentHtml}</table>
@@ -547,6 +1031,8 @@ document.getElementById('downloadBtn').addEventListener('click', ()=>{
 
   <div class="section-h">В стоимость не входит</div>
   <table class="plain-table">${excludedHtml}</table>
+
+  ${requisitesEnabled ? `<div class="section-h">Реквизиты для оплаты</div><div class="intro-block">${esc(requisitesText).replace(/\n/g,'<br>')}</div>` : ''}
 
   <div class="intro-block" style="font-style:italic;margin-top:16pt;">${esc(closing)}</div>
 
@@ -570,6 +1056,7 @@ document.getElementById('downloadBtn').addEventListener('click', ()=>{
 renderStages();
 renderLines('paymentWrap', 'payment');
 renderLines('excludedWrap', 'excluded');
+updateGrandTotal();
 </script>
 </body>
 </html>
