@@ -241,6 +241,7 @@
   .speak-toggle select{
     background:var(--bg2);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:5px 8px;font-size:13px;
   }
+  #voiceSelect{max-width:220px;}
 
   /* ---- CTA к Play Button ---- */
   .cta{
@@ -341,6 +342,11 @@
           <option value="30">30 сек</option>
         </select>
       </div>
+
+      <div class="speak-toggle" style="margin-top:10px;">
+        Голос
+        <select id="voiceSelect"><option value="">Загрузка голосов…</option></select>
+      </div>
     </div>
   </section>
 
@@ -383,6 +389,7 @@ const modeCountdown = document.getElementById('modeCountdown');
 const modeCountup = document.getElementById('modeCountup');
 const ringFg = document.getElementById('ringFg');
 const intervalSelect = document.getElementById('intervalSelect');
+const voiceSelect = document.getElementById('voiceSelect');
 const presets = document.getElementById('presets');
 
 const RADIUS = 124;
@@ -390,25 +397,52 @@ const CIRC = 2 * Math.PI * RADIUS;
 ringFg.style.strokeDasharray = CIRC;
 ringFg.style.strokeDashoffset = 0;
 
-let voicesReady = false;
-let ruVoice = null;
-function loadVoices(){
+let allVoices = [];
+let selectedVoice = null;
+
+function populateVoiceList(){
   const voices = window.speechSynthesis.getVoices();
-  if (voices.length){
-    ruVoice = voices.find(v=>v.lang==='ru-RU') || voices.find(v=>v.lang && v.lang.startsWith('ru')) || null;
-    voicesReady = true;
+  if (!voices.length) return;
+  allVoices = voices;
+
+  // русские голоса — в начало списка, остальные — следом
+  const ru = voices.filter(v => v.lang && v.lang.startsWith('ru'));
+  const other = voices.filter(v => !(v.lang && v.lang.startsWith('ru')));
+  const ordered = [...ru, ...other];
+
+  voiceSelect.innerHTML = '';
+  ordered.forEach((v, i) => {
+    const opt = document.createElement('option');
+    opt.value = v.name; // имя голоса уникально в списке браузера
+    opt.textContent = `${v.name} (${v.lang})`;
+    voiceSelect.appendChild(opt);
+  });
+
+  // выбираем по умолчанию первый русский, если ещё ничего не выбрано
+  if (!selectedVoice){
+    selectedVoice = ru[0] || ordered[0] || null;
+    if (selectedVoice) voiceSelect.value = selectedVoice.name;
   }
 }
 if ('speechSynthesis' in window){
-  loadVoices();
-  window.speechSynthesis.onvoiceschanged = loadVoices;
+  populateVoiceList();
+  window.speechSynthesis.onvoiceschanged = populateVoiceList;
 }
+voiceSelect.addEventListener('change', () => {
+  selectedVoice = allVoices.find(v => v.name === voiceSelect.value) || null;
+});
+
 function speak(text){
   if (!('speechSynthesis' in window)) return;
-  if (!voicesReady) loadVoices();
+  if (!allVoices.length) populateVoiceList();
   const u = new SpeechSynthesisUtterance(text);
-  u.lang='ru-RU'; u.rate=1.1; u.volume=1;
-  if (ruVoice) u.voice = ruVoice;
+  u.rate=1.1; u.volume=1;
+  if (selectedVoice){
+    u.voice = selectedVoice;
+    u.lang = selectedVoice.lang;
+  } else {
+    u.lang='ru-RU';
+  }
   window.speechSynthesis.speak(u);
 }
 function warmUpSpeech(){
