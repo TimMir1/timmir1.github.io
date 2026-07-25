@@ -32,8 +32,20 @@
 
     <!-- FontAwesome icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Vue 3 -->
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- Vue 3 (основной CDN + резервные, на случай если один заблокирован/недоступен) -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
+    <script>
+        if (typeof Vue === 'undefined') {
+            document.write('<scr' + 'ipt src="https://unpkg.com/vue@3/dist/vue.global.js"><\/scr' + 'ipt>');
+        }
+    </script>
+    <script>
+        if (typeof Vue === 'undefined') {
+            document.write('<scr' + 'ipt src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.4.21/vue.global.prod.min.js"><\/scr' + 'ipt>');
+        }
+    </script>
+    <!-- QRCode generator for receipts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <!-- Google Fonts: Roboto & Roboto Medium & Oswald -->
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Roboto+Mono:wght@500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     
@@ -52,10 +64,20 @@
             .modal-enter-from, .modal-leave-to { transform: translateY(100%); }
         }
 
+        /* Чек скрыт на экране, показывается только при печати */
+        #printable-receipt { display: none; }
         @media print {
             body * { visibility: hidden; }
             #printable-receipt, #printable-receipt * { visibility: visible; }
-            #printable-receipt { position: absolute; left: 0; top: 0; width: 100%; color: black; background: white; }
+            #printable-receipt {
+                display: block !important;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                color: black;
+                background: white;
+            }
         }
 
         .ai-pulse { animation: aiPulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
@@ -69,14 +91,22 @@
             background-color: rgba(245, 158, 11, 0.05) !important;
         }
 
-        /* Точные стили шрифтов для превью наград */
+        /* Точные стили шрифтов для превью наград — как на реальном макете */
+        .preview-presented-to {
+            font-family: 'Roboto', sans-serif;
+            font-weight: 400;
+        }
         .preview-channel-name {
             font-family: 'Roboto', sans-serif;
-            font-weight: 500; /* Roboto Medium */
+            font-weight: 700; /* Roboto Bold — жирное имя получателя */
+            line-height: 1.2;
+            word-break: break-word;
         }
         .preview-plaque-text {
             font-family: 'Roboto', sans-serif;
             font-weight: 400; /* Roboto Regular */
+            line-height: 1.25;
+            word-break: break-word;
         }
     </style>
 </head>
@@ -101,6 +131,11 @@
                 </div>
 
                 <div class="flex items-center space-x-2 sm:space-x-3">
+                    <a href="https://timmir1.github.io" target="_blank" rel="noopener" class="flex items-center space-x-2 px-3 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors shadow-sm text-sm font-medium">
+                        <i class="fa-solid fa-globe text-red-500"></i>
+                        <span class="hidden md:inline">Мой сайт</span>
+                    </a>
+
                     <button @click="toggleTheme" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors shadow-sm">
                         <i :class="isDark ? 'fa-solid fa-sun text-amber-400' : 'fa-solid fa-moon text-indigo-500'"></i>
                     </button>
@@ -320,25 +355,24 @@
                             </div>
 
                             <div class="flex flex-col lg:flex-row gap-6 items-center lg:items-start">
-                                <!-- Контейнер превью с пропорциональным размещением по чертежу -->
-                                <div class="relative w-[280px] h-[360px] sm:w-[320px] sm:h-[410px] rounded-2xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-700/50 flex-none select-none bg-slate-900">
+                                <!-- Контейнер превью — пропорции точно как у исходного файла шаблона (925x1101), без обрезки -->
+                                <div class="relative w-[280px] sm:w-[320px] rounded-2xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-700/50 flex-none select-none bg-slate-900" style="aspect-ratio: 925 / 1101;">
                                     
                                     <img :src="selectedOrder.type === 'silver' ? 'https://raw.githubusercontent.com/TimMir1/timmir1.github.io/main/youtube%20shab%20s.png' : 'https://raw.githubusercontent.com/TimMir1/timmir1.github.io/main/youtube%20shab.png'" 
-                                         class="absolute inset-0 w-full h-full object-cover pointer-events-none" alt="Шаблон">
+                                         class="absolute inset-0 w-full h-full object-contain pointer-events-none" alt="Шаблон">
 
-                                    <!-- Название канала (Roboto Medium, центрировано над шильдиком) -->
-                                    <div class="absolute inset-x-0 bottom-24 z-10 text-center px-4">
-                                        <div class="preview-channel-name uppercase text-xl sm:text-[22px] tracking-wide drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] truncate w-full"
-                                             :class="selectedOrder.type === 'silver' ? 'text-slate-100' : 'text-amber-100'">
-                                            {{ selectedOrder.channelName || 'CHANNEL NAME' }}
+                                    <!-- Текстовый блок как на реальном макете: Presented to / Имя / For passing ... subscribers -->
+                                    <div class="absolute inset-x-0 z-10 flex flex-col items-center text-center px-8" style="top: 54%;">
+                                        <div class="preview-presented-to text-white/90 drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]" style="font-size: 11px;">
+                                            Presented to
                                         </div>
-                                    </div>
-
-                                    <!-- Шильдик 5х1.2см (Roboto Regular, внизу по центру) -->
-                                    <div class="absolute inset-x-0 bottom-8 z-10 flex justify-center px-6">
-                                        <div class="preview-plaque-text w-full max-w-[210px] bg-black/75 backdrop-blur-sm border border-amber-300/40 rounded px-2 py-1 text-[10px] text-center shadow-lg truncate"
-                                             :class="selectedOrder.type === 'silver' ? 'text-slate-200 border-slate-300/40' : 'text-amber-200 border-amber-300/40'">
-                                            {{ selectedOrder.plaqueText || 'PRESENTED TO...' }}
+                                        <div class="preview-channel-name text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] w-full mt-1"
+                                             :style="{ fontSize: channelFontSize(selectedOrder.channelName) }">
+                                            {{ selectedOrder.channelName || 'Recipient Name' }}
+                                        </div>
+                                        <div class="preview-plaque-text text-white/90 drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] w-full mt-1"
+                                             :style="{ fontSize: plaqueFontSize(selectedOrder.plaqueText) }">
+                                            {{ selectedOrder.plaqueText || 'For passing 100,000 subscribers' }}
                                         </div>
                                     </div>
                                 </div>
@@ -434,12 +468,20 @@
                                 
                                 <div class="grid grid-cols-2 gap-3 flex-1">
                                     <div class="bg-slate-50 dark:bg-slate-950/50 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800">
-                                        <label class="text-[10px] text-slate-500 block mb-1 uppercase">АКП + Резка (₽)</label>
-                                        <input :value="selectedOrder.costAcp + selectedOrder.costCutting" disabled class="w-full bg-transparent text-sm font-bold text-slate-700 dark:text-slate-300">
+                                        <label class="text-[10px] text-slate-500 block mb-1 uppercase">АКП (₽)</label>
+                                        <input v-model.number="selectedOrder.costAcp" @input="recalcOrderCost(selectedOrder); logHistory('Изменена стоимость АКП')" type="number" class="w-full bg-transparent text-sm font-bold text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500 rounded-lg px-1">
                                     </div>
                                     <div class="bg-slate-50 dark:bg-slate-950/50 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800">
-                                        <label class="text-[10px] text-slate-500 block mb-1 uppercase">Гравировка + Клей (₽)</label>
-                                        <input :value="selectedOrder.costEngraving + selectedOrder.costGlue" disabled class="w-full bg-transparent text-sm font-bold text-slate-700 dark:text-slate-300">
+                                        <label class="text-[10px] text-slate-500 block mb-1 uppercase">ЧПУ Резка (₽)</label>
+                                        <input v-model.number="selectedOrder.costCutting" @input="recalcOrderCost(selectedOrder); logHistory('Изменена стоимость резки')" type="number" class="w-full bg-transparent text-sm font-bold text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500 rounded-lg px-1">
+                                    </div>
+                                    <div class="bg-slate-50 dark:bg-slate-950/50 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800">
+                                        <label class="text-[10px] text-slate-500 block mb-1 uppercase">Гравировка (₽)</label>
+                                        <input v-model.number="selectedOrder.costEngraving" @input="recalcOrderCost(selectedOrder); logHistory('Изменена стоимость гравировки')" type="number" class="w-full bg-transparent text-sm font-bold text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500 rounded-lg px-1">
+                                    </div>
+                                    <div class="bg-slate-50 dark:bg-slate-950/50 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800">
+                                        <label class="text-[10px] text-slate-500 block mb-1 uppercase">Клей (₽)</label>
+                                        <input v-model.number="selectedOrder.costGlue" @input="recalcOrderCost(selectedOrder); logHistory('Изменена стоимость клея')" type="number" class="w-full bg-transparent text-sm font-bold text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500 rounded-lg px-1">
                                     </div>
                                 </div>
 
@@ -613,16 +655,32 @@
         </transition>
 
         <!-- ЧЕК ДЛЯ ПЕЧАТИ -->
-        <div id="printable-receipt" v-if="receiptOrder" class="hidden">
+        <div id="printable-receipt" v-if="receiptOrder">
             <div style="width: 80mm; font-family: monospace; color: black; background: white; padding: 15px;">
-                <h2 style="text-align: center; font-size: 16px; margin-bottom: 5px;">Мастерская PlayButton</h2>
-                <p style="text-align: center; font-size: 11px; margin: 0 0 10px 0;">Награды из композита АКП</p>
-                <p style="font-size: 12px;"><strong>Чек №:</strong> {{ receiptOrder.id }}<br><strong>Дата:</strong> {{ formatDate(receiptOrder.createdAt) }}<br><strong>Клиент:</strong> {{ receiptOrder.clientName }}</p>
-                <hr style="border: 0; border-top: 1px dashed black; margin: 10px 0;">
-                <p style="font-size: 12px;"><strong>Товар:</strong><br>{{ receiptOrder.type === 'silver' ? 'Серебряная кнопка 25х30см' : 'Золотая кнопка 35х43см' }}<br><strong>Канал:</strong> {{ receiptOrder.channelName }}<br><strong>Шильдик:</strong> {{ receiptOrder.plaqueText }}</p>
-                <hr style="border: 0; border-top: 1px dashed black; margin: 10px 0;">
-                <h3 style="font-size: 16px; text-align: right; margin: 10px 0;">ИТОГО: {{ receiptOrder.price.toLocaleString() }} ₽</h3>
-                <p style="text-align: center; font-size: 10px; margin-top: 20px;">Спасибо за заказ!</p>
+                <h2 style="text-align: center; font-size: 16px; margin-bottom: 2px;">MIRA &amp; PAPA</h2>
+                <p style="text-align: center; font-size: 11px; margin: 0 0 10px 0;">Награды из композита АКП • Москва</p>
+                <hr style="border: 0; border-top: 1px dashed black; margin: 8px 0;">
+                <p style="font-size: 12px; margin: 0 0 8px 0;">
+                    <strong>Чек №:</strong> {{ receiptOrder.id }}<br>
+                    <strong>Дата:</strong> {{ formatDate(receiptOrder.createdAt) }}<br>
+                    <strong>Клиент:</strong> {{ receiptOrder.clientName }}<br>
+                    <span v-if="receiptOrder.clientContact"><strong>Контакт:</strong> {{ receiptOrder.clientContact }}<br></span>
+                    <span v-if="receiptOrder.trackNumber"><strong>Трек-номер:</strong> {{ receiptOrder.trackNumber }}<br></span>
+                </p>
+                <hr style="border: 0; border-top: 1px dashed black; margin: 8px 0;">
+                <p style="font-size: 12px; margin: 0 0 8px 0;">
+                    <strong>Товар:</strong> {{ receiptOrder.type === 'silver' ? 'Серебряная кнопка 25х30см' : 'Золотая кнопка 35х43см' }}<br>
+                    <strong>Канал:</strong> {{ receiptOrder.channelName }}<br>
+                    <strong>Шильдик:</strong> «{{ receiptOrder.plaqueText }}»
+                </p>
+                <hr style="border: 0; border-top: 1px dashed black; margin: 8px 0;">
+                <h3 style="font-size: 16px; text-align: right; margin: 8px 0;">ИТОГО: {{ receiptOrder.price.toLocaleString() }} ₽</h3>
+                <hr style="border: 0; border-top: 1px dashed black; margin: 8px 0;">
+                <div style="display: flex; justify-content: center; margin: 10px 0;">
+                    <div id="receipt-qr"></div>
+                </div>
+                <p style="text-align: center; font-size: 9px; margin: 0;">Наведите камеру, чтобы перейти на сайт</p>
+                <p style="text-align: center; font-size: 10px; margin-top: 14px;">Спасибо за заказ! MIRA &amp; PAPA</p>
             </div>
         </div>
 
@@ -634,7 +692,7 @@
         createApp({
             data() {
                 return {
-                    isDark: true,
+                    isDark: false,
                     searchQuery: '',
                     filterType: 'all',
                     selectedOrder: null,
@@ -763,6 +821,20 @@
                         this.selectedOrder.history.unshift({ text, time: new Date().toISOString() });
                     }
                 },
+                channelFontSize(text) {
+                    const len = (text || '').length;
+                    if (len > 22) return '13px';
+                    if (len > 17) return '15px';
+                    if (len > 13) return '18px';
+                    if (len > 9) return '20px';
+                    return '22px';
+                },
+                plaqueFontSize(text) {
+                    const len = (text || '').length;
+                    if (len > 45) return '10px';
+                    if (len > 32) return '12px';
+                    return '13px';
+                },
                 async fetchWithRetry(url, options, maxRetries = 5) {
                     const delays = [1000, 2000, 4000, 8000, 16000];
                     for (let i = 0; i < maxRetries; i++) {
@@ -886,12 +958,26 @@
                         this.addSheetsCount = 1;
                     }
                 },
-                openReceiptModal(order) { 
-                    this.receiptOrder = order; 
-                    setTimeout(() => { 
-                        window.print(); 
-                        this.receiptOrder = null; 
-                    }, 150); 
+                openReceiptModal(order) {
+                    this.receiptOrder = order;
+                    this.$nextTick(() => {
+                        const qrContainer = document.getElementById('receipt-qr');
+                        if (qrContainer && window.QRCode) {
+                            qrContainer.innerHTML = '';
+                            new QRCode(qrContainer, {
+                                text: `https://timmir1.github.io/?order=${order.id}`,
+                                width: 90,
+                                height: 90,
+                                colorDark: '#000000',
+                                colorLight: '#ffffff',
+                                correctLevel: QRCode.CorrectLevel.M
+                            });
+                        }
+                        setTimeout(() => {
+                            window.print();
+                            this.receiptOrder = null;
+                        }, 350);
+                    });
                 },
                 exportToWord(order) {
                     const content = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word'><head><meta charset='utf-8'></head><body><h1>Паспорт заказа #${order.id}</h1><p>Канал: ${order.channelName}</p><p>Клиент: ${order.clientName}</p><p>Цена: ${order.price} руб</p></body></html>`;
