@@ -98,8 +98,8 @@
         }
         .preview-channel-name {
             font-family: 'Roboto', sans-serif;
-            font-weight: 700; /* Roboto Bold — жирное имя получателя */
-            line-height: 1.2;
+            font-weight: 500; /* Roboto Medium — как у вас на реальном рендере */
+            line-height: 1.15;
             word-break: break-word;
         }
         .preview-plaque-text {
@@ -361,16 +361,20 @@
                                     <img :src="selectedOrder.type === 'silver' ? 'https://raw.githubusercontent.com/TimMir1/timmir1.github.io/main/youtube%20shab%20s.png' : 'https://raw.githubusercontent.com/TimMir1/timmir1.github.io/main/youtube%20shab.png'" 
                                          class="absolute inset-0 w-full h-full object-contain pointer-events-none" alt="Шаблон">
 
-                                    <!-- Текстовый блок как на реальном макете: Presented to / Имя / For passing ... subscribers -->
-                                    <div class="absolute inset-x-0 z-10 flex flex-col items-center text-center px-8" style="top: 54%;">
+                                    <!-- Текстовый блок — позиции измерены по вашему эталонному рендеру (bar5_278.png) -->
+                                    <div class="absolute inset-x-0 z-10 text-center px-8" style="top: 59.5%;">
                                         <div class="preview-presented-to text-white/90 drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]" style="font-size: 11px;">
                                             Presented to
                                         </div>
-                                        <div class="preview-channel-name text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] w-full mt-1"
+                                    </div>
+                                    <div class="absolute inset-x-0 z-10 text-center px-6" style="top: 65.3%;">
+                                        <div class="preview-channel-name text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] w-full"
                                              :style="{ fontSize: channelFontSize(selectedOrder.channelName) }">
                                             {{ selectedOrder.channelName || 'Recipient Name' }}
                                         </div>
-                                        <div class="preview-plaque-text text-white/90 drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] w-full mt-1"
+                                    </div>
+                                    <div class="absolute inset-x-0 z-10 text-center px-6" style="top: 72.7%;">
+                                        <div class="preview-plaque-text text-white/90 drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)] w-full"
                                              :style="{ fontSize: plaqueFontSize(selectedOrder.plaqueText) }">
                                             {{ selectedOrder.plaqueText || 'For passing 100,000 subscribers' }}
                                         </div>
@@ -831,9 +835,9 @@
                 },
                 plaqueFontSize(text) {
                     const len = (text || '').length;
-                    if (len > 45) return '10px';
-                    if (len > 32) return '12px';
-                    return '13px';
+                    if (len > 45) return '9px';
+                    if (len > 32) return '10.5px';
+                    return '12px';
                 },
                 async fetchWithRetry(url, options, maxRetries = 5) {
                     const delays = [1000, 2000, 4000, 8000, 16000];
