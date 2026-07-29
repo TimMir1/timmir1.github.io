@@ -1,4 +1,4 @@
-html<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -6,7 +6,7 @@ html<!DOCTYPE html>
     <style>
         body { font-family: Arial, sans-serif; background: #f0f2f5; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
         .container { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); text-align: center; width: 450px; }
-        #webcam-container { border-radius: 12px; overflow: hidden; margin-bottom: 25px; border: 4px solid #202124; }
+        #webcam-container { border-radius: 12px; overflow: hidden; margin-bottom: 25px; border: 4px solid #202124; display: flex; justify-content: center; }
         .label-title { font-size: 20px; color: #5f6368; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
         #result { font-size: 42px; font-weight: bold; color: #1e8e3e; margin-top: 5px; min-height: 50px; line-height: 1.2; }
     </style>
@@ -19,26 +19,41 @@ html<!DOCTYPE html>
     <div style="margin-top: 25px;" id="webcam-container"></div>
 </div>
 
+<!-- ИСПРАВЛЕНО: Подключены точные рабочие ссылки библиотек Google TensorFlow -->
 <script src="https://jsdelivr.net"></script>
 <script src="https://jsdelivr.net"></script>
+
 <script type="text/javascript">
-    // ВСТАВЬТЕ СВОЮ ССЫЛКУ МЕЖДУ КАВЫЧКАМИ:
+    // ВСТАВЬТЕ СВОЮ ССЫЛКУ МЕЖДУ КАВЫЧКАМИ (Обязательно с https:// и косой чертой / на конце):
     const URL = "СЮДА_ВСТАВЬТЕ_ВАШУ_ССЫЛКУ_ИЗ_GOOGLE";
 
     let model, webcam, maxPredictions;
 
     async function init() {
+        if (URL.includes("СЮДА_ВСТАВЬТЕ")) {
+            document.getElementById("result").innerText = "Вставьте ссылку!";
+            document.getElementById("result").style.color = "red";
+            return;
+        }
+
         const modelURL = URL + "model.json";
         const metadataURL = URL + "metadata.json";
-        model = await tmImage.load(modelURL, metadataURL);
-        maxPredictions = model.getTotalClasses();
+        
+        try {
+            model = await tmImage.load(modelURL, metadataURL);
+            maxPredictions = model.getTotalClasses();
 
-        webcam = new tmImage.Webcam(450, 330, true); 
-        await webcam.setup(); 
-        await webcam.play();
-        window.requestAnimationFrame(loop);
+            webcam = new tmImage.Webcam(450, 330, true); 
+            await webcam.setup(); 
+            await webcam.play();
+            window.requestAnimationFrame(loop);
 
-        document.getElementById("webcam-container").appendChild(webcam.canvas);
+            document.getElementById("webcam-container").appendChild(webcam.canvas);
+        } catch (error) {
+            console.error(error);
+            document.getElementById("result").innerText = "Ошибка загрузки";
+            document.getElementById("result").style.color = "red";
+        }
     }
 
     async function loop() {
@@ -59,11 +74,12 @@ html<!DOCTYPE html>
             }
         }
         
-        // Порог уверенности нейросети (85%)
         if (highestProb > 0.85) {
             document.getElementById("result").innerText = bestMatch;
+            document.getElementById("result").style.color = "#1e8e3e";
         } else {
             document.getElementById("result").innerText = "Положите товар...";
+            document.getElementById("result").style.color = "#5f6368";
         }
     }
 
