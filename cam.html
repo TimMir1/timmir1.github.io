@@ -1,0 +1,73 @@
+html<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Умная Касса - Контроль Цен</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f0f2f5; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .container { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); text-align: center; width: 450px; }
+        #webcam-container { border-radius: 12px; overflow: hidden; margin-bottom: 25px; border: 4px solid #202124; }
+        .label-title { font-size: 20px; color: #5f6368; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        #result { font-size: 42px; font-weight: bold; color: #1e8e3e; margin-top: 5px; min-height: 50px; line-height: 1.2; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="label-title">Определенный товар и цена:</div>
+    <div id="result">Сканирование...</div>
+    <div style="margin-top: 25px;" id="webcam-container"></div>
+</div>
+
+<script src="https://jsdelivr.net"></script>
+<script src="https://jsdelivr.net"></script>
+<script type="text/javascript">
+    // ВСТАВЬТЕ СВОЮ ССЫЛКУ МЕЖДУ КАВЫЧКАМИ:
+    const URL = "СЮДА_ВСТАВЬТЕ_ВАШУ_ССЫЛКУ_ИЗ_GOOGLE";
+
+    let model, webcam, maxPredictions;
+
+    async function init() {
+        const modelURL = URL + "model.json";
+        const metadataURL = URL + "metadata.json";
+        model = await tmImage.load(modelURL, metadataURL);
+        maxPredictions = model.getTotalClasses();
+
+        webcam = new tmImage.Webcam(450, 330, true); 
+        await webcam.setup(); 
+        await webcam.play();
+        window.requestAnimationFrame(loop);
+
+        document.getElementById("webcam-container").appendChild(webcam.canvas);
+    }
+
+    async function loop() {
+        webcam.update(); 
+        await predict();
+        window.requestAnimationFrame(loop);
+    }
+
+    async function predict() {
+        const prediction = await model.predict(webcam.canvas);
+        let highestProb = 0;
+        let bestMatch = "Товар не распознан";
+
+        for (let i = 0; i < maxPredictions; i++) {
+            if (prediction[i].probability > highestProb) {
+                highestProb = prediction[i].probability;
+                bestMatch = prediction[i].className;
+            }
+        }
+        
+        // Порог уверенности нейросети (85%)
+        if (highestProb > 0.85) {
+            document.getElementById("result").innerText = bestMatch;
+        } else {
+            document.getElementById("result").innerText = "Положите товар...";
+        }
+    }
+
+    init();
+</script>
+</body>
+</html>
