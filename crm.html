@@ -224,6 +224,7 @@
                     <button @click="filterType = 'all'" :class="filterType === 'all' ? 'bg-slate-800 text-white dark:bg-slate-200 dark:text-slate-900' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700'" class="px-4 py-2 rounded-xl transition-all shadow-sm text-xs font-medium whitespace-nowrap">Все ({{ orders.length }})</button>
                     <button @click="filterType = 'silver'" :class="filterType === 'silver' ? 'bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700'" class="px-4 py-2 rounded-xl transition-all shadow-sm text-xs font-medium flex items-center whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-slate-400 mr-2"></span> Серебро</button>
                     <button @click="filterType = 'gold'" :class="filterType === 'gold' ? 'bg-amber-100 dark:bg-amber-500/20 text-amber-800 dark:text-amber-400' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700'" class="px-4 py-2 rounded-xl transition-all shadow-sm text-xs font-medium flex items-center whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-amber-400 mr-2"></span> Золото</button>
+                    <button @click="filterType = 'custom'" :class="filterType === 'custom' ? 'bg-purple-100 dark:bg-purple-500/20 text-purple-800 dark:text-purple-400' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700'" class="px-4 py-2 rounded-xl transition-all shadow-sm text-xs font-medium flex items-center whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-purple-400 mr-2"></span> Индивидуально</button>
                 </div>
             </div>
 
@@ -255,16 +256,24 @@
                             class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80 rounded-2xl p-4 shadow-sm hover:shadow-md cursor-grab active:cursor-grabbing transition-all transform hover:-translate-y-0.5 group">
                             
                             <div class="flex items-center justify-between mb-3">
-                                <span :class="order.type === 'silver' ? 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300' : 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400'" 
+                                <span :class="order.type === 'silver' ? 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300' : order.type === 'gold' ? 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400' : 'bg-purple-50 text-purple-700 dark:bg-purple-500/10 dark:text-purple-400'" 
                                       class="text-[10px] font-bold px-2 py-1 rounded-lg flex items-center uppercase">
                                     <i class="fa-solid fa-play mr-1.5 opacity-70 text-[9px]"></i>
-                                    {{ order.type === 'silver' ? 'Серебро' : 'Золото' }}
+                                    {{ order.type === 'silver' ? 'Серебро' : order.type === 'gold' ? 'Золото' : 'Индивидуально' }}
                                 </span>
 
                                 <span :class="order.source === 'avito' ? 'text-blue-500 bg-blue-50 dark:bg-blue-500/10' : 'text-sky-500 bg-sky-50 dark:bg-sky-500/10'" 
                                       class="text-[10px] font-bold px-2 py-1 rounded-lg flex items-center">
                                     <i :class="order.source === 'avito' ? 'fa-solid fa-bag-shopping' : 'fa-paper-plane'" class="mr-1 opacity-80"></i>
                                     {{ order.source === 'avito' ? 'Avito' : 'Telegram' }}
+                                </span>
+                            </div>
+
+                            <div class="mb-2">
+                                <span :class="(order.paymentStatus || 'waiting') === 'paid' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400' : (order.paymentStatus || 'waiting') === 'on_completion' ? 'bg-sky-50 text-sky-700 dark:bg-sky-500/10 dark:text-sky-400' : 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400'"
+                                      class="text-[10px] font-bold px-2 py-1 rounded-lg inline-flex items-center">
+                                    <i :class="paymentStatuses.find(p => p.id === (order.paymentStatus || 'waiting'))?.icon" class="mr-1.5 text-[9px] opacity-80"></i>
+                                    {{ paymentStatuses.find(p => p.id === (order.paymentStatus || 'waiting'))?.title }}
                                 </span>
                             </div>
 
@@ -312,7 +321,7 @@
                             </div>
                             <div>
                                 <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight">
-                                    {{ selectedOrder.type === 'silver' ? 'Серебряная кнопка YouTube' : 'Золотая кнопка YouTube' }}
+                                    {{ selectedOrder.type === 'silver' ? 'Серебряная кнопка YouTube' : selectedOrder.type === 'gold' ? 'Золотая кнопка YouTube' : 'Индивидуальная награда' }}
                                 </h2>
                                 <div class="flex items-center text-[11px] text-slate-500 mt-1 space-x-2">
                                     <span class="font-mono bg-slate-100 dark:bg-slate-800 px-1.5 rounded">ID: {{ selectedOrder.id }}</span>
@@ -343,6 +352,20 @@
                             </div>
                         </div>
 
+                        <!-- Статус оплаты -->
+                        <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
+                            <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-3">Статус оплаты</label>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                <button v-for="ps in paymentStatuses" :key="ps.id" 
+                                    @click="updatePaymentStatus(selectedOrder, ps.id)"
+                                    :class="(selectedOrder.paymentStatus || 'waiting') === ps.id ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-md ring-2 ring-slate-900 dark:ring-white ring-offset-2 dark:ring-offset-slate-900' : 'bg-slate-50 hover:bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700'"
+                                    class="py-3 px-2 rounded-xl text-xs font-medium transition-all flex items-center justify-center space-x-2">
+                                    <i :class="ps.icon" :class="(selectedOrder.paymentStatus || 'waiting') === ps.id ? (isDark ? 'text-slate-900' : 'text-white') : ps.badgeColor.replace('bg-', 'text-')"></i>
+                                    <span>{{ ps.title }}</span>
+                                </button>
+                            </div>
+                        </div>
+
                         <!-- Превью с правильным позиционированием текста по шрифтам Roboto Medium и Roboto Regular -->
                         <div class="bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
                             <div class="flex justify-between items-center mb-4">
@@ -356,7 +379,7 @@
 
                             <div class="flex flex-col lg:flex-row gap-6 items-center lg:items-start">
                                 <!-- Контейнер превью — пропорции точно как у исходного файла шаблона (925x1101), без обрезки -->
-                                <div class="relative w-[280px] sm:w-[320px] rounded-2xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-700/50 flex-none select-none bg-slate-900" style="aspect-ratio: 925 / 1101;">
+                                <div v-if="selectedOrder.type !== 'custom'" class="relative w-[280px] sm:w-[320px] rounded-2xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-700/50 flex-none select-none bg-slate-900" style="aspect-ratio: 925 / 1101;">
                                     
                                     <img :src="selectedOrder.type === 'silver' ? 'https://raw.githubusercontent.com/TimMir1/timmir1.github.io/main/youtube%20shab%20s.png' : 'https://raw.githubusercontent.com/TimMir1/timmir1.github.io/main/youtube%20shab.png'" 
                                          class="absolute inset-0 w-full h-full object-contain pointer-events-none" alt="Шаблон">
@@ -379,6 +402,13 @@
                                             {{ selectedOrder.plaqueText || 'For passing 100,000 subscribers' }}
                                         </div>
                                     </div>
+                                </div>
+
+                                <!-- Заглушка для индивидуального заказа — фиксированного шаблона нет, макет обсуждается отдельно -->
+                                <div v-else class="relative w-[280px] sm:w-[320px] rounded-2xl overflow-hidden shadow-2xl border border-dashed border-slate-300 dark:border-slate-700 flex-none select-none bg-gradient-to-br from-purple-50 to-slate-100 dark:from-purple-950/30 dark:to-slate-900 flex flex-col items-center justify-center text-center p-6" style="aspect-ratio: 925 / 1101;">
+                                    <i class="fa-solid fa-wand-magic-sparkles text-3xl text-purple-400 mb-3"></i>
+                                    <div class="font-bold text-sm text-slate-700 dark:text-slate-200 mb-1">Индивидуальный макет</div>
+                                    <div class="text-xs text-slate-500 dark:text-slate-400">Форма и оформление согласовываются отдельно с клиентом — фиксированного шаблона нет.</div>
                                 </div>
 
                                 <div class="flex-1 w-full space-y-4">
@@ -534,7 +564,7 @@
                     </div>
 
                     <div class="p-6 space-y-5 overflow-y-auto">
-                        <div class="grid grid-cols-2 gap-3 text-center">
+                        <div class="grid grid-cols-3 gap-3 text-center">
                             <div class="p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800">
                                 <div class="text-[10px] text-slate-400 uppercase font-bold">Серебряные кнопки</div>
                                 <div class="text-2xl font-bold text-slate-700 dark:text-slate-200 mt-1">{{ orders.filter(o=>o.type==='silver').length }} шт.</div>
@@ -542,6 +572,10 @@
                             <div class="p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800">
                                 <div class="text-[10px] text-slate-400 uppercase font-bold">Золотые кнопки</div>
                                 <div class="text-2xl font-bold text-amber-500 mt-1">{{ orders.filter(o=>o.type==='gold').length }} шт.</div>
+                            </div>
+                            <div class="p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800">
+                                <div class="text-[10px] text-slate-400 uppercase font-bold">Индивидуально</div>
+                                <div class="text-2xl font-bold text-purple-500 mt-1">{{ orders.filter(o=>o.type==='custom').length }} шт.</div>
                             </div>
                         </div>
 
@@ -581,6 +615,7 @@
                             <select v-model="newOrder.type" @change="onTypeChange" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3 text-sm font-bold text-slate-900 dark:text-white outline-none">
                                 <option value="silver">Серебряная 25х30 см ({{ settings.silverPrice.toLocaleString() }} ₽)</option>
                                 <option value="gold">Золотая 35х43 см ({{ settings.goldPrice.toLocaleString() }} ₽)</option>
+                                <option value="custom">Индивидуально ({{ settings.customPrice.toLocaleString() }} ₽)</option>
                             </select>
                         </div>
                         <div>
@@ -626,6 +661,10 @@
                         <div class="grid grid-cols-2 gap-3">
                             <div><label class="text-slate-500">Серебро (₽)</label><input v-model.number="settings.silverPrice" @input="updateAllOrdersCost" type="number" class="w-full bg-slate-50 dark:bg-slate-950 border rounded-xl p-2.5 font-bold"></div>
                             <div><label class="text-slate-500">Золото (₽)</label><input v-model.number="settings.goldPrice" @input="updateAllOrdersCost" type="number" class="w-full bg-slate-50 dark:bg-slate-950 border rounded-xl p-2.5 font-bold"></div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div><label class="text-slate-500">Индивидуально (₽)</label><input v-model.number="settings.customPrice" @input="updateAllOrdersCost" type="number" class="w-full bg-slate-50 dark:bg-slate-950 border rounded-xl p-2.5 font-bold"></div>
+                            <div><label class="text-slate-500">Индивид. площадь (см²)</label><input v-model.number="settings.customAreaCm2" @input="updateAllOrdersCost" type="number" class="w-full bg-slate-50 dark:bg-slate-950 border rounded-xl p-2.5 font-bold"></div>
                         </div>
                         <div><label class="text-slate-500">Лист АКП (1220х4000мм)</label><input v-model.number="settings.acpSheetPrice" @input="updateAllOrdersCost" type="number" class="w-full bg-slate-50 dark:bg-slate-950 border rounded-xl p-2.5 font-bold"></div>
                         <div class="grid grid-cols-3 gap-2">
@@ -673,7 +712,7 @@
                 </p>
                 <hr style="border: 0; border-top: 1px dashed black; margin: 8px 0;">
                 <p style="font-size: 12px; margin: 0 0 8px 0;">
-                    <strong>Товар:</strong> {{ receiptOrder.type === 'silver' ? 'Серебряная кнопка 25х30см' : 'Золотая кнопка 35х43см' }}<br>
+                    <strong>Товар:</strong> {{ receiptOrder.type === 'silver' ? 'Серебряная кнопка 25х30см' : receiptOrder.type === 'gold' ? 'Золотая кнопка 35х43см' : 'Индивидуальная награда' }}<br>
                     <strong>Канал:</strong> {{ receiptOrder.channelName }}<br>
                     <strong>Шильдик:</strong> «{{ receiptOrder.plaqueText }}»
                 </p>
@@ -722,6 +761,8 @@
                     settings: {
                         silverPrice: 6700,
                         goldPrice: 7600,
+                        customPrice: 8500,
+                        customAreaCm2: 4000,
                         acpSheetPrice: 11000,
                         gluePrice: 30,
                         engravingPrice: 500,
@@ -733,6 +774,12 @@
                         { id: 'cnc', title: 'ЧПУ & Сборка', badgeColor: 'bg-amber-500', icon: 'fa-solid fa-gears' },
                         { id: 'ready', title: 'Готов к выдаче', badgeColor: 'bg-purple-500', icon: 'fa-solid fa-box-open' },
                         { id: 'shipped', title: 'Отправлен', badgeColor: 'bg-emerald-500', icon: 'fa-solid fa-truck-fast' }
+                    ],
+
+                    paymentStatuses: [
+                        { id: 'waiting', title: 'Ждём оплату', badgeColor: 'bg-amber-500', icon: 'fa-solid fa-hourglass-half' },
+                        { id: 'paid', title: 'Оплачен', badgeColor: 'bg-emerald-500', icon: 'fa-solid fa-circle-check' },
+                        { id: 'on_completion', title: 'Оплата по факту изгот.', badgeColor: 'bg-sky-500', icon: 'fa-solid fa-truck-ramp-box' }
                     ],
 
                     newOrder: {
@@ -747,7 +794,8 @@
                         costGlue: 30,
                         costEngraving: 500,
                         costCutting: 1500,
-                        costPrice: 2774
+                        costPrice: 2774,
+                        paymentStatus: 'waiting'
                     },
 
                     orders: []
@@ -790,13 +838,14 @@
                 const savedOrders = localStorage.getItem('pb_crm_orders');
                 if (savedOrders) {
                     this.orders = JSON.parse(savedOrders);
+                    this.orders.forEach(o => { if (!o.paymentStatus) o.paymentStatus = 'waiting'; });
                 } else {
                     this.orders = [
                         {
                             id: 501, type: 'silver', source: 'avito', channelName: 'Wylsacom',
                             plaqueText: 'FOR PASSING 100,000 SUBSCRIBERS', clientName: 'Алексей', clientContact: '+7 (926) 000-11-22',
                             price: this.settings.silverPrice, costAcp: 744, costGlue: 30, costEngraving: 500, costCutting: 1500, costPrice: 2774,
-                            status: 'cnc', trackNumber: '', createdAt: new Date(Date.now() - 1000 * 60 * 120).toISOString(),
+                            status: 'cnc', paymentStatus: 'waiting', trackNumber: '', createdAt: new Date(Date.now() - 1000 * 60 * 120).toISOString(),
                             history: [{text: 'Заказ создан', time: new Date(Date.now() - 1000 * 60 * 120).toISOString()}]
                         }
                     ];
@@ -913,8 +962,16 @@
                     order.history.unshift({ text: `Статус изменен с "${oldTitle}" на "${newTitle}"`, time: new Date().toISOString() });
                     this.showToast(`Статус: ${newTitle}`);
                 },
+                updatePaymentStatus(order, newStatus) {
+                    const oldTitle = this.paymentStatuses.find(s=>s.id===order.paymentStatus)?.title;
+                    const newTitle = this.paymentStatuses.find(s=>s.id===newStatus)?.title;
+                    order.paymentStatus = newStatus;
+                    if (!order.history) order.history = [];
+                    order.history.unshift({ text: `Оплата: "${oldTitle || '—'}" → "${newTitle}"`, time: new Date().toISOString() });
+                    this.showToast(`Оплата: ${newTitle}`);
+                },
                 calcAcpCost(type) {
-                    const cm2 = type === 'silver' ? 3300 : 6435;
+                    const cm2 = type === 'silver' ? 3300 : type === 'gold' ? 6435 : (this.settings.customAreaCm2 || 4000);
                     return Math.round(cm2 * (this.settings.acpSheetPrice / (122 * 400)));
                 },
                 recalcOrderCost(order) {
@@ -922,7 +979,7 @@
                 },
                 onTypeChange() {
                     const acp = this.calcAcpCost(this.newOrder.type);
-                    this.newOrder.price = this.newOrder.type === 'silver' ? this.settings.silverPrice : this.settings.goldPrice;
+                    this.newOrder.price = this.newOrder.type === 'silver' ? this.settings.silverPrice : this.newOrder.type === 'gold' ? this.settings.goldPrice : this.settings.customPrice;
                     this.newOrder.costAcp = acp;
                     this.newOrder.costGlue = this.settings.gluePrice;
                     this.newOrder.costEngraving = this.settings.engravingPrice;
