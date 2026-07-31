@@ -32,24 +32,19 @@
 
     <!-- FontAwesome icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Vue 3 (основной CDN + резервные, на случай если один заблокирован/недоступен) -->
+    <!-- Vue 3 -->
     <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
     <script>
         if (typeof Vue === 'undefined') {
             document.write('<scr' + 'ipt src="https://unpkg.com/vue@3/dist/vue.global.js"><\/scr' + 'ipt>');
         }
     </script>
-    <script>
-        if (typeof Vue === 'undefined') {
-            document.write('<scr' + 'ipt src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.4.21/vue.global.prod.min.js"><\/scr' + 'ipt>');
-        }
-    </script>
     <!-- QRCode generator for receipts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <!-- Firebase (для синхронизации заказов между устройствами — см. инструкцию в README/чате) -->
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
-    <!-- Google Fonts: Roboto & Roboto Medium & Oswald -->
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Roboto+Mono:wght@500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     
     <style>
@@ -67,7 +62,6 @@
             .modal-enter-from, .modal-leave-to { transform: translateY(100%); }
         }
 
-        /* Чек скрыт на экране, показывается только при печати */
         #printable-receipt { display: none; }
         @media print {
             body * { visibility: hidden; }
@@ -94,23 +88,9 @@
             background-color: rgba(245, 158, 11, 0.05) !important;
         }
 
-        /* Точные стили шрифтов для превью наград — как на реальном макете */
-        .preview-presented-to {
-            font-family: 'Roboto', sans-serif;
-            font-weight: 400;
-        }
-        .preview-channel-name {
-            font-family: 'Roboto', sans-serif;
-            font-weight: 500; /* Roboto Medium — как у вас на реальном рендере */
-            line-height: 1.15;
-            word-break: break-word;
-        }
-        .preview-plaque-text {
-            font-family: 'Roboto', sans-serif;
-            font-weight: 400; /* Roboto Regular */
-            line-height: 1.25;
-            word-break: break-word;
-        }
+        .preview-presented-to { font-family: 'Roboto', sans-serif; font-weight: 400; }
+        .preview-channel-name { font-family: 'Roboto', sans-serif; font-weight: 500; line-height: 1.15; word-break: break-word; }
+        .preview-plaque-text { font-family: 'Roboto', sans-serif; font-weight: 400; line-height: 1.25; word-break: break-word; }
     </style>
 </head>
 <body class="h-full bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300 selection:bg-amber-500 selection:text-white">
@@ -406,11 +386,10 @@
                             </div>
                         </div>
 
-                        <!-- Превью с правильным позиционированием текста по шрифтам Roboto Medium и Roboto Regular -->
                         <div class="bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
                             <div class="flex justify-between items-center mb-4">
                                 <h3 class="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center">
-                                    <i class="fa-solid fa-eye text-amber-500 mr-2"></i> Визуализация макета (Roboto & Roboto Medium)
+                                    <i class="fa-solid fa-eye text-amber-500 mr-2"></i> Визуализация макета
                                 </h3>
                                 <button @click="downloadSVG(selectedOrder)" class="text-xs font-bold text-sky-600 bg-sky-50 hover:bg-sky-100 dark:bg-sky-500/10 px-3 py-1.5 rounded-lg transition-colors flex items-center">
                                     <i class="fa-solid fa-download mr-1.5"></i> SVG
@@ -418,13 +397,11 @@
                             </div>
 
                             <div class="flex flex-col lg:flex-row gap-6 items-center lg:items-start">
-                                <!-- Контейнер превью — пропорции точно как у исходного файла шаблона (925x1101), без обрезки -->
                                 <div v-if="selectedOrder.type !== 'custom'" class="relative w-[280px] sm:w-[320px] rounded-2xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-700/50 flex-none select-none bg-slate-900" style="aspect-ratio: 925 / 1101;">
                                     
                                     <img :src="selectedOrder.type === 'silver' ? 'https://raw.githubusercontent.com/TimMir1/timmir1.github.io/main/youtube%20shab%20s.png' : 'https://raw.githubusercontent.com/TimMir1/timmir1.github.io/main/youtube%20shab.png'" 
                                          class="absolute inset-0 w-full h-full object-contain pointer-events-none" alt="Шаблон">
 
-                                    <!-- Текстовый блок — позиции измерены по вашему эталонному рендеру (bar5_278.png) -->
                                     <div class="absolute inset-x-0 z-10 text-center px-8" style="top: 59.5%;">
                                         <div class="preview-presented-to text-white/90 drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]" style="font-size: 11px;">
                                             Presented to
@@ -444,7 +421,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Заглушка для индивидуального заказа — фиксированного шаблона нет, макет обсуждается отдельно -->
                                 <div v-else class="relative w-[280px] sm:w-[320px] rounded-2xl overflow-hidden shadow-2xl border border-dashed border-slate-300 dark:border-slate-700 flex-none select-none bg-gradient-to-br from-purple-50 to-slate-100 dark:from-purple-950/30 dark:to-slate-900 flex flex-col items-center justify-center text-center p-6" style="aspect-ratio: 925 / 1101;">
                                     <i class="fa-solid fa-wand-magic-sparkles text-3xl text-purple-400 mb-3"></i>
                                     <div class="font-bold text-sm text-slate-700 dark:text-slate-200 mb-1">Индивидуальный макет</div>
@@ -453,12 +429,12 @@
 
                                 <div class="flex-1 w-full space-y-4">
                                     <div>
-                                        <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase">Название канала (Roboto Medium)</label>
+                                        <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase">Название канала</label>
                                         <input v-model="selectedOrder.channelName" @input="logHistory('Изменено название канала')" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500">
                                     </div>
                                     <div class="relative">
                                         <div class="flex justify-between items-end mb-1.5">
-                                            <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Текст шильдика 5х1.2 см (Roboto Regular)</label>
+                                            <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Текст шильдика 5х1.2 см</label>
                                             <button @click="generatePlaqueIdeas(selectedOrder)" :disabled="aiLoadingPlaque" class="text-[10px] font-bold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-500/10 hover:bg-purple-100 px-2.5 py-1 rounded-lg transition-colors flex items-center">
                                                 <i class="fa-solid fa-wand-magic-sparkles mr-1.5" :class="{'ai-pulse': aiLoadingPlaque}"></i>
                                                 {{ aiLoadingPlaque ? 'Генерация...' : '✨ Идеи от ИИ' }}
@@ -679,46 +655,50 @@
                         <button @click="showCreateModal = false" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
                     </div>
 
-                    <form @submit.prevent="createOrder" class="flex-1 overflow-y-auto p-5 space-y-4">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase">Модель кнопки</label>
-                            <select v-model="newOrder.type" @change="onTypeChange" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3 text-sm font-bold text-slate-900 dark:text-white outline-none">
-                                <option value="silver">Серебряная 25х30 см ({{ settings.silverPrice.toLocaleString() }} ₽)</option>
-                                <option value="gold">Золотая 35х43 см ({{ settings.goldPrice.toLocaleString() }} ₽)</option>
-                                <option value="custom">Индивидуально ({{ settings.customPrice.toLocaleString() }} ₽)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase">Источник</label>
-                            <select v-model="newOrder.source" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3 text-sm text-slate-900 dark:text-white outline-none">
-                                <option value="avito">Avito</option>
-                                <option value="telegram">Telegram</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase">YouTube Канал</label>
-                            <input v-model="newOrder.channelName" placeholder="Wylsacom" required class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3 text-sm font-bold text-slate-900 dark:text-white outline-none">
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
+                    <!-- Форма теперь оборачивает весь блок, чтобы работала HTML5 валидация required -->
+                    <form @submit.prevent="createOrder" class="flex flex-col flex-1 overflow-hidden">
+                        <div class="flex-1 overflow-y-auto p-5 space-y-4">
                             <div>
-                                <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase">Имя</label>
-                                <input v-model="newOrder.clientName" required class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3 text-sm font-bold text-slate-900 dark:text-white outline-none">
+                                <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase">Модель кнопки</label>
+                                <select v-model="newOrder.type" @change="onTypeChange" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3 text-sm font-bold text-slate-900 dark:text-white outline-none">
+                                    <option value="silver">Серебряная 25х30 см ({{ settings.silverPrice.toLocaleString() }} ₽)</option>
+                                    <option value="gold">Золотая 35х43 см ({{ settings.goldPrice.toLocaleString() }} ₽)</option>
+                                    <option value="custom">Индивидуально ({{ settings.customPrice.toLocaleString() }} ₽)</option>
+                                </select>
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase">Контакт</label>
-                                <input v-model="newOrder.clientContact" placeholder="@tg" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3 text-sm font-bold text-slate-900 dark:text-white outline-none">
+                                <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase">Источник</label>
+                                <select v-model="newOrder.source" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3 text-sm text-slate-900 dark:text-white outline-none">
+                                    <option value="avito">Avito</option>
+                                    <option value="telegram">Telegram</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase">YouTube Канал</label>
+                                <input v-model="newOrder.channelName" placeholder="Wylsacom" required class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3 text-sm font-bold text-slate-900 dark:text-white outline-none">
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase">Имя</label>
+                                    <input v-model="newOrder.clientName" required class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3 text-sm font-bold text-slate-900 dark:text-white outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase">Контакт</label>
+                                    <input v-model="newOrder.clientContact" placeholder="@tg" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3 text-sm font-bold text-slate-900 dark:text-white outline-none">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase">Срок сдачи (необязательно)</label>
+                                <input v-model="newOrder.deadline" type="date" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3 text-sm font-bold text-slate-900 dark:text-white outline-none">
                             </div>
                         </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase">Срок сдачи (необязательно)</label>
-                            <input v-model="newOrder.deadline" type="date" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3 text-sm font-bold text-slate-900 dark:text-white outline-none">
+                        
+                        <!-- Кнопка "Создать" теперь type="submit", и триггерит валидацию -->
+                        <div class="flex-none p-4 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 flex space-x-3">
+                            <button type="button" @click="showCreateModal = false" class="flex-1 py-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold rounded-xl">Отмена</button>
+                            <button type="submit" class="flex-1 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-xl shadow-md">Создать</button>
                         </div>
                     </form>
-                    
-                    <div class="flex-none p-4 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 flex space-x-3">
-                        <button type="button" @click="showCreateModal = false" class="flex-1 py-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold rounded-xl">Отмена</button>
-                        <button @click="createOrder" type="button" class="flex-1 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-xl shadow-md">Создать</button>
-                    </div>
                 </div>
             </div>
         </Transition>
@@ -819,11 +799,12 @@
             </div>
         </Transition>
 
-
+        <!-- Toast Notifications (Исправлено) -->
+        <Transition name="modal">
             <div v-if="toastMessage" class="fixed bottom-6 inset-x-0 mx-auto w-max z-[60] bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-5 py-3 rounded-2xl font-bold shadow-2xl flex items-center space-x-3 text-sm">
                 <i class="fa-solid fa-circle-check text-emerald-400"></i><span>{{ toastMessage }}</span>
             </div>
-        </transition>
+        </Transition>
 
         <!-- ЧЕК ДЛЯ ПЕЧАТИ -->
         <div id="printable-receipt" v-if="receiptOrder">
@@ -858,13 +839,6 @@
     </div>
 
     <script>
-        // ===================== НАСТРОЙКА ОБЛАЧНОЙ СИНХРОНИЗАЦИИ (Firebase) =====================
-        // Чтобы заказы синхронизировались между компьютером и телефоном автоматически:
-        // 1. Зайдите на https://console.firebase.google.com → "Add project" → создайте бесплатный проект
-        // 2. В проекте: Build → Firestore Database → Create database → Start in TEST mode
-        // 3. Затем: значок шестерёнки → Project settings → внизу "Your apps" → "</>" (Web app) → зарегистрируйте
-        // 4. Скопируйте объект firebaseConfig, который вам покажут, и вставьте его вместо плейсхолдера ниже
-        // 5. Сохраните файл — иконка "облако" в шапке CRM должна позеленеть на всех устройствах
         const FIREBASE_CONFIG = {
             apiKey: "AIzaSyAyALvwPDcfhqTOsC5Q9aGJ7Y2cezG4MKw",
             authDomain: "mira-papa-crm.firebaseapp.com",
@@ -893,7 +867,7 @@
                     toastTimeout: null,
                     addSheetsCount: 1,
 
-                    cloudStatus: 'local-only', // local-only | connecting | synced | error
+                    cloudStatus: 'local-only',
                     db: null,
                     docRef: null,
                     _applyingRemote: false,
@@ -1040,19 +1014,29 @@
                 if (savedTheme !== null) this.isDark = JSON.parse(savedTheme);
                 this.applyTheme();
 
+                // Защищаем парсинг от поломанных данных в LocalStorage
                 const savedSettings = localStorage.getItem('pb_crm_settings');
-                if (savedSettings) this.settings = JSON.parse(savedSettings);
+                if (savedSettings) {
+                    try {
+                        this.settings = { ...this.settings, ...JSON.parse(savedSettings) };
+                    } catch (e) { console.error('Error parsing settings', e); }
+                }
 
                 const savedOrders = localStorage.getItem('pb_crm_orders');
                 if (savedOrders) {
-                    this.orders = JSON.parse(savedOrders);
-                    this.orders.forEach(o => {
-                        if (!o.paymentStatus) o.paymentStatus = 'waiting';
-                        if (o.deadline === undefined || o.deadline === null) o.deadline = '';
-                        if (o.consumedSheetFraction === undefined || o.consumedSheetFraction === null) o.consumedSheetFraction = 0;
-                        if (!o.trackNumber) o.trackNumber = '';
-                        if (!o.history) o.history = [{ text: 'Заказ создан', time: o.createdAt }];
-                    });
+                    try {
+                        const parsedOrders = JSON.parse(savedOrders);
+                        if(Array.isArray(parsedOrders)) {
+                            this.orders = parsedOrders;
+                            this.orders.forEach(o => {
+                                if (!o.paymentStatus) o.paymentStatus = 'waiting';
+                                if (o.deadline === undefined || o.deadline === null) o.deadline = '';
+                                if (o.consumedSheetFraction === undefined || o.consumedSheetFraction === null) o.consumedSheetFraction = 0;
+                                if (!o.trackNumber) o.trackNumber = '';
+                                if (!o.history) o.history = [{ text: 'Заказ создан', time: o.createdAt }];
+                            });
+                        }
+                    } catch (e) { console.error('Error parsing orders', e); }
                 } else {
                     this.orders = [
                         {
@@ -1064,8 +1048,13 @@
                         }
                     ];
                 }
+                
                 const savedStock = localStorage.getItem('pb_crm_stock');
-                if (savedStock) this.stockSheets = JSON.parse(savedStock);
+                if (savedStock) {
+                    try {
+                        this.stockSheets = JSON.parse(savedStock);
+                    } catch (e) { console.error('Error parsing stock', e); }
+                }
 
                 this.initCloudSync();
             },
@@ -1091,8 +1080,6 @@
 
                         this.docRef.onSnapshot((snap) => {
                             if (!snap.exists) {
-                                // В облаке ещё ничего нет. Сидируем его текущими локальными данными РОВНО ОДИН РАЗ —
-                                // и только после этого разрешаем обычные пуши (иначе возможна гонка между устройствами).
                                 if (!this._cloudSeeded) {
                                     this._cloudSeeded = true;
                                     this._cloudReady = true;
@@ -1104,7 +1091,7 @@
                             if (data.updatedAt && data.updatedAt === this._lastPushedAt) {
                                 this.cloudStatus = 'synced';
                                 this._cloudReady = true;
-                                return; // это эхо нашей же записи
+                                return;
                             }
                             this._applyingRemote = true;
                             if (Array.isArray(data.orders)) this.orders = data.orders;
@@ -1124,7 +1111,6 @@
                     }
                 },
                 pushCloud(immediate) {
-                    // Ничего не отправляем, пока не получили первый ответ от облака (защита от гонки при первом запуске)
                     if (!this.docRef || this._applyingRemote || !this._cloudReady) return;
                     clearTimeout(this._pushTimer);
                     const doPush = () => {
@@ -1135,8 +1121,6 @@
                                 stockSheets: this.stockSheets,
                                 updatedAt: Date.now()
                             };
-                            // JSON roundtrip убирает undefined-поля (в старых заказах могло не быть новых полей) —
-                            // Firestore иначе выбрасывает ошибку и запись не проходит.
                             const payload = JSON.parse(JSON.stringify(rawPayload));
                             this._lastPushedAt = payload.updatedAt;
                             this.docRef.set(payload).then(() => {
@@ -1351,7 +1335,7 @@
                 sheetFractionForType(type) {
                     if (type === 'silver') return 1 / (this.settings.silverPerSheet || 1);
                     if (type === 'gold') return 1 / (this.settings.goldPerSheet || 1);
-                    return 0; // для "Индивидуально" расход листа не автоматизируем — размер не фиксирован
+                    return 0; 
                 },
                 recalcOrderCost(order) {
                     order.costPrice = (order.costAcp || 0) + (order.costGlue || 0) + (order.costEngraving || 0) + (order.costCutting || 0);
@@ -1365,16 +1349,27 @@
                     this.newOrder.costCutting = this.settings.cuttingPrice;
                     this.recalcOrderCost(this.newOrder);
                 },
-                updateAllOrdersCost() {
-                    this.orders.forEach(o => {
-                        o.costAcp = this.calcAcpCost(o.type);
-                        o.costGlue = this.settings.gluePrice;
-                        o.costEngraving = this.settings.engravingPrice;
-                        o.costCutting = this.settings.cuttingPrice;
-                        this.recalcOrderCost(o);
-                    });
+                // Важное исправление: теперь мы сбрасываем абсолютно все данные
+                openCreateModal() { 
+                    this.newOrder = {
+                        type: 'silver',
+                        source: 'avito',
+                        channelName: '',
+                        plaqueText: '',
+                        clientName: '',
+                        clientContact: '',
+                        price: 0,
+                        costAcp: 0,
+                        costGlue: 0,
+                        costEngraving: 0,
+                        costCutting: 0,
+                        costPrice: 0,
+                        paymentStatus: 'waiting',
+                        deadline: ''
+                    };
+                    this.onTypeChange(); 
+                    this.showCreateModal = true; 
                 },
-                openCreateModal() { this.newOrder.plaqueText = ""; this.newOrder.channelName = ""; this.onTypeChange(); this.showCreateModal = true; },
                 createOrder() {
                     const fraction = this.sheetFractionForType(this.newOrder.type);
                     const created = {
