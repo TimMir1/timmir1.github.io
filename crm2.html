@@ -46,6 +46,9 @@
     </script>
     <!-- QRCode generator for receipts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- Firebase (для синхронизации заказов между устройствами — см. инструкцию в README/чате) -->
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
     <!-- Google Fonts: Roboto & Roboto Medium & Oswald -->
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Roboto+Mono:wght@500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     
@@ -139,6 +142,13 @@
                     <button @click="toggleTheme" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors shadow-sm">
                         <i :class="isDark ? 'fa-solid fa-sun text-amber-400' : 'fa-solid fa-moon text-indigo-500'"></i>
                     </button>
+
+                    <div :title="cloudStatusTitle" class="hidden sm:flex items-center justify-center w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 shadow-sm">
+                        <i v-if="cloudStatus === 'synced'" class="fa-solid fa-cloud text-emerald-500"></i>
+                        <i v-else-if="cloudStatus === 'connecting'" class="fa-solid fa-cloud-arrow-up text-sky-500 animate-pulse"></i>
+                        <i v-else-if="cloudStatus === 'error'" class="fa-solid fa-triangle-exclamation text-red-500"></i>
+                        <i v-else class="fa-solid fa-desktop text-slate-400"></i>
+                    </div>
 
                     <button @click="showClientsModal = true" class="hidden md:flex items-center space-x-2 px-3 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors shadow-sm text-sm font-medium">
                         <i class="fa-solid fa-users text-pink-500"></i>
@@ -848,6 +858,22 @@
     </div>
 
     <script>
+        // ===================== НАСТРОЙКА ОБЛАЧНОЙ СИНХРОНИЗАЦИИ (Firebase) =====================
+        // Чтобы заказы синхронизировались между компьютером и телефоном автоматически:
+        // 1. Зайдите на https://console.firebase.google.com → "Add project" → создайте бесплатный проект
+        // 2. В проекте: Build → Firestore Database → Create database → Start in TEST mode
+        // 3. Затем: значок шестерёнки → Project settings → внизу "Your apps" → "</>" (Web app) → зарегистрируйте
+        // 4. Скопируйте объект firebaseConfig, который вам покажут, и вставьте его вместо плейсхолдера ниже
+        // 5. Сохраните файл — иконка "облако" в шапке CRM должна позеленеть на всех устройствах
+        const FIREBASE_CONFIG = {
+            apiKey: "AIzaSyAyALvwPDcfhqTOsC5Q9aGJ7Y2cezG4MKw",
+            authDomain: "mira-papa-crm.firebaseapp.com",
+            projectId: "mira-papa-crm",
+            storageBucket: "mira-papa-crm.firebasestorage.app",
+            messagingSenderId: "94293849864",
+            appId: "1:94293849864:web:86e72cea1a36a1f8269ebd"
+        };
+
         const { createApp } = Vue;
 
         createApp({
@@ -866,6 +892,13 @@
                     toastMessage: '',
                     toastTimeout: null,
                     addSheetsCount: 1,
+
+                    cloudStatus: 'local-only', // local-only | connecting | synced | error
+                    db: null,
+                    docRef: null,
+                    _applyingRemote: false,
+                    _lastPushedAt: 0,
+                    _pushTimer: null,
 
                     stockSheets: 4,
                     draggedOrder: null,
@@ -992,6 +1025,12 @@
                 },
                 possibleGoldFromStock() {
                     return Math.floor(this.stockSheets * (this.settings.goldPerSheet || 1));
+                },
+                cloudStatusTitle() {
+                    if (this.cloudStatus === 'synced') return 'Синхронизировано со всеми устройствами';
+                    if (this.cloudStatus === 'connecting') return 'Подключение к облаку...';
+                    if (this.cloudStatus === 'error') return 'Ошибка синхронизации — проверьте настройки Firebase';
+                    return 'Облако не настроено — данные только на этом устройстве (см. FIREBASE_CONFIG в коде)';
                 }
             },
             mounted() {
@@ -1019,15 +1058,74 @@
                 }
                 const savedStock = localStorage.getItem('pb_crm_stock');
                 if (savedStock) this.stockSheets = JSON.parse(savedStock);
+
+                this.initCloudSync();
             },
             watch: {
                 isDark(newVal) { localStorage.setItem('pb_crm_theme', JSON.stringify(newVal)); this.applyTheme(); },
-                orders: { handler(newVal) { localStorage.setItem('pb_crm_orders', JSON.stringify(newVal)); }, deep: true },
-                stockSheets(newVal) { localStorage.setItem('pb_crm_stock', JSON.stringify(newVal)); },
-                settings: { handler(newVal) { localStorage.setItem('pb_crm_settings', JSON.stringify(newVal)); }, deep: true }
+                orders: { handler(newVal) { localStorage.setItem('pb_crm_orders', JSON.stringify(newVal)); this.pushCloud(); }, deep: true },
+                stockSheets(newVal) { localStorage.setItem('pb_crm_stock', JSON.stringify(newVal)); this.pushCloud(); },
+                settings: { handler(newVal) { localStorage.setItem('pb_crm_settings', JSON.stringify(newVal)); this.pushCloud(); }, deep: true }
             },
             methods: {
                 onDragStart(order) { this.draggedOrder = order; },
+                initCloudSync() {
+                    if (!FIREBASE_CONFIG.apiKey || FIREBASE_CONFIG.apiKey.indexOf('ВАШ') === 0) {
+                        this.cloudStatus = 'local-only';
+                        return;
+                    }
+                    try {
+                        this.cloudStatus = 'connecting';
+                        const app = firebase.initializeApp(FIREBASE_CONFIG);
+                        this.db = firebase.firestore();
+                        this.docRef = this.db.collection('mira_papa_crm').doc('shared');
+
+                        this.docRef.onSnapshot((snap) => {
+                            if (!snap.exists) {
+                                // документа ещё нет в облаке — создаём его текущим локальным состоянием
+                                this.pushCloud(true);
+                                return;
+                            }
+                            const data = snap.data();
+                            if (data.updatedAt && data.updatedAt === this._lastPushedAt) {
+                                this.cloudStatus = 'synced';
+                                return; // это наша же запись — эхо, не применяем повторно
+                            }
+                            this._applyingRemote = true;
+                            if (data.orders) this.orders = data.orders;
+                            if (data.settings) this.settings = { ...this.settings, ...data.settings };
+                            if (typeof data.stockSheets === 'number') this.stockSheets = data.stockSheets;
+                            this.cloudStatus = 'synced';
+                            this.$nextTick(() => { this._applyingRemote = false; });
+                        }, (err) => {
+                            console.error('Firestore sync error:', err);
+                            this.cloudStatus = 'error';
+                        });
+                    } catch (e) {
+                        console.error('Firebase init error:', e);
+                        this.cloudStatus = 'error';
+                    }
+                },
+                pushCloud(immediate) {
+                    if (!this.docRef || this._applyingRemote) return;
+                    clearTimeout(this._pushTimer);
+                    const doPush = () => {
+                        const payload = {
+                            orders: this.orders,
+                            settings: this.settings,
+                            stockSheets: this.stockSheets,
+                            updatedAt: Date.now()
+                        };
+                        this._lastPushedAt = payload.updatedAt;
+                        this.docRef.set(payload).then(() => {
+                            this.cloudStatus = 'synced';
+                        }).catch((e) => {
+                            console.error('Firestore push error:', e);
+                            this.cloudStatus = 'error';
+                        });
+                    };
+                    if (immediate) doPush(); else this._pushTimer = setTimeout(doPush, 800);
+                },
                 onDrop(newStatusId) {
                     this.dragTargetStatus = null;
                     if (this.draggedOrder && this.draggedOrder.status !== newStatusId) {
