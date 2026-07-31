@@ -899,6 +899,8 @@
                     _applyingRemote: false,
                     _lastPushedAt: 0,
                     _pushTimer: null,
+                    _cloudReady: false,
+                    _cloudSeeded: false,
 
                     stockSheets: 4,
                     draggedOrder: null,
@@ -1044,7 +1046,13 @@
                 const savedOrders = localStorage.getItem('pb_crm_orders');
                 if (savedOrders) {
                     this.orders = JSON.parse(savedOrders);
-                    this.orders.forEach(o => { if (!o.paymentStatus) o.paymentStatus = 'waiting'; });
+                    this.orders.forEach(o => {
+                        if (!o.paymentStatus) o.paymentStatus = 'waiting';
+                        if (o.deadline === undefined || o.deadline === null) o.deadline = '';
+                        if (o.consumedSheetFraction === undefined || o.consumedSheetFraction === null) o.consumedSheetFraction = 0;
+                        if (!o.trackNumber) o.trackNumber = '';
+                        if (!o.history) o.history = [{ text: 'Заказ создан', time: o.createdAt }];
+                    });
                 } else {
                     this.orders = [
                         {
@@ -1072,30 +1080,38 @@
                 initCloudSync() {
                     if (!FIREBASE_CONFIG.apiKey || FIREBASE_CONFIG.apiKey.indexOf('ВАШ') === 0) {
                         this.cloudStatus = 'local-only';
+                        this._cloudReady = true;
                         return;
                     }
                     try {
                         this.cloudStatus = 'connecting';
-                        const app = firebase.initializeApp(FIREBASE_CONFIG);
+                        firebase.initializeApp(FIREBASE_CONFIG);
                         this.db = firebase.firestore();
                         this.docRef = this.db.collection('mira_papa_crm').doc('shared');
 
                         this.docRef.onSnapshot((snap) => {
                             if (!snap.exists) {
-                                // документа ещё нет в облаке — создаём его текущим локальным состоянием
-                                this.pushCloud(true);
+                                // В облаке ещё ничего нет. Сидируем его текущими локальными данными РОВНО ОДИН РАЗ —
+                                // и только после этого разрешаем обычные пуши (иначе возможна гонка между устройствами).
+                                if (!this._cloudSeeded) {
+                                    this._cloudSeeded = true;
+                                    this._cloudReady = true;
+                                    this.pushCloud(true);
+                                }
                                 return;
                             }
                             const data = snap.data();
                             if (data.updatedAt && data.updatedAt === this._lastPushedAt) {
                                 this.cloudStatus = 'synced';
-                                return; // это наша же запись — эхо, не применяем повторно
+                                this._cloudReady = true;
+                                return; // это эхо нашей же записи
                             }
                             this._applyingRemote = true;
-                            if (data.orders) this.orders = data.orders;
+                            if (Array.isArray(data.orders)) this.orders = data.orders;
                             if (data.settings) this.settings = { ...this.settings, ...data.settings };
                             if (typeof data.stockSheets === 'number') this.stockSheets = data.stockSheets;
                             this.cloudStatus = 'synced';
+                            this._cloudReady = true;
                             this.$nextTick(() => { this._applyingRemote = false; });
                         }, (err) => {
                             console.error('Firestore sync error:', err);
@@ -1104,25 +1120,35 @@
                     } catch (e) {
                         console.error('Firebase init error:', e);
                         this.cloudStatus = 'error';
+                        this._cloudReady = true;
                     }
                 },
                 pushCloud(immediate) {
-                    if (!this.docRef || this._applyingRemote) return;
+                    // Ничего не отправляем, пока не получили первый ответ от облака (защита от гонки при первом запуске)
+                    if (!this.docRef || this._applyingRemote || !this._cloudReady) return;
                     clearTimeout(this._pushTimer);
                     const doPush = () => {
-                        const payload = {
-                            orders: this.orders,
-                            settings: this.settings,
-                            stockSheets: this.stockSheets,
-                            updatedAt: Date.now()
-                        };
-                        this._lastPushedAt = payload.updatedAt;
-                        this.docRef.set(payload).then(() => {
-                            this.cloudStatus = 'synced';
-                        }).catch((e) => {
-                            console.error('Firestore push error:', e);
+                        try {
+                            const rawPayload = {
+                                orders: this.orders,
+                                settings: this.settings,
+                                stockSheets: this.stockSheets,
+                                updatedAt: Date.now()
+                            };
+                            // JSON roundtrip убирает undefined-поля (в старых заказах могло не быть новых полей) —
+                            // Firestore иначе выбрасывает ошибку и запись не проходит.
+                            const payload = JSON.parse(JSON.stringify(rawPayload));
+                            this._lastPushedAt = payload.updatedAt;
+                            this.docRef.set(payload).then(() => {
+                                this.cloudStatus = 'synced';
+                            }).catch((e) => {
+                                console.error('Firestore push error:', e);
+                                this.cloudStatus = 'error';
+                            });
+                        } catch (e) {
+                            console.error('Firestore push build error:', e);
                             this.cloudStatus = 'error';
-                        });
+                        }
                     };
                     if (immediate) doPush(); else this._pushTimer = setTimeout(doPush, 800);
                 },
