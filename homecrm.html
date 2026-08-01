@@ -219,14 +219,14 @@
     import { getFirestore, collection, onSnapshot, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     // === ВАШИ НАСТРОЙКИ FIREBASE (ИНТЕГРИРОВАНЫ) ===
-    const myFirebaseConfig = {
-      apiKey: "AIzaSyB-1HYDIr3PIkpN8WJYMg9Pfa28sbrWAnw",
-      authDomain: "home-crm-bbf39.firebaseapp.com",
-      projectId: "home-crm-bbf39",
-      storageBucket: "home-crm-bbf39.firebasestorage.app",
-      messagingSenderId: "704942086077",
-      appId: "1:704942086077:web:eee3dfa5596ab3c841a4d4"
-    };
+    const firebaseConfig = {
+  apiKey: "AIzaSyB-1HYDIr3PIkpN8WJYMg9Pfa28sbrWAnw",
+  authDomain: "home-crm-bbf39.firebaseapp.com",
+  projectId: "home-crm-bbf39",
+  storageBucket: "home-crm-bbf39.firebasestorage.app",
+  messagingSenderId: "704942086077",
+  appId: "1:704942086077:web:d349fe799cee12c341a4d4"
+};
 
     const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : myFirebaseConfig;
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'home-crm-html-app';
