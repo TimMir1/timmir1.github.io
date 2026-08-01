@@ -111,11 +111,30 @@
       </div>
 
       <!-- ВКЛАДКА: ДЕЛА -->
-      <div id="tab-tasks" class="space-y-6 fade-in hidden">
-        <h2 class="text-2xl font-bold text-gray-800">Домашние дела</h2>
+      <div id="tab-tasks" class="space-y-5 fade-in hidden">
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <h2 class="text-2xl font-bold text-gray-800">Домашние дела</h2>
+          <div class="flex items-center gap-3">
+            <p id="tasks-counter" class="text-sm text-slate-400 font-medium"></p>
+            <button type="button" onclick="window.clearCompletedTasks()" class="text-xs text-slate-400 hover:text-red-500 font-medium flex items-center gap-1 transition-colors">
+              <i class="fa-solid fa-broom"></i> Очистить выполненные
+            </button>
+          </div>
+        </div>
+
+        <div class="flex gap-2">
+          <button type="button" onclick="window.setTaskFilter('all')" id="filter-all" class="task-filter-btn px-4 py-2 rounded-full text-sm font-semibold bg-indigo-600 text-white shadow-sm transition-all">Все</button>
+          <button type="button" onclick="window.setTaskFilter('Папа')" id="filter-Папа" class="task-filter-btn px-4 py-2 rounded-full text-sm font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all">👨 Папа</button>
+          <button type="button" onclick="window.setTaskFilter('Мама')" id="filter-Мама" class="task-filter-btn px-4 py-2 rounded-full text-sm font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all">👩 Мама</button>
+        </div>
+
         <form onsubmit="window.addTask(event)" class="flex gap-2 flex-col sm:flex-row bg-slate-50 p-4 rounded-xl border border-slate-100 shadow-sm">
           <input type="text" id="task-title" placeholder="Что нужно сделать?" class="flex-1 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
-          <input type="text" id="task-assignee" placeholder="Кто делает?" class="w-full sm:w-48 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          <select id="task-assignee" class="w-full sm:w-40 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+            <option value="Общее">👥 Общее</option>
+            <option value="Папа">👨 Папа</option>
+            <option value="Мама">👩 Мама</option>
+          </select>
           <button type="submit" class="bg-indigo-600 text-white p-3 rounded-lg hover:bg-indigo-700 transition-all active:scale-95 flex items-center justify-center gap-2">
             <i class="fa-solid fa-plus"></i> <span class="sm:hidden">Добавить</span>
           </button>
@@ -276,6 +295,7 @@
 
     let currentUser = null;
     let dataState = { tasks: [], shopping: [], contacts: [], finances: [], inventory: [], notes: [] };
+    let taskFilter = 'all';
 
     // Инициализация авторизации
     const initAuth = async () => {
@@ -334,25 +354,34 @@
     function renderData(type) {
       if(type === 'tasks') {
         const container = document.getElementById('tasks-list');
-        if(!dataState.tasks.length) {
-          container.innerHTML = `<div class="text-center py-10 bg-slate-50 rounded-xl border border-dashed border-slate-300"><i class="fa-solid fa-square-check text-4xl text-slate-300 mb-3 block"></i><p class="text-slate-500 font-medium">Все дела сделаны! 🎉</p></div>`;
+        const activeCount = dataState.tasks.filter(t => !t.completed).length;
+        const counterEl = document.getElementById('tasks-counter');
+        if (counterEl) counterEl.innerText = dataState.tasks.length ? (activeCount ? `Осталось: ${activeCount}` : 'Всё сделано! 🎉') : '';
+
+        const filtered = taskFilter === 'all' ? dataState.tasks : dataState.tasks.filter(t => t.assignee === taskFilter);
+
+        if(!filtered.length) {
+          const msg = dataState.tasks.length ? 'Нет дел с этим фильтром.' : 'Все дела сделаны! 🎉';
+          container.innerHTML = `<div class="text-center py-10 bg-slate-50 rounded-xl border border-dashed border-slate-300"><i class="fa-solid fa-square-check text-4xl text-slate-300 mb-3 block"></i><p class="text-slate-500 font-medium">${msg}</p></div>`;
           return;
         }
-        container.innerHTML = dataState.tasks.map(t => `
+        container.innerHTML = filtered.map(t => {
+          const emoji = t.assignee === 'Папа' ? '👨' : t.assignee === 'Мама' ? '👩' : '👥';
+          return `
           <div class="group flex items-center justify-between p-4 rounded-xl border transition-all duration-300 ${t.completed ? 'bg-slate-50 border-slate-200 opacity-75' : 'bg-white border-slate-200 shadow-sm hover:shadow-md'}">
-            <div class="flex items-center gap-4 flex-1 cursor-pointer" onclick="window.toggleTask('${t.id}', ${t.completed}, '${escapeHTML(t.title)}', '${escapeHTML(t.assignee)}')">
-              <i class="${t.completed ? 'fa-solid fa-circle-check text-green-500 text-2xl' : 'fa-regular fa-circle text-slate-300 text-2xl group-hover:text-indigo-400'}"></i>
-              <div>
-                <p class="font-medium ${t.completed ? 'text-slate-500 line-through' : 'text-slate-800'}">${escapeHTML(t.title)}</p>
-                <p class="text-xs text-indigo-600 font-semibold mt-1 bg-indigo-50 inline-block px-2 py-0.5 rounded-full">${escapeHTML(t.assignee)}</p>
+            <div class="flex items-center gap-4 flex-1 cursor-pointer min-w-0" onclick="window.toggleTask('${t.id}', ${t.completed}, '${escapeHTML(t.title)}', '${escapeHTML(t.assignee)}')">
+              <i class="${t.completed ? 'fa-solid fa-circle-check text-green-500 text-2xl' : 'fa-regular fa-circle text-slate-300 text-2xl group-hover:text-indigo-400'} shrink-0"></i>
+              <div class="min-w-0">
+                <p class="font-medium ${t.completed ? 'text-slate-500 line-through' : 'text-slate-800'} truncate">${escapeHTML(t.title)}</p>
+                <p class="text-xs text-indigo-600 font-semibold mt-1 bg-indigo-50 inline-block px-2 py-0.5 rounded-full">${emoji} ${escapeHTML(t.assignee)}</p>
               </div>
             </div>
-            <div class="flex items-center opacity-0 group-hover:opacity-100 transition-all">
+            <div class="flex items-center shrink-0 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all">
               <button onclick="window.openEditModal('tasks', '${t.id}')" class="text-slate-300 hover:text-indigo-500 p-2"><i class="fa-solid fa-pen"></i></button>
               <button onclick="window.deleteDocItem('tasks', '${t.id}')" class="text-slate-300 hover:text-red-500 p-2"><i class="fa-solid fa-trash"></i></button>
             </div>
           </div>
-        `).join('');
+        `}).join('');
       }
       
       if(type === 'shopping') {
@@ -367,7 +396,7 @@
               <i class="${i.bought ? 'fa-solid fa-circle-check text-emerald-500 text-2xl' : 'fa-regular fa-circle text-slate-300 text-2xl group-hover:text-emerald-400'}"></i>
               <p class="font-medium ${i.bought ? 'text-slate-500 line-through' : 'text-slate-800'}">${escapeHTML(i.item)}</p>
             </div>
-            <div class="flex items-center opacity-0 group-hover:opacity-100 transition-all">
+            <div class="flex items-center shrink-0 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all">
               <button onclick="window.openEditModal('shopping', '${i.id}')" class="text-slate-300 hover:text-emerald-600 p-2"><i class="fa-solid fa-pen"></i></button>
               <button onclick="window.deleteDocItem('shopping', '${i.id}')" class="text-slate-300 hover:text-red-500 p-2"><i class="fa-solid fa-trash"></i></button>
             </div>
@@ -383,7 +412,7 @@
         }
         container.innerHTML = dataState.contacts.map(c => `
           <div class="group bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative hover:shadow-md transition-shadow">
-            <div class="absolute top-3 right-3 flex items-center opacity-0 group-hover:opacity-100 transition-all">
+            <div class="absolute top-3 right-3 flex items-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all">
               <button onclick="window.openEditModal('contacts', '${c.id}')" class="text-slate-300 hover:text-blue-600 p-1.5"><i class="fa-solid fa-pen"></i></button>
               <button onclick="window.deleteDocItem('contacts', '${c.id}')" class="text-slate-300 hover:text-red-500 p-1.5"><i class="fa-solid fa-trash"></i></button>
             </div>
@@ -416,7 +445,7 @@
                 <p class="font-semibold ${f.type === 'income' ? 'text-green-600' : 'text-red-500'}">${f.type === 'income' ? '+' : '-'}${f.amount.toLocaleString('ru-RU')} ₽</p>
               </div>
             </div>
-            <div class="flex items-center opacity-0 group-hover:opacity-100 transition-all">
+            <div class="flex items-center shrink-0 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all">
               <button onclick="window.openEditModal('finances', '${f.id}')" class="text-slate-300 hover:text-violet-600 p-2"><i class="fa-solid fa-pen"></i></button>
               <button onclick="window.deleteDocItem('finances', '${f.id}')" class="text-slate-300 hover:text-red-500 p-2"><i class="fa-solid fa-trash"></i></button>
             </div>
@@ -446,8 +475,8 @@
             </div>
             <div class="flex items-center shrink-0">
               <button onclick="window.markPurchased('inventory', '${i.id}')" title="Отметить, что купили сегодня" class="text-slate-300 hover:text-emerald-500 p-2"><i class="fa-solid fa-cart-circle-check"></i></button>
-              <button onclick="window.openEditModal('inventory', '${i.id}')" class="text-slate-300 hover:text-amber-500 p-2 opacity-0 group-hover:opacity-100 transition-all"><i class="fa-solid fa-pen"></i></button>
-              <button onclick="window.deleteDocItem('inventory', '${i.id}')" class="text-slate-300 hover:text-red-500 p-2 opacity-0 group-hover:opacity-100 transition-all"><i class="fa-solid fa-trash"></i></button>
+              <button onclick="window.openEditModal('inventory', '${i.id}')" class="text-slate-300 hover:text-amber-500 p-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all"><i class="fa-solid fa-pen"></i></button>
+              <button onclick="window.deleteDocItem('inventory', '${i.id}')" class="text-slate-300 hover:text-red-500 p-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all"><i class="fa-solid fa-trash"></i></button>
             </div>
           </div>
         `).join('');
@@ -461,7 +490,7 @@
         }
         container.innerHTML = dataState.notes.map(n => `
           <div class="bg-[#fff9e6] p-5 rounded-2xl border border-amber-200/50 shadow-sm relative group hover:shadow-md transition-shadow">
-            <div class="absolute top-3 right-3 flex items-center opacity-0 group-hover:opacity-100 transition-all">
+            <div class="absolute top-3 right-3 flex items-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all">
               <button onclick="window.openEditModal('notes', '${n.id}')" class="text-amber-300 hover:text-amber-600 p-1.5"><i class="fa-solid fa-pen"></i></button>
               <button onclick="window.deleteDocItem('notes', '${n.id}')" class="text-amber-300 hover:text-red-500 p-1.5"><i class="fa-solid fa-trash"></i></button>
             </div>
@@ -505,6 +534,19 @@
       activeBtn.className = `w-full flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-1 sm:gap-3 p-3 sm:px-4 sm:py-3.5 rounded-xl transition-all text-white shadow-md ${bgColors[tabId]}`;
     };
 
+    // Фильтр дел: Все / Папа / Мама
+    window.setTaskFilter = (filter) => {
+      taskFilter = filter;
+      ['all', 'Папа', 'Мама'].forEach(f => {
+        const btn = document.getElementById(`filter-${f}`);
+        if (!btn) return;
+        btn.className = f === filter
+          ? 'task-filter-btn px-4 py-2 rounded-full text-sm font-semibold bg-indigo-600 text-white shadow-sm transition-all'
+          : 'task-filter-btn px-4 py-2 rounded-full text-sm font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all';
+      });
+      renderData('tasks');
+    };
+
     // Единый обработчик ошибок записи в Firestore
     function handleWriteError(e, action) {
       console.error(`Ошибка (${action}):`, e);
@@ -546,7 +588,7 @@
         title: 'Редактировать дело',
         fields: [
           { key: 'title', label: 'Что нужно сделать', kind: 'text', required: true },
-          { key: 'assignee', label: 'Кто делает', kind: 'text' }
+          { key: 'assignee', label: 'Кто делает', kind: 'select', options: [['Общее','👥 Общее'], ['Папа','👨 Папа'], ['Мама','👩 Мама']] }
         ]
       },
       shopping: {
@@ -659,6 +701,18 @@
         document.getElementById('task-assignee').value = '';
       } catch (err) {
         handleWriteError(err, 'добавление задачи');
+      }
+    };
+
+    // Очистить все выполненные дела разом
+    window.clearCompletedTasks = async () => {
+      const completed = dataState.tasks.filter(t => t.completed);
+      if (!completed.length) { alert('Нет выполненных дел для очистки.'); return; }
+      if (!confirm(`Удалить ${completed.length} выполненных дел? Это действие нельзя отменить.`)) return;
+      try {
+        await Promise.all(completed.map(t => deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'tasks', t.id))));
+      } catch (e) {
+        handleWriteError(e, 'очистка выполненных дел');
       }
     };
 
