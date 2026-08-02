@@ -129,14 +129,20 @@
           </div>
         </div>
 
-        <div class="flex gap-2">
+        <div id="week-strip" class="grid grid-cols-7 gap-1.5 sm:gap-2"></div>
+
+        <div class="flex items-center gap-2 flex-wrap">
           <button type="button" onclick="window.setTaskFilter('all')" id="filter-all" class="task-filter-btn px-4 py-2 rounded-full text-sm font-semibold bg-indigo-600 text-white shadow-sm transition-all">Все</button>
           <button type="button" onclick="window.setTaskFilter('Папа')" id="filter-Папа" class="task-filter-btn px-4 py-2 rounded-full text-sm font-semibold bg-blue-50 text-blue-600 hover:bg-blue-100 transition-all">👨 Папа</button>
           <button type="button" onclick="window.setTaskFilter('Мама')" id="filter-Мама" class="task-filter-btn px-4 py-2 rounded-full text-sm font-semibold bg-rose-50 text-rose-600 hover:bg-rose-100 transition-all">👩 Мама</button>
+          <button type="button" onclick="window.clearDayFilter()" id="filter-day-clear" class="hidden text-sm font-semibold text-slate-400 hover:text-red-500 items-center gap-1 ml-1">
+            <i class="fa-solid fa-xmark"></i> <span id="filter-day-label"></span>
+          </button>
         </div>
 
         <form onsubmit="window.addTask(event)" class="flex gap-2 flex-col sm:flex-row bg-slate-50 p-4 rounded-xl border border-slate-100 shadow-sm">
           <input type="text" id="task-title" placeholder="Что нужно сделать?" class="flex-1 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+          <input type="date" id="task-date" title="День (необязательно)" class="w-full sm:w-40 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
           <select id="task-assignee" class="w-full sm:w-40 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
             <option value="Общее">👥 Общее</option>
             <option value="Папа">👨 Папа</option>
@@ -316,6 +322,7 @@
     let currentUser = null;
     let dataState = { tasks: [], shopping: [], contacts: [], finances: [], inventory: [], notes: [], events: [] };
     let taskFilter = 'all';
+    let taskDayFilter = null;
     let expandedEvents = new Set();
 
     // Инициализация авторизации
@@ -379,20 +386,30 @@
         const counterEl = document.getElementById('tasks-counter');
         if (counterEl) counterEl.innerText = dataState.tasks.length ? (activeCount ? `Осталось: ${activeCount}` : 'Всё сделано! 🎉') : '';
 
-        const filtered = taskFilter === 'all' ? dataState.tasks : dataState.tasks.filter(t => t.assignee === taskFilter);
+        renderWeekStrip();
+
+        let filtered = taskFilter === 'all' ? dataState.tasks : dataState.tasks.filter(t => t.assignee === taskFilter);
+        if (taskDayFilter) filtered = filtered.filter(t => t.date === taskDayFilter);
 
         if(!filtered.length) {
-          const msg = dataState.tasks.length ? 'Нет дел с этим фильтром.' : 'Все дела сделаны! 🎉';
+          const msg = taskDayFilter ? 'На этот день дел не запланировано.' : (dataState.tasks.length ? 'Нет дел с этим фильтром.' : 'Все дела сделаны! 🎉');
           container.innerHTML = `<div class="text-center py-10 bg-slate-50 rounded-xl border border-dashed border-slate-300"><i class="fa-solid fa-square-check text-4xl text-slate-300 mb-3 block"></i><p class="text-slate-500 font-medium">${msg}</p></div>`;
           return;
         }
 
+        const dayBadgeLabels = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
         const taskRow = (t) => {
           const emoji = t.assignee === 'Папа' ? '👨' : t.assignee === 'Мама' ? '👩' : '👥';
           const badgeClass = t.assignee === 'Папа' ? 'bg-blue-50 text-blue-600' : t.assignee === 'Мама' ? 'bg-rose-50 text-rose-600' : 'bg-slate-100 text-slate-600';
           const statusBadge = t.completed
             ? `<span class="text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-600">Выполнено</span>`
             : `<span class="text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded bg-amber-50 text-amber-600">В работе</span>`;
+          let dateBadge = '';
+          if (t.date) {
+            const d = new Date(t.date + 'T00:00:00');
+            const label = `${dayBadgeLabels[d.getDay()]} ${d.getDate()}.${String(d.getMonth()+1).padStart(2,'0')}`;
+            dateBadge = `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-500"><i class="fa-solid fa-calendar-day"></i> ${label}</span>`;
+          }
           return `
           <div class="group flex items-center justify-between p-4 rounded-xl border transition-all duration-300 ${t.completed ? 'bg-slate-50 border-slate-200 opacity-75' : 'bg-white border-slate-200 shadow-sm hover:shadow-md'}">
             <div class="flex items-center gap-4 flex-1 cursor-pointer min-w-0" onclick="window.toggleTask('${t.id}', ${t.completed}, '${escapeHTML(t.title)}', '${escapeHTML(t.assignee)}')">
@@ -402,6 +419,7 @@
                 <div class="flex items-center gap-1.5 mt-1 flex-wrap">
                   <span class="text-xs font-semibold inline-block px-2 py-0.5 rounded-full ${badgeClass}">${emoji} ${escapeHTML(t.assignee)}</span>
                   ${statusBadge}
+                  ${dateBadge}
                 </div>
               </div>
             </div>
@@ -570,14 +588,20 @@
           const progressBadge = checklist.length
             ? `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full ${doneCount === checklist.length ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}">${doneCount}/${checklist.length}</span>`
             : '';
-          const checklistHtml = checklist.map(item => `
-            <div class="flex items-center gap-2 group/item py-1.5">
-              <button onclick="window.toggleChecklistItem('${ev.id}', '${item.id}')" class="shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${item.done ? 'bg-teal-600 border-teal-600' : 'border-slate-300 hover:border-teal-400'}">
+          const progressBar = checklist.length
+            ? `<div class="w-full h-1 rounded-full bg-slate-100 mt-1.5 overflow-hidden"><div class="h-full rounded-full ${doneCount === checklist.length ? 'bg-emerald-500' : 'bg-teal-500'} transition-all" style="width:${Math.round(doneCount/checklist.length*100)}%"></div></div>`
+            : '';
+          const sortedChecklist = [...checklist].sort((a, b) => (a.done === b.done) ? 0 : (a.done ? 1 : -1));
+          const checklistHtml = sortedChecklist.map(item => `
+            <div class="flex items-start gap-2 group/item py-2">
+              <button onclick="window.toggleChecklistItem('${ev.id}', '${item.id}')" class="mt-0.5 shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${item.done ? 'bg-teal-600 border-teal-600' : 'border-slate-300 hover:border-teal-400'}">
                 ${item.done ? '<i class="fa-solid fa-check text-white text-[10px]"></i>' : ''}
               </button>
-              <span class="flex-1 text-sm min-w-0 truncate ${item.done ? 'text-slate-400 line-through' : 'text-slate-700'}">${escapeHTML(item.text)}</span>
-              <span class="text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded shrink-0 ${item.done ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}">${item.done ? 'Выполнено' : 'В работе'}</span>
-              <button onclick="window.deleteChecklistItem('${ev.id}', '${item.id}')" class="text-slate-300 hover:text-red-500 opacity-0 group-hover/item:opacity-100 transition-all p-1 shrink-0"><i class="fa-solid fa-xmark"></i></button>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm break-words ${item.done ? 'text-slate-400 line-through' : 'text-slate-700'}">${escapeHTML(item.text)}</p>
+                <span class="inline-block mt-1 text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded ${item.done ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}">${item.done ? 'Выполнено' : 'В работе'}</span>
+              </div>
+              <button onclick="window.deleteChecklistItem('${ev.id}', '${item.id}')" class="text-slate-300 hover:text-red-500 opacity-100 sm:opacity-0 sm:group-hover/item:opacity-100 transition-all p-1 shrink-0 mt-0.5"><i class="fa-solid fa-xmark"></i></button>
             </div>
           `).join('');
           return `
@@ -594,6 +618,7 @@
                     ${progressBadge}
                   </div>
                   <p class="text-xs font-semibold mt-1 ${info.textClass}">${info.label}</p>
+                  ${progressBar}
                 </div>
               </div>
               <div class="flex items-center shrink-0 gap-1">
@@ -645,8 +670,78 @@
       return { text, className };
     }
 
+    // Неделя (Пн-Вс) для быстрого добавления/фильтра дел по дню
+    function getCurrentWeekDays() {
+      const labels = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+      const today = new Date(); today.setHours(0,0,0,0);
+      const dow = today.getDay();
+      const diffToMonday = dow === 0 ? -6 : 1 - dow;
+      const monday = new Date(today);
+      monday.setDate(today.getDate() + diffToMonday);
+      const days = [];
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(monday);
+        d.setDate(monday.getDate() + i);
+        const iso = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        days.push({ label: labels[i], num: d.getDate(), iso, isToday: iso === `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}` });
+      }
+      return days;
+    }
+
+    function renderWeekStrip() {
+      const strip = document.getElementById('week-strip');
+      if (!strip) return;
+      const days = getCurrentWeekDays();
+      strip.innerHTML = days.map(d => {
+        const count = dataState.tasks.filter(t => t.date === d.iso && !t.completed).length;
+        const isSelected = taskDayFilter === d.iso;
+        const base = isSelected
+          ? 'bg-indigo-600 text-white shadow-md'
+          : d.isToday
+            ? 'bg-indigo-50 text-indigo-700 border border-indigo-200'
+            : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50';
+        return `
+          <button type="button" onclick="window.selectTaskDay('${d.iso}')" class="flex flex-col items-center justify-center rounded-xl py-2 gap-0.5 transition-all ${base}">
+            <span class="text-[10px] font-bold uppercase tracking-wide opacity-80">${d.label}</span>
+            <span class="text-base font-bold leading-none">${d.num}</span>
+            <span class="w-1.5 h-1.5 rounded-full mt-0.5 ${count ? (isSelected ? 'bg-white' : 'bg-indigo-500') : 'bg-transparent'}"></span>
+          </button>
+        `;
+      }).join('');
+    }
+
     // === ГЛОБАЛЬНЫЕ ФУНКЦИИ (ДЛЯ ВЫЗОВА ИЗ HTML) ===
-    
+
+    // Клик по дню недели: подставить дату в форму добавления и отфильтровать список
+    window.selectTaskDay = (iso) => {
+      taskDayFilter = (taskDayFilter === iso) ? null : iso;
+      const dateInput = document.getElementById('task-date');
+      const clearBtn = document.getElementById('filter-day-clear');
+      const clearLabel = document.getElementById('filter-day-label');
+      if (taskDayFilter) {
+        if (dateInput) dateInput.value = taskDayFilter;
+        const d = new Date(taskDayFilter + 'T00:00:00');
+        const labels = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+        if (clearLabel) clearLabel.innerText = `${labels[d.getDay()]} ${d.getDate()}.${String(d.getMonth()+1).padStart(2,'0')}`;
+        if (clearBtn) { clearBtn.classList.remove('hidden'); clearBtn.classList.add('flex'); }
+        const titleInput = document.getElementById('task-title');
+        if (titleInput) titleInput.focus();
+      } else {
+        if (dateInput) dateInput.value = '';
+        if (clearBtn) { clearBtn.classList.add('hidden'); clearBtn.classList.remove('flex'); }
+      }
+      renderData('tasks');
+    };
+
+    window.clearDayFilter = () => {
+      taskDayFilter = null;
+      const dateInput = document.getElementById('task-date');
+      if (dateInput) dateInput.value = '';
+      const clearBtn = document.getElementById('filter-day-clear');
+      if (clearBtn) { clearBtn.classList.add('hidden'); clearBtn.classList.remove('flex'); }
+      renderData('tasks');
+    };
+
     // Переключение вкладок
     window.switchTab = (tabId) => {
       ['tasks', 'shopping', 'contacts', 'finances', 'inventory', 'notes', 'events'].forEach(t => {
@@ -720,7 +815,8 @@
         title: 'Редактировать дело',
         fields: [
           { key: 'title', label: 'Что нужно сделать', kind: 'text', required: true },
-          { key: 'assignee', label: 'Кто делает', kind: 'select', options: [['Общее','👥 Общее'], ['Папа','👨 Папа'], ['Мама','👩 Мама']] }
+          { key: 'assignee', label: 'Кто делает', kind: 'select', options: [['Общее','👥 Общее'], ['Папа','👨 Папа'], ['Мама','👩 Мама']] },
+          { key: 'date', label: 'День (необязательно)', kind: 'date' }
         ]
       },
       shopping: {
@@ -833,11 +929,13 @@
       e.preventDefault();
       const title = document.getElementById('task-title').value;
       const assignee = document.getElementById('task-assignee').value || 'Общее';
+      const date = document.getElementById('task-date').value || null;
       if(!title.trim() || !currentUser) return;
       try {
-        await setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'tasks')), { title, assignee, completed: false, createdAt: Date.now() });
+        await setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'tasks')), { title, assignee, date, completed: false, createdAt: Date.now() });
         document.getElementById('task-title').value = '';
         document.getElementById('task-assignee').value = '';
+        if (!taskDayFilter) document.getElementById('task-date').value = '';
       } catch (err) {
         handleWriteError(err, 'добавление задачи');
       }
