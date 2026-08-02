@@ -11,7 +11,916 @@
   <!-- FontAwesome Иконки -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   
+  <style><!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Домашняя CRM</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- FontAwesome Иконки -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  
   <style>
+    /* Прячем скроллбар для мобильного меню */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+    
+    /* Анимация появления */
+    .fade-in { animation: fadeIn 0.3s ease-in-out; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+
+  <!-- Проверка на запуск локально без сервера -->
+  <script>
+    if (window.location.protocol === 'file:') {
+      alert("ВНИМАНИЕ! Вы открыли файл напрямую с компьютера (file://).\n\nИз-за политик безопасности браузера модули Firebase не будут работать. Пожалуйста, загрузите этот файл на GitHub Pages или используйте локальный сервер (например, Live Server в VS Code).");
+    }
+  </script>
+</head>
+<body class="bg-slate-50 font-sans text-slate-900 pb-24 sm:pb-8">
+
+  <!-- Шапка -->
+  <header class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-20">
+    <div class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="bg-indigo-600 p-2.5 rounded-xl shadow-sm text-white flex items-center justify-center w-10 h-10">
+          <i class="fa-solid fa-house text-lg"></i>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold text-slate-800 leading-tight">ДомCRM</h1>
+          <p id="sync-status" class="text-xs text-slate-400 font-medium flex items-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-slate-300"></span> Ожидание...
+          </p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-4xl mx-auto flex flex-col sm:flex-row gap-6 p-4 mt-2">
+    
+    <!-- Навигация -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 sm:relative sm:border-t-0 sm:border-none sm:bg-transparent sm:w-64 z-20 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] sm:shadow-none pb-safe sm:pb-0 overflow-x-auto no-scrollbar">
+      <ul class="flex sm:flex-col justify-start sm:justify-start gap-2 p-2 sm:p-0 min-w-max sm:min-w-0">
+        
+        <li class="flex-1 sm:flex-none">
+          <button onclick="window.switchTab('tasks')" id="nav-tasks" class="w-full flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-1 sm:gap-3 p-3 sm:px-4 sm:py-3.5 rounded-xl transition-all bg-indigo-600 text-white shadow-md">
+            <i class="fa-solid fa-square-check text-xl"></i>
+            <span class="text-xs sm:text-base font-medium">Дела</span>
+          </button>
+        </li>
+        
+        <li class="flex-1 sm:flex-none">
+          <button onclick="window.switchTab('shopping')" id="nav-shopping" class="w-full flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-1 sm:gap-3 p-3 sm:px-4 sm:py-3.5 rounded-xl transition-all text-slate-600 hover:bg-slate-200 hover:text-slate-900">
+            <i class="fa-solid fa-cart-shopping text-xl"></i>
+            <span class="text-xs sm:text-base font-medium">Покупки</span>
+          </button>
+        </li>
+        
+        <li class="flex-1 sm:flex-none">
+          <button onclick="window.switchTab('contacts')" id="nav-contacts" class="w-full flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-1 sm:gap-3 p-3 sm:px-4 sm:py-3.5 rounded-xl transition-all text-slate-600 hover:bg-slate-200 hover:text-slate-900">
+            <i class="fa-solid fa-users text-xl"></i>
+            <span class="text-xs sm:text-base font-medium">Контакты</span>
+          </button>
+        </li>
+        
+        <li class="flex-1 sm:flex-none">
+          <button onclick="window.switchTab('finances')" id="nav-finances" class="w-full flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-1 sm:gap-3 p-3 sm:px-4 sm:py-3.5 rounded-xl transition-all text-slate-600 hover:bg-slate-200 hover:text-slate-900">
+            <i class="fa-solid fa-wallet text-xl"></i>
+            <span class="text-xs sm:text-base font-medium">Бюджет</span>
+          </button>
+        </li>
+        
+        <li class="flex-1 sm:flex-none">
+          <button onclick="window.switchTab('inventory')" id="nav-inventory" class="w-full flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-1 sm:gap-3 p-3 sm:px-4 sm:py-3.5 rounded-xl transition-all text-slate-600 hover:bg-slate-200 hover:text-slate-900">
+            <i class="fa-solid fa-box text-xl"></i>
+            <span class="text-xs sm:text-base font-medium">Запасы</span>
+          </button>
+        </li>
+        
+        <li class="flex-1 sm:flex-none">
+          <button onclick="window.switchTab('notes')" id="nav-notes" class="w-full flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-1 sm:gap-3 p-3 sm:px-4 sm:py-3.5 rounded-xl transition-all text-slate-600 hover:bg-slate-200 hover:text-slate-900">
+            <i class="fa-solid fa-note-sticky text-xl"></i>
+            <span class="text-xs sm:text-base font-medium">Заметки</span>
+          </button>
+        </li>
+
+        <li class="flex-1 sm:flex-none">
+          <button onclick="window.switchTab('events')" id="nav-events" class="w-full flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-1 sm:gap-3 p-3 sm:px-4 sm:py-3.5 rounded-xl transition-all text-slate-600 hover:bg-slate-200 hover:text-slate-900">
+            <i class="fa-solid fa-calendar-day text-xl"></i>
+            <span class="text-xs sm:text-base font-medium">Событие</span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Основной контент -->
+    <main class="flex-1 bg-white p-4 sm:p-7 rounded-2xl shadow-sm border border-slate-200 min-h-[60vh]">
+      
+      <!-- Loader (Теперь с поддержкой вывода ошибок) -->
+      <div id="loader" class="flex flex-col items-center justify-center min-h-[40vh] text-indigo-600">
+        <i class="fa-solid fa-spinner fa-spin text-4xl mb-4"></i>
+        <p class="font-medium">Загрузка данных...</p>
+      </div>
+
+      <!-- ВКЛАДКА: ДЕЛА -->
+      <div id="tab-tasks" class="space-y-5 fade-in hidden">
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <h2 class="text-2xl font-bold text-gray-800">Домашние дела</h2>
+          <div class="flex items-center gap-3">
+            <p id="tasks-counter" class="text-sm text-slate-400 font-medium"></p>
+            <button type="button" onclick="window.clearCompletedTasks()" class="text-xs text-slate-400 hover:text-red-500 font-medium flex items-center gap-1 transition-colors">
+              <i class="fa-solid fa-broom"></i> Очистить выполненные
+            </button>
+          </div>
+        </div>
+
+        <div class="flex gap-2">
+          <button type="button" onclick="window.setTaskFilter('all')" id="filter-all" class="task-filter-btn px-4 py-2 rounded-full text-sm font-semibold bg-indigo-600 text-white shadow-sm transition-all">Все</button>
+          <button type="button" onclick="window.setTaskFilter('Папа')" id="filter-Папа" class="task-filter-btn px-4 py-2 rounded-full text-sm font-semibold bg-blue-50 text-blue-600 hover:bg-blue-100 transition-all">👨 Папа</button>
+          <button type="button" onclick="window.setTaskFilter('Мама')" id="filter-Мама" class="task-filter-btn px-4 py-2 rounded-full text-sm font-semibold bg-rose-50 text-rose-600 hover:bg-rose-100 transition-all">👩 Мама</button>
+        </div>
+
+        <form onsubmit="window.addTask(event)" class="flex gap-2 flex-col sm:flex-row bg-slate-50 p-4 rounded-xl border border-slate-100 shadow-sm">
+          <input type="text" id="task-title" placeholder="Что нужно сделать?" class="flex-1 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+          <select id="task-assignee" class="w-full sm:w-40 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+            <option value="Общее">👥 Общее</option>
+            <option value="Папа">👨 Папа</option>
+            <option value="Мама">👩 Мама</option>
+          </select>
+          <button type="submit" class="bg-indigo-600 text-white p-3 rounded-lg hover:bg-indigo-700 transition-all active:scale-95 flex items-center justify-center gap-2">
+            <i class="fa-solid fa-plus"></i> <span class="sm:hidden">Добавить</span>
+          </button>
+        </form>
+        <div id="tasks-list" class="space-y-3"></div>
+      </div>
+
+      <!-- ВКЛАДКА: ПОКУПКИ -->
+      <div id="tab-shopping" class="space-y-6 fade-in hidden">
+        <h2 class="text-2xl font-bold text-gray-800">Список покупок</h2>
+        <form onsubmit="window.addShoppingItem(event)" class="flex gap-2 bg-slate-50 p-4 rounded-xl border border-slate-100 shadow-sm">
+          <input type="text" id="shopping-item" placeholder="Что купить?" class="flex-1 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" required>
+          <button type="submit" class="bg-emerald-600 text-white px-5 p-3 rounded-lg hover:bg-emerald-700 transition-all active:scale-95 flex items-center justify-center">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+        </form>
+        <div id="shopping-list" class="space-y-3"></div>
+      </div>
+
+      <!-- ВКЛАДКА: КОНТАКТЫ -->
+      <div id="tab-contacts" class="space-y-6 fade-in hidden">
+        <h2 class="text-2xl font-bold text-gray-800">Полезные контакты</h2>
+        <form onsubmit="window.addContact(event)" class="flex flex-col sm:flex-row gap-2 bg-slate-50 p-4 rounded-xl border border-slate-100 shadow-sm">
+          <input type="text" id="contact-name" placeholder="Имя" class="flex-1 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+          <input type="text" id="contact-role" placeholder="Роль (напр. Врач)" class="w-full sm:w-1/4 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <input type="text" id="contact-phone" placeholder="Телефон" class="w-full sm:w-1/3 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+          <button type="submit" class="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition-all active:scale-95 flex items-center justify-center gap-2">
+            <i class="fa-solid fa-user-plus"></i> <span class="sm:hidden">Добавить</span>
+          </button>
+        </form>
+        <div id="contacts-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+      </div>
+
+      <!-- ВКЛАДКА: ФИНАНСЫ -->
+      <div id="tab-finances" class="space-y-6 fade-in hidden">
+        <div class="flex justify-between items-center bg-gradient-to-r from-violet-500 to-fuchsia-600 p-6 rounded-2xl text-white shadow-lg">
+          <div>
+            <h2 class="text-lg font-medium opacity-90 mb-1">Общий баланс</h2>
+            <p id="finance-total" class="text-4xl font-bold">0 ₽</p>
+          </div>
+          <i class="fa-solid fa-wallet text-5xl opacity-50"></i>
+        </div>
+        <form onsubmit="window.addFinance(event)" class="flex flex-col sm:flex-row gap-2 bg-slate-50 p-4 rounded-xl border border-slate-100 shadow-sm">
+          <input type="text" id="finance-desc" placeholder="Описание (напр. Зарплата)" class="flex-1 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500" required>
+          <input type="number" id="finance-amount" placeholder="Сумма" class="w-full sm:w-32 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500" required>
+          <select id="finance-type" class="w-full sm:w-36 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500 bg-white">
+            <option value="expense">Расход</option>
+            <option value="income">Доход</option>
+          </select>
+          <button type="submit" class="bg-violet-600 text-white p-3 rounded-lg hover:bg-violet-700 transition-all flex justify-center items-center">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+        </form>
+        <div id="finances-list" class="space-y-3"></div>
+      </div>
+
+      <!-- ВКЛАДКА: ЗАПАСЫ -->
+      <div id="tab-inventory" class="space-y-6 fade-in hidden">
+        <h2 class="text-2xl font-bold text-gray-800">Домашние запасы</h2>
+        
+        <div class="flex flex-wrap gap-2 items-center -mb-2">
+          <span class="text-sm text-slate-500 font-medium">Быстро добавить:</span>
+          <button type="button" onclick="window.quickFillInv('Корм для кошек', 'Кухня')" class="text-xs bg-amber-50 text-amber-700 px-3 py-1.5 rounded-full hover:bg-amber-100 transition-colors flex items-center gap-1 border border-amber-200 shadow-sm">
+            🐈 Корм для кошек
+          </button>
+          <button type="button" onclick="window.quickFillInv('Наполнитель для лотка', 'Ванная')" class="text-xs bg-amber-50 text-amber-700 px-3 py-1.5 rounded-full hover:bg-amber-100 transition-colors flex items-center gap-1 border border-amber-200 shadow-sm">
+            🐈 Наполнитель
+          </button>
+        </div>
+
+        <form onsubmit="window.addInventory(event)" class="flex flex-col sm:flex-row gap-2 bg-slate-50 p-4 rounded-xl border border-slate-100 shadow-sm">
+          <input type="text" id="inv-name" placeholder="Что храним? (напр. Аспирин)" class="flex-1 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" required>
+          <input type="text" id="inv-location" placeholder="Где? (напр. Кладовка)" class="w-full sm:w-1/3 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+          <button type="submit" class="bg-amber-500 text-white p-3 rounded-lg hover:bg-amber-600 transition-all flex justify-center items-center">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+        </form>
+        <div id="inventory-list" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+      </div>
+
+      <!-- ВКЛАДКА: ЗАМЕТКИ -->
+      <div id="tab-notes" class="space-y-6 fade-in hidden">
+        <h2 class="text-2xl font-bold text-gray-800">Семейные заметки</h2>
+        <form onsubmit="window.addNote(event)" class="flex flex-col gap-2 bg-slate-50 p-4 rounded-xl border border-slate-100 shadow-sm">
+          <input type="text" id="note-title" placeholder="Заголовок (напр. Пароль от Wi-Fi)" class="p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500" required>
+          <textarea id="note-content" placeholder="Текст заметки..." class="p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500 min-h-[100px] resize-y"></textarea>
+          <button type="submit" class="bg-rose-500 text-white p-3 rounded-lg hover:bg-rose-600 transition-all self-end flex items-center gap-2">
+            <i class="fa-solid fa-file-lines"></i> Сохранить заметку
+          </button>
+        </form>
+        <div id="notes-list" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+      </div>
+
+      <!-- ВКЛАДКА: СОБЫТИЕ -->
+      <div id="tab-events" class="space-y-6 fade-in hidden">
+        <h2 class="text-2xl font-bold text-gray-800">Семейные события</h2>
+        <form onsubmit="window.addEvent(event)" class="flex flex-col sm:flex-row gap-2 bg-slate-50 p-4 rounded-xl border border-slate-100 shadow-sm">
+          <input type="text" id="event-title" placeholder="Что за событие? (напр. День рождения Яны)" class="flex-1 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500" required>
+          <input type="date" id="event-date" class="w-full sm:w-48 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500" required>
+          <button type="submit" class="bg-teal-600 text-white p-3 rounded-lg hover:bg-teal-700 transition-all active:scale-95 flex items-center justify-center gap-2">
+            <i class="fa-solid fa-plus"></i> <span class="sm:hidden">Добавить</span>
+          </button>
+        </form>
+        <div id="events-list" class="space-y-3"></div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- МОДАЛЬНОЕ ОКНО РЕДАКТИРОВАНИЯ -->
+  <div id="edit-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 backdrop-blur-[2px] p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 fade-in">
+      <div class="flex justify-between items-center mb-5">
+        <h3 id="edit-modal-title" class="text-lg font-bold text-slate-800">Редактировать</h3>
+        <button onclick="window.closeEditModal()" class="text-slate-400 hover:text-slate-600 w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <div id="edit-modal-body" class="space-y-3"></div>
+      <div class="flex gap-2 mt-6">
+        <button onclick="window.closeEditModal()" class="flex-1 p-3 rounded-lg border border-slate-200 text-slate-600 font-medium hover:bg-slate-50 transition-all">Отмена</button>
+        <button onclick="window.saveEdit()" class="flex-1 p-3 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-all">Сохранить</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FIREBASE СКРИПТЫ И ЛОГИКА -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, collection, onSnapshot, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // === ВАШИ НАСТРОЙКИ FIREBASE (ИНТЕГРИРОВАНЫ) ===
+    const firebaseConfig = {
+      apiKey: "AIzaSyB-1HYDIr3PIkpN8WJYMg9Pfa28sbrWAnw",
+      authDomain: "home-crm-bbf39.firebaseapp.com",
+      projectId: "home-crm-bbf39",
+      storageBucket: "home-crm-bbf39.firebasestorage.app",
+      messagingSenderId: "704942086077",
+      appId: "1:704942086077:web:d349fe799cee12c341a4d4"
+    };
+
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'home-crm-html-app';
+
+    // Функция для вывода ошибок прямо на экран
+    function showError(icon, title, subtitle) {
+      const loader = document.getElementById('loader');
+      loader.classList.remove('text-indigo-600');
+      loader.classList.add('text-red-500');
+      loader.innerHTML = `
+        <i class="fa-solid ${icon} text-5xl mb-4"></i>
+        <h3 class="text-xl font-bold text-red-600 text-center px-4 max-w-md">${title}</h3>
+        <p class="text-sm text-slate-500 mt-2 text-center px-4 max-w-md">${subtitle}</p>
+      `;
+      document.getElementById('sync-status').innerHTML = '<span class="w-2 h-2 rounded-full bg-red-500"></span> Ошибка сети';
+      document.getElementById('sync-status').className = 'text-xs text-red-600 font-medium flex items-center gap-1';
+    }
+
+    let app, auth, db;
+
+    try {
+      app = initializeApp(firebaseConfig);
+      auth = getAuth(app);
+      db = getFirestore(app);
+    } catch (e) {
+      showError(
+        'fa-triangle-exclamation', 
+        'Ошибка инициализации Firebase', 
+        e.message
+      );
+      throw e;
+    }
+
+    let currentUser = null;
+    let dataState = { tasks: [], shopping: [], contacts: [], finances: [], inventory: [], notes: [], events: [] };
+    let taskFilter = 'all';
+
+    // Инициализация авторизации
+    const initAuth = async () => {
+      try {
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          await signInWithCustomToken(auth, __initial_auth_token);
+        } else {
+          await signInAnonymously(auth);
+        }
+      } catch (error) {
+        console.error("Ошибка авторизации:", error);
+        
+        if (error.code === 'auth/operation-not-allowed') {
+          showError(
+            'fa-user-lock', 
+            'Анонимная авторизация отключена!', 
+            'Зайдите в Firebase Console -> Authentication -> вкладка Sign-in method -> включите провайдер "Anonymous".'
+          );
+        } else if (error.code === 'auth/network-request-failed') {
+          showError('fa-wifi', 'Нет подключения', 'Проверьте соединение с интернетом.');
+        } else {
+          showError('fa-plug-circle-xmark', 'Ошибка Firebase', error.message);
+        }
+      }
+    };
+
+    initAuth();
+
+    onAuthStateChanged(auth, (user) => {
+      currentUser = user;
+      if (user) {
+        setupListeners();
+        document.getElementById('sync-status').innerHTML = '<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Синхронизировано';
+        document.getElementById('sync-status').className = 'text-xs text-green-600 font-medium flex items-center gap-1';
+        document.getElementById('loader').style.display = 'none';
+        window.switchTab('tasks');
+      }
+    });
+
+    // Функция подписки на коллекции
+    function setupListeners() {
+      const collections = ['tasks', 'shopping', 'contacts', 'finances', 'inventory', 'notes', 'events'];
+      
+      collections.forEach(colName => {
+        const ref = collection(db, 'artifacts', appId, 'public', 'data', colName);
+        onSnapshot(ref, (snapshot) => {
+          const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          data.sort((a, b) => b.createdAt - a.createdAt);
+          dataState[colName] = data;
+          renderData(colName);
+        }, (err) => console.error(`Ошибка загрузки ${colName}:`, err));
+      });
+    }
+
+    // === РЕНДЕР ИНТЕРФЕЙСА ===
+    function renderData(type) {
+      if(type === 'tasks') {
+        const container = document.getElementById('tasks-list');
+        const activeCount = dataState.tasks.filter(t => !t.completed).length;
+        const counterEl = document.getElementById('tasks-counter');
+        if (counterEl) counterEl.innerText = dataState.tasks.length ? (activeCount ? `Осталось: ${activeCount}` : 'Всё сделано! 🎉') : '';
+
+        const filtered = taskFilter === 'all' ? dataState.tasks : dataState.tasks.filter(t => t.assignee === taskFilter);
+
+        if(!filtered.length) {
+          const msg = dataState.tasks.length ? 'Нет дел с этим фильтром.' : 'Все дела сделаны! 🎉';
+          container.innerHTML = `<div class="text-center py-10 bg-slate-50 rounded-xl border border-dashed border-slate-300"><i class="fa-solid fa-square-check text-4xl text-slate-300 mb-3 block"></i><p class="text-slate-500 font-medium">${msg}</p></div>`;
+          return;
+        }
+        container.innerHTML = filtered.map(t => {
+          const emoji = t.assignee === 'Папа' ? '👨' : t.assignee === 'Мама' ? '👩' : '👥';
+          const badgeClass = t.assignee === 'Папа' ? 'bg-blue-50 text-blue-600' : t.assignee === 'Мама' ? 'bg-rose-50 text-rose-600' : 'bg-slate-100 text-slate-600';
+          return `
+          <div class="group flex items-center justify-between p-4 rounded-xl border transition-all duration-300 ${t.completed ? 'bg-slate-50 border-slate-200 opacity-75' : 'bg-white border-slate-200 shadow-sm hover:shadow-md'}">
+            <div class="flex items-center gap-4 flex-1 cursor-pointer min-w-0" onclick="window.toggleTask('${t.id}', ${t.completed}, '${escapeHTML(t.title)}', '${escapeHTML(t.assignee)}')">
+              <i class="${t.completed ? 'fa-solid fa-circle-check text-green-500 text-2xl' : 'fa-regular fa-circle text-slate-300 text-2xl group-hover:text-indigo-400'} shrink-0"></i>
+              <div class="min-w-0">
+                <p class="font-medium ${t.completed ? 'text-slate-500 line-through' : 'text-slate-800'} truncate">${escapeHTML(t.title)}</p>
+                <p class="text-xs font-semibold mt-1 inline-block px-2 py-0.5 rounded-full ${badgeClass}">${emoji} ${escapeHTML(t.assignee)}</p>
+              </div>
+            </div>
+            <div class="flex items-center shrink-0 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all">
+              <button onclick="window.openEditModal('tasks', '${t.id}')" class="text-slate-300 hover:text-indigo-500 p-2"><i class="fa-solid fa-pen"></i></button>
+              <button onclick="window.deleteDocItem('tasks', '${t.id}')" class="text-slate-300 hover:text-red-500 p-2"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </div>
+        `}).join('');
+      }
+      
+      if(type === 'shopping') {
+        const container = document.getElementById('shopping-list');
+        if(!dataState.shopping.length) {
+          container.innerHTML = `<div class="text-center py-10 bg-slate-50 rounded-xl border border-dashed border-slate-300"><i class="fa-solid fa-cart-shopping text-4xl text-slate-300 mb-3 block"></i><p class="text-slate-500 font-medium">Список пуст.</p></div>`;
+          return;
+        }
+        container.innerHTML = dataState.shopping.map(i => `
+          <div class="group flex items-center justify-between p-4 rounded-xl border transition-all duration-300 ${i.bought ? 'bg-slate-50 border-slate-200 opacity-75' : 'bg-white border-slate-200 shadow-sm hover:shadow-md'}">
+            <div class="flex items-center gap-4 flex-1 cursor-pointer" onclick="window.toggleShopping('${i.id}', ${i.bought}, '${escapeHTML(i.item)}')">
+              <i class="${i.bought ? 'fa-solid fa-circle-check text-emerald-500 text-2xl' : 'fa-regular fa-circle text-slate-300 text-2xl group-hover:text-emerald-400'}"></i>
+              <p class="font-medium ${i.bought ? 'text-slate-500 line-through' : 'text-slate-800'}">${escapeHTML(i.item)}</p>
+            </div>
+            <div class="flex items-center shrink-0 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all">
+              <button onclick="window.openEditModal('shopping', '${i.id}')" class="text-slate-300 hover:text-emerald-600 p-2"><i class="fa-solid fa-pen"></i></button>
+              <button onclick="window.deleteDocItem('shopping', '${i.id}')" class="text-slate-300 hover:text-red-500 p-2"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      if(type === 'contacts') {
+        const container = document.getElementById('contacts-list');
+        if(!dataState.contacts.length) {
+          container.innerHTML = `<div class="col-span-full text-center py-10 bg-slate-50 rounded-xl border border-dashed border-slate-300"><i class="fa-solid fa-users text-4xl text-slate-300 mb-3 block"></i><p class="text-slate-500 font-medium">Нет контактов.</p></div>`;
+          return;
+        }
+        container.innerHTML = dataState.contacts.map(c => `
+          <div class="group bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative hover:shadow-md transition-shadow">
+            <div class="absolute top-3 right-3 flex items-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all">
+              <button onclick="window.openEditModal('contacts', '${c.id}')" class="text-slate-300 hover:text-blue-600 p-1.5"><i class="fa-solid fa-pen"></i></button>
+              <button onclick="window.deleteDocItem('contacts', '${c.id}')" class="text-slate-300 hover:text-red-500 p-1.5"><i class="fa-solid fa-trash"></i></button>
+            </div>
+            <div class="flex justify-between items-start pr-6">
+              <div><h3 class="font-bold text-slate-800 text-lg">${escapeHTML(c.name)}</h3><p class="text-sm text-slate-500">${escapeHTML(c.role)}</p></div>
+              <div class="bg-blue-50 p-2.5 rounded-full text-blue-600"><i class="fa-solid fa-phone"></i></div>
+            </div>
+            <a href="tel:${c.phone}" class="text-blue-600 font-semibold hover:underline mt-2 inline-block">${escapeHTML(c.phone)}</a>
+          </div>
+        `).join('');
+      }
+
+      if(type === 'finances') {
+        const container = document.getElementById('finances-list');
+        const total = dataState.finances.reduce((acc, curr) => curr.type === 'income' ? acc + curr.amount : acc - curr.amount, 0);
+        document.getElementById('finance-total').innerText = `${total.toLocaleString('ru-RU')} ₽`;
+        
+        if(!dataState.finances.length) {
+          container.innerHTML = `<div class="text-center py-10 bg-slate-50 rounded-xl border border-dashed border-slate-300"><i class="fa-solid fa-wallet text-4xl text-slate-300 mb-3 block"></i><p class="text-slate-500 font-medium">Нет записей о финансах.</p></div>`;
+          return;
+        }
+        container.innerHTML = dataState.finances.map(f => `
+          <div class="flex items-center justify-between p-4 bg-white rounded-xl border border-slate-200 shadow-sm group hover:shadow-md transition-shadow">
+            <div class="flex items-center gap-4">
+              <div class="p-2 rounded-full text-xl ${f.type === 'income' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-500'}">
+                <i class="fa-solid ${f.type === 'income' ? 'fa-circle-arrow-up' : 'fa-circle-arrow-down'}"></i>
+              </div>
+              <div>
+                <p class="font-medium text-slate-800">${escapeHTML(f.description)}</p>
+                <p class="font-semibold ${f.type === 'income' ? 'text-green-600' : 'text-red-500'}">${f.type === 'income' ? '+' : '-'}${f.amount.toLocaleString('ru-RU')} ₽</p>
+              </div>
+            </div>
+            <div class="flex items-center shrink-0 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all">
+              <button onclick="window.openEditModal('finances', '${f.id}')" class="text-slate-300 hover:text-violet-600 p-2"><i class="fa-solid fa-pen"></i></button>
+              <button onclick="window.deleteDocItem('finances', '${f.id}')" class="text-slate-300 hover:text-red-500 p-2"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      if(type === 'inventory') {
+        const container = document.getElementById('inventory-list');
+        if(!dataState.inventory.length) {
+          container.innerHTML = `<div class="col-span-full text-center py-10 bg-slate-50 rounded-xl border border-dashed border-slate-300"><i class="fa-solid fa-box text-4xl text-slate-300 mb-3 block"></i><p class="text-slate-500 font-medium">Ваша кладовка пуста.</p></div>`;
+          return;
+        }
+        container.innerHTML = dataState.inventory.map(i => `
+          <div class="flex justify-between items-center p-4 bg-white border border-slate-200 rounded-xl shadow-sm group hover:shadow-md transition-shadow">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="bg-amber-50 p-2 rounded-lg text-amber-500 shrink-0"><i class="fa-solid fa-box"></i></div>
+              <div class="min-w-0">
+                <p class="font-medium text-slate-800 truncate">${escapeHTML(i.name)}</p>
+                <div class="flex flex-wrap items-center gap-1.5 mt-1">
+                  <span class="text-xs font-semibold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md">${escapeHTML(i.location)}</span>
+                  <span class="text-xs font-medium ${formatLastPurchased(i.lastPurchased).className} px-2 py-0.5 rounded-md flex items-center gap-1">
+                    <i class="fa-solid fa-clock-rotate-left text-[10px]"></i> ${formatLastPurchased(i.lastPurchased).text}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center shrink-0">
+              <button onclick="window.markPurchased('inventory', '${i.id}')" title="Отметить, что купили сегодня" class="text-slate-300 hover:text-emerald-500 p-2"><i class="fa-solid fa-cart-circle-check"></i></button>
+              <button onclick="window.openEditModal('inventory', '${i.id}')" class="text-slate-300 hover:text-amber-500 p-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all"><i class="fa-solid fa-pen"></i></button>
+              <button onclick="window.deleteDocItem('inventory', '${i.id}')" class="text-slate-300 hover:text-red-500 p-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      if(type === 'notes') {
+        const container = document.getElementById('notes-list');
+        if(!dataState.notes.length) {
+          container.innerHTML = `<div class="col-span-full text-center py-10 bg-slate-50 rounded-xl border border-dashed border-slate-300"><i class="fa-solid fa-note-sticky text-4xl text-slate-300 mb-3 block"></i><p class="text-slate-500 font-medium">Нет сохраненных заметок.</p></div>`;
+          return;
+        }
+        container.innerHTML = dataState.notes.map(n => `
+          <div class="bg-[#fff9e6] p-5 rounded-2xl border border-amber-200/50 shadow-sm relative group hover:shadow-md transition-shadow">
+            <div class="absolute top-3 right-3 flex items-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all">
+              <button onclick="window.openEditModal('notes', '${n.id}')" class="text-amber-300 hover:text-amber-600 p-1.5"><i class="fa-solid fa-pen"></i></button>
+              <button onclick="window.deleteDocItem('notes', '${n.id}')" class="text-amber-300 hover:text-red-500 p-1.5"><i class="fa-solid fa-trash"></i></button>
+            </div>
+            <h3 class="font-bold text-slate-800 mb-2 pr-14 border-b border-amber-200/50 pb-2">${escapeHTML(n.title)}</h3>
+            <p class="text-slate-700 text-sm whitespace-pre-wrap leading-relaxed">${escapeHTML(n.content)}</p>
+          </div>
+        `).join('');
+      }
+
+      if(type === 'events') {
+        const container = document.getElementById('events-list');
+        if(!dataState.events.length) {
+          container.innerHTML = `<div class="text-center py-10 bg-slate-50 rounded-xl border border-dashed border-slate-300"><i class="fa-solid fa-calendar-day text-4xl text-slate-300 mb-3 block"></i><p class="text-slate-500 font-medium">Нет запланированных событий.</p></div>`;
+          return;
+        }
+        const sorted = [...dataState.events].sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+        container.innerHTML = sorted.map(ev => {
+          const info = formatEventDate(ev.date);
+          return `
+          <div class="group flex items-center justify-between p-4 rounded-xl border transition-all duration-300 bg-white border-slate-200 shadow-sm hover:shadow-md">
+            <div class="flex items-center gap-4 flex-1 min-w-0">
+              <div class="shrink-0 w-14 h-14 rounded-xl flex flex-col items-center justify-center ${info.boxClass}">
+                <span class="text-lg font-bold leading-none">${info.day}</span>
+                <span class="text-[10px] font-semibold uppercase leading-none mt-1">${info.month}</span>
+              </div>
+              <div class="min-w-0">
+                <p class="font-medium text-slate-800 truncate">${escapeHTML(ev.title)}</p>
+                <p class="text-xs font-semibold mt-1 ${info.textClass}">${info.label}</p>
+              </div>
+            </div>
+            <div class="flex items-center shrink-0 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all">
+              <button onclick="window.openEditModal('events', '${ev.id}')" class="text-slate-300 hover:text-teal-600 p-2"><i class="fa-solid fa-pen"></i></button>
+              <button onclick="window.deleteDocItem('events', '${ev.id}')" class="text-slate-300 hover:text-red-500 p-2"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </div>
+        `}).join('');
+      }
+    }
+
+    // Форматирование даты события: число/месяц + метка "сегодня/через N дней/прошло"
+    function formatEventDate(dateStr) {
+      const months = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+      if (!dateStr) return { day: '?', month: '', label: '', boxClass: 'bg-slate-100 text-slate-500', textClass: 'text-slate-400' };
+      const d = new Date(dateStr + 'T00:00:00');
+      const today = new Date(); today.setHours(0,0,0,0);
+      const diffDays = Math.round((d - today) / 86400000);
+      let label, boxClass, textClass;
+      if (diffDays === 0) { label = 'Сегодня'; boxClass = 'bg-teal-600 text-white'; textClass = 'text-teal-600'; }
+      else if (diffDays === 1) { label = 'Завтра'; boxClass = 'bg-teal-100 text-teal-700'; textClass = 'text-teal-600'; }
+      else if (diffDays > 1 && diffDays <= 7) { label = `Через ${diffDays} дн.`; boxClass = 'bg-teal-50 text-teal-600'; textClass = 'text-teal-600'; }
+      else if (diffDays > 7) { label = `Через ${diffDays} дн.`; boxClass = 'bg-slate-100 text-slate-600'; textClass = 'text-slate-400'; }
+      else { label = `Прошло ${Math.abs(diffDays)} дн. назад`; boxClass = 'bg-slate-100 text-slate-400'; textClass = 'text-slate-400'; }
+      return { day: d.getDate(), month: months[d.getMonth()], label, boxClass, textClass };
+    }
+
+    // Форматирование даты последней покупки для запасов
+    function formatLastPurchased(ts) {
+      if (!ts) return { text: 'Ещё не покупали', className: 'bg-slate-100 text-slate-500' };
+      const days = Math.floor((Date.now() - ts) / 86400000);
+      let text, className;
+      if (days <= 0) { text = 'Куплено сегодня'; className = 'bg-emerald-50 text-emerald-600'; }
+      else if (days === 1) { text = 'Куплено вчера'; className = 'bg-emerald-50 text-emerald-600'; }
+      else if (days < 7) { text = `Куплено ${days} дн. назад`; className = 'bg-slate-100 text-slate-600'; }
+      else if (days < 30) { text = `Куплено ${Math.floor(days/7)} нед. назад`; className = 'bg-amber-50 text-amber-600'; }
+      else { text = `Куплено ${new Date(ts).toLocaleDateString('ru-RU')}`; className = 'bg-red-50 text-red-500'; }
+      return { text, className };
+    }
+
+    // === ГЛОБАЛЬНЫЕ ФУНКЦИИ (ДЛЯ ВЫЗОВА ИЗ HTML) ===
+    
+    // Переключение вкладок
+    window.switchTab = (tabId) => {
+      ['tasks', 'shopping', 'contacts', 'finances', 'inventory', 'notes', 'events'].forEach(t => {
+        document.getElementById(`tab-${t}`).style.display = 'none';
+        
+        // Сброс стилей кнопок меню
+        const btn = document.getElementById(`nav-${t}`);
+        btn.className = `w-full flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-1 sm:gap-3 p-3 sm:px-4 sm:py-3.5 rounded-xl transition-all text-slate-600 hover:bg-slate-200 hover:text-slate-900`;
+      });
+      
+      document.getElementById(`tab-${tabId}`).style.display = 'block';
+      
+      // Активный стиль кнопки
+      const activeBtn = document.getElementById(`nav-${tabId}`);
+      const bgColors = { tasks: 'bg-indigo-600', shopping: 'bg-emerald-600', contacts: 'bg-blue-600', finances: 'bg-violet-600', inventory: 'bg-amber-500', notes: 'bg-rose-500', events: 'bg-teal-600' };
+      activeBtn.className = `w-full flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-1 sm:gap-3 p-3 sm:px-4 sm:py-3.5 rounded-xl transition-all text-white shadow-md ${bgColors[tabId]}`;
+    };
+
+    // Фильтр дел: Все / Папа / Мама
+    window.setTaskFilter = (filter) => {
+      taskFilter = filter;
+      const activeClasses = { all: 'bg-indigo-600 text-white', 'Папа': 'bg-blue-600 text-white', 'Мама': 'bg-rose-500 text-white' };
+      ['all', 'Папа', 'Мама'].forEach(f => {
+        const btn = document.getElementById(`filter-${f}`);
+        if (!btn) return;
+        btn.className = f === filter
+          ? `task-filter-btn px-4 py-2 rounded-full text-sm font-semibold shadow-sm transition-all ${activeClasses[f]}`
+          : 'task-filter-btn px-4 py-2 rounded-full text-sm font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all';
+      });
+      renderData('tasks');
+    };
+
+    // Единый обработчик ошибок записи в Firestore
+    function handleWriteError(e, action) {
+      console.error(`Ошибка (${action}):`, e);
+      let msg = e.message || String(e);
+      if (e.code === 'permission-denied') {
+        msg = 'Firestore заблокировал запись (permission-denied). Откройте Firebase Console → Firestore Database → вкладка Rules и разрешите доступ авторизованным пользователям, например:\n\nallow read, write: if request.auth != null;\n\nЗатем нажмите Publish.';
+      } else if (e.code === 'not-found' || (e.message && e.message.includes('database'))) {
+        msg = 'Похоже, база Firestore ещё не создана в этом проекте. Откройте Firebase Console → Firestore Database → Create database.';
+      }
+      alert(`Не удалось выполнить действие "${action}":\n\n${msg}`);
+    }
+
+    // Удаление любого документа (с подтверждением)
+    window.deleteDocItem = async (colName, id) => {
+      if(!currentUser) return;
+      if(!confirm('Удалить этот пункт? Это действие нельзя отменить.')) return;
+      try {
+        await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', colName, id));
+      } catch (e) {
+        handleWriteError(e, 'удаление');
+      }
+    };
+
+    // Отметить "куплено сегодня" для запаса
+    window.markPurchased = async (colName, id) => {
+      if(!currentUser) return;
+      try {
+        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', colName, id), { lastPurchased: Date.now() }, {merge: true});
+      } catch (e) {
+        handleWriteError(e, 'отметка покупки');
+      }
+    };
+
+    // === РЕДАКТИРОВАНИЕ (универсальное модальное окно) ===
+    let editState = { type: null, id: null };
+
+    const editFieldConfig = {
+      tasks: {
+        title: 'Редактировать дело',
+        fields: [
+          { key: 'title', label: 'Что нужно сделать', kind: 'text', required: true },
+          { key: 'assignee', label: 'Кто делает', kind: 'select', options: [['Общее','👥 Общее'], ['Папа','👨 Папа'], ['Мама','👩 Мама']] }
+        ]
+      },
+      shopping: {
+        title: 'Редактировать покупку',
+        fields: [
+          { key: 'item', label: 'Что купить', kind: 'text', required: true }
+        ]
+      },
+      contacts: {
+        title: 'Редактировать контакт',
+        fields: [
+          { key: 'name', label: 'Имя', kind: 'text', required: true },
+          { key: 'role', label: 'Роль', kind: 'text' },
+          { key: 'phone', label: 'Телефон', kind: 'text', required: true }
+        ]
+      },
+      finances: {
+        title: 'Редактировать запись бюджета',
+        fields: [
+          { key: 'description', label: 'Описание', kind: 'text', required: true },
+          { key: 'amount', label: 'Сумма', kind: 'number', required: true },
+          { key: 'type', label: 'Тип', kind: 'select', options: [['expense','Расход'], ['income','Доход']] }
+        ]
+      },
+      inventory: {
+        title: 'Редактировать запас',
+        fields: [
+          { key: 'name', label: 'Что храним', kind: 'text', required: true },
+          { key: 'location', label: 'Где', kind: 'text' }
+        ]
+      },
+      notes: {
+        title: 'Редактировать заметку',
+        fields: [
+          { key: 'title', label: 'Заголовок', kind: 'text', required: true },
+          { key: 'content', label: 'Текст', kind: 'textarea' }
+        ]
+      },
+      events: {
+        title: 'Редактировать событие',
+        fields: [
+          { key: 'title', label: 'Что за событие', kind: 'text', required: true },
+          { key: 'date', label: 'Дата', kind: 'date', required: true }
+        ]
+      }
+    };
+
+    window.openEditModal = (type, id) => {
+      const item = dataState[type].find(x => x.id === id);
+      if (!item) return;
+      const config = editFieldConfig[type];
+      editState = { type, id };
+
+      document.getElementById('edit-modal-title').innerText = config.title;
+      document.getElementById('edit-modal-body').innerHTML = config.fields.map(f => {
+        const val = item[f.key] !== undefined && item[f.key] !== null ? item[f.key] : '';
+        const labelHtml = `<label class="block text-xs font-semibold text-slate-500 mb-1">${f.label}</label>`;
+        if (f.kind === 'textarea') {
+          return `<div>${labelHtml}<textarea id="edit-field-${f.key}" class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 min-h-[100px] resize-y">${escapeHTML(val)}</textarea></div>`;
+        }
+        if (f.kind === 'select') {
+          const opts = f.options.map(([v, label]) => `<option value="${v}" ${v === val ? 'selected' : ''}>${label}</option>`).join('');
+          return `<div>${labelHtml}<select id="edit-field-${f.key}" class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">${opts}</select></div>`;
+        }
+        return `<div>${labelHtml}<input type="${f.kind}" id="edit-field-${f.key}" value="${escapeHTML(String(val))}" class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" ${f.required ? 'required' : ''}></div>`;
+      }).join('');
+
+      const modal = document.getElementById('edit-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    };
+
+    window.closeEditModal = () => {
+      const modal = document.getElementById('edit-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      editState = { type: null, id: null };
+    };
+
+    window.saveEdit = async () => {
+      if (!editState.type || !editState.id || !currentUser) return;
+      const config = editFieldConfig[editState.type];
+      const updates = {};
+      for (const f of config.fields) {
+        const el = document.getElementById(`edit-field-${f.key}`);
+        if (!el) continue;
+        let value = el.value;
+        if (f.required && !String(value).trim()) {
+          alert(`Поле "${f.label}" не может быть пустым.`);
+          return;
+        }
+        if (f.kind === 'number') value = parseFloat(value) || 0;
+        updates[f.key] = value;
+      }
+      try {
+        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', editState.type, editState.id), updates, {merge: true});
+        window.closeEditModal();
+      } catch (e) {
+        handleWriteError(e, 'сохранение изменений');
+      }
+    };
+
+    // Закрытие модалки по клику на фон
+    document.getElementById('edit-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'edit-modal') window.closeEditModal();
+    });
+
+    // Добавление Задачи
+    window.addTask = async (e) => {
+      e.preventDefault();
+      const title = document.getElementById('task-title').value;
+      const assignee = document.getElementById('task-assignee').value || 'Общее';
+      if(!title.trim() || !currentUser) return;
+      try {
+        await setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'tasks')), { title, assignee, completed: false, createdAt: Date.now() });
+        document.getElementById('task-title').value = '';
+        document.getElementById('task-assignee').value = '';
+      } catch (err) {
+        handleWriteError(err, 'добавление задачи');
+      }
+    };
+
+    // Очистить все выполненные дела разом
+    window.clearCompletedTasks = async () => {
+      const completed = dataState.tasks.filter(t => t.completed);
+      if (!completed.length) { alert('Нет выполненных дел для очистки.'); return; }
+      if (!confirm(`Удалить ${completed.length} выполненных дел? Это действие нельзя отменить.`)) return;
+      try {
+        await Promise.all(completed.map(t => deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'tasks', t.id))));
+      } catch (e) {
+        handleWriteError(e, 'очистка выполненных дел');
+      }
+    };
+
+    // Переключение Задачи
+    window.toggleTask = async (id, isCompleted, title, assignee) => {
+      if(!currentUser) return;
+      try {
+        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'tasks', id), { title, assignee, completed: !isCompleted }, {merge: true});
+      } catch (e) {
+        handleWriteError(e, 'изменение задачи');
+      }
+    };
+
+    // Добавление Покупки
+    window.addShoppingItem = async (e) => {
+      e.preventDefault();
+      const item = document.getElementById('shopping-item').value;
+      if(!item.trim() || !currentUser) return;
+      try {
+        await setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'shopping')), { item, bought: false, createdAt: Date.now() });
+        document.getElementById('shopping-item').value = '';
+      } catch (err) {
+        handleWriteError(err, 'добавление покупки');
+      }
+    };
+
+    window.toggleShopping = async (id, isBought, item) => {
+      if(!currentUser) return;
+      try {
+        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'shopping', id), { item, bought: !isBought }, {merge: true});
+      } catch (e) {
+        handleWriteError(e, 'изменение покупки');
+      }
+    };
+
+    // Контакты
+    window.addContact = async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('contact-name').value;
+      const role = document.getElementById('contact-role').value || 'Контакт';
+      const phone = document.getElementById('contact-phone').value;
+      if(!name.trim() || !phone.trim() || !currentUser) return;
+      try {
+        await setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'contacts')), { name, role, phone, createdAt: Date.now() });
+        document.getElementById('contact-name').value = ''; document.getElementById('contact-role').value = ''; document.getElementById('contact-phone').value = '';
+      } catch (err) {
+        handleWriteError(err, 'добавление контакта');
+      }
+    };
+
+    // Финансы
+    window.addFinance = async (e) => {
+      e.preventDefault();
+      const desc = document.getElementById('finance-desc').value;
+      const amount = parseFloat(document.getElementById('finance-amount').value);
+      const type = document.getElementById('finance-type').value;
+      if(!desc.trim() || isNaN(amount) || !currentUser) return;
+      try {
+        await setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'finances')), { description: desc, amount, type, createdAt: Date.now() });
+        document.getElementById('finance-desc').value = ''; document.getElementById('finance-amount').value = '';
+      } catch (err) {
+        handleWriteError(err, 'добавление записи бюджета');
+      }
+    };
+
+    // Запасы
+    window.addInventory = async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('inv-name').value;
+      const location = document.getElementById('inv-location').value || 'Дом';
+      if(!name.trim() || !currentUser) return;
+      try {
+        await setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'inventory')), { name, location, lastPurchased: null, createdAt: Date.now() });
+        document.getElementById('inv-name').value = ''; document.getElementById('inv-location').value = '';
+      } catch (err) {
+        handleWriteError(err, 'добавление запаса');
+      }
+    };
+
+    window.quickFillInv = (name, loc) => {
+      document.getElementById('inv-name').value = name;
+      document.getElementById('inv-location').value = loc;
+    };
+
+    // Заметки
+    window.addNote = async (e) => {
+      e.preventDefault();
+      const title = document.getElementById('note-title').value;
+      const content = document.getElementById('note-content').value;
+      if(!title.trim() || !currentUser) return;
+      try {
+        await setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'notes')), { title, content, createdAt: Date.now() });
+        document.getElementById('note-title').value = ''; document.getElementById('note-content').value = '';
+      } catch (err) {
+        handleWriteError(err, 'добавление заметки');
+      }
+    };
+
+    // События
+    window.addEvent = async (e) => {
+      e.preventDefault();
+      const title = document.getElementById('event-title').value;
+      const date = document.getElementById('event-date').value;
+      if(!title.trim() || !date || !currentUser) return;
+      try {
+        await setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'events')), { title, date, createdAt: Date.now() });
+        document.getElementById('event-title').value = ''; document.getElementById('event-date').value = '';
+      } catch (err) {
+        handleWriteError(err, 'добавление события');
+      }
+    };
+
+    // Утилита для безопасности от XSS
+    function escapeHTML(str) {
+      if(!str) return '';
+      return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag]));
+    }
+
+  </script>
+</body>
+</html>
     /* Прячем скроллбар для мобильного меню */
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
