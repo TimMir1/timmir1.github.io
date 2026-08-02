@@ -316,6 +316,7 @@
     let currentUser = null;
     let dataState = { tasks: [], shopping: [], contacts: [], finances: [], inventory: [], notes: [], events: [] };
     let taskFilter = 'all';
+    let expandedEvents = new Set();
 
     // Инициализация авторизации
     const initAuth = async () => {
@@ -385,16 +386,23 @@
           container.innerHTML = `<div class="text-center py-10 bg-slate-50 rounded-xl border border-dashed border-slate-300"><i class="fa-solid fa-square-check text-4xl text-slate-300 mb-3 block"></i><p class="text-slate-500 font-medium">${msg}</p></div>`;
           return;
         }
-        container.innerHTML = filtered.map(t => {
+
+        const taskRow = (t) => {
           const emoji = t.assignee === 'Папа' ? '👨' : t.assignee === 'Мама' ? '👩' : '👥';
           const badgeClass = t.assignee === 'Папа' ? 'bg-blue-50 text-blue-600' : t.assignee === 'Мама' ? 'bg-rose-50 text-rose-600' : 'bg-slate-100 text-slate-600';
+          const statusBadge = t.completed
+            ? `<span class="text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-600">Выполнено</span>`
+            : `<span class="text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded bg-amber-50 text-amber-600">В работе</span>`;
           return `
           <div class="group flex items-center justify-between p-4 rounded-xl border transition-all duration-300 ${t.completed ? 'bg-slate-50 border-slate-200 opacity-75' : 'bg-white border-slate-200 shadow-sm hover:shadow-md'}">
             <div class="flex items-center gap-4 flex-1 cursor-pointer min-w-0" onclick="window.toggleTask('${t.id}', ${t.completed}, '${escapeHTML(t.title)}', '${escapeHTML(t.assignee)}')">
               <i class="${t.completed ? 'fa-solid fa-circle-check text-green-500 text-2xl' : 'fa-regular fa-circle text-slate-300 text-2xl group-hover:text-indigo-400'} shrink-0"></i>
               <div class="min-w-0">
                 <p class="font-medium ${t.completed ? 'text-slate-500 line-through' : 'text-slate-800'} truncate">${escapeHTML(t.title)}</p>
-                <p class="text-xs font-semibold mt-1 inline-block px-2 py-0.5 rounded-full ${badgeClass}">${emoji} ${escapeHTML(t.assignee)}</p>
+                <div class="flex items-center gap-1.5 mt-1 flex-wrap">
+                  <span class="text-xs font-semibold inline-block px-2 py-0.5 rounded-full ${badgeClass}">${emoji} ${escapeHTML(t.assignee)}</span>
+                  ${statusBadge}
+                </div>
               </div>
             </div>
             <div class="flex items-center shrink-0 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all">
@@ -402,7 +410,33 @@
               <button onclick="window.deleteDocItem('tasks', '${t.id}')" class="text-slate-300 hover:text-red-500 p-2"><i class="fa-solid fa-trash"></i></button>
             </div>
           </div>
-        `}).join('');
+        `};
+
+        const activeItems = filtered.filter(t => !t.completed);
+        const completedItems = filtered.filter(t => t.completed);
+
+        let html = '';
+        if (activeItems.length) {
+          html += `
+            <div class="flex items-center gap-2 mb-3">
+              <span class="text-xs font-bold uppercase tracking-wide text-indigo-500">К выполнению</span>
+              <span class="text-xs text-slate-300">${activeItems.length}</span>
+              <div class="flex-1 h-px bg-slate-100"></div>
+            </div>
+            <div class="space-y-3">${activeItems.map(taskRow).join('')}</div>
+          `;
+        }
+        if (completedItems.length) {
+          html += `
+            <div class="flex items-center gap-2 mb-3 ${activeItems.length ? 'mt-7' : ''}">
+              <span class="text-xs font-bold uppercase tracking-wide text-slate-400">Выполнено</span>
+              <span class="text-xs text-slate-300">${completedItems.length}</span>
+              <div class="flex-1 h-px bg-slate-100"></div>
+            </div>
+            <div class="space-y-3">${completedItems.map(taskRow).join('')}</div>
+          `;
+        }
+        container.innerHTML = html;
       }
       
       if(type === 'shopping') {
@@ -530,21 +564,52 @@
         const sorted = [...dataState.events].sort((a, b) => (a.date || '').localeCompare(b.date || ''));
         container.innerHTML = sorted.map(ev => {
           const info = formatEventDate(ev.date);
+          const checklist = ev.checklist || [];
+          const doneCount = checklist.filter(c => c.done).length;
+          const isExpanded = expandedEvents.has(ev.id);
+          const progressBadge = checklist.length
+            ? `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full ${doneCount === checklist.length ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}">${doneCount}/${checklist.length}</span>`
+            : '';
+          const checklistHtml = checklist.map(item => `
+            <div class="flex items-center gap-2 group/item py-1.5">
+              <button onclick="window.toggleChecklistItem('${ev.id}', '${item.id}')" class="shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${item.done ? 'bg-teal-600 border-teal-600' : 'border-slate-300 hover:border-teal-400'}">
+                ${item.done ? '<i class="fa-solid fa-check text-white text-[10px]"></i>' : ''}
+              </button>
+              <span class="flex-1 text-sm min-w-0 truncate ${item.done ? 'text-slate-400 line-through' : 'text-slate-700'}">${escapeHTML(item.text)}</span>
+              <span class="text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded shrink-0 ${item.done ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}">${item.done ? 'Выполнено' : 'В работе'}</span>
+              <button onclick="window.deleteChecklistItem('${ev.id}', '${item.id}')" class="text-slate-300 hover:text-red-500 opacity-0 group-hover/item:opacity-100 transition-all p-1 shrink-0"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+          `).join('');
           return `
-          <div class="group flex items-center justify-between p-4 rounded-xl border transition-all duration-300 bg-white border-slate-200 shadow-sm hover:shadow-md">
-            <div class="flex items-center gap-4 flex-1 min-w-0">
-              <div class="shrink-0 w-14 h-14 rounded-xl flex flex-col items-center justify-center ${info.boxClass}">
-                <span class="text-lg font-bold leading-none">${info.day}</span>
-                <span class="text-[10px] font-semibold uppercase leading-none mt-1">${info.month}</span>
+          <div class="group rounded-xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+            <div class="flex items-center justify-between p-4 cursor-pointer" onclick="window.toggleEventExpand('${ev.id}')">
+              <div class="flex items-center gap-4 flex-1 min-w-0">
+                <div class="shrink-0 w-14 h-14 rounded-xl flex flex-col items-center justify-center ${info.boxClass}">
+                  <span class="text-lg font-bold leading-none">${info.day}</span>
+                  <span class="text-[10px] font-semibold uppercase leading-none mt-1">${info.month}</span>
+                </div>
+                <div class="min-w-0">
+                  <div class="flex items-center gap-2">
+                    <p class="font-medium text-slate-800 truncate">${escapeHTML(ev.title)}</p>
+                    ${progressBadge}
+                  </div>
+                  <p class="text-xs font-semibold mt-1 ${info.textClass}">${info.label}</p>
+                </div>
               </div>
-              <div class="min-w-0">
-                <p class="font-medium text-slate-800 truncate">${escapeHTML(ev.title)}</p>
-                <p class="text-xs font-semibold mt-1 ${info.textClass}">${info.label}</p>
+              <div class="flex items-center shrink-0 gap-1">
+                <div class="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all flex items-center">
+                  <button onclick="event.stopPropagation(); window.openEditModal('events', '${ev.id}')" class="text-slate-300 hover:text-teal-600 p-2"><i class="fa-solid fa-pen"></i></button>
+                  <button onclick="event.stopPropagation(); window.deleteDocItem('events', '${ev.id}')" class="text-slate-300 hover:text-red-500 p-2"><i class="fa-solid fa-trash"></i></button>
+                </div>
+                <i class="fa-solid fa-chevron-down text-slate-300 transition-transform ml-1 ${isExpanded ? 'rotate-180' : ''}"></i>
               </div>
             </div>
-            <div class="flex items-center shrink-0 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all">
-              <button onclick="window.openEditModal('events', '${ev.id}')" class="text-slate-300 hover:text-teal-600 p-2"><i class="fa-solid fa-pen"></i></button>
-              <button onclick="window.deleteDocItem('events', '${ev.id}')" class="text-slate-300 hover:text-red-500 p-2"><i class="fa-solid fa-trash"></i></button>
+            <div class="${isExpanded ? '' : 'hidden'} border-t border-slate-100 bg-slate-50/60 px-4 py-3 sm:pl-[4.5rem]">
+              ${checklist.length ? `<div class="divide-y divide-slate-100 mb-2">${checklistHtml}</div>` : `<p class="text-xs text-slate-400 mb-2">Список задач к этому дню пуст — добавьте первую.</p>`}
+              <form onsubmit="window.addChecklistItem(event, '${ev.id}')" class="flex gap-2">
+                <input type="text" id="checklist-input-${ev.id}" placeholder="Добавить задачу к событию" class="flex-1 p-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
+                <button type="submit" class="bg-teal-600 text-white px-3 rounded-lg hover:bg-teal-700 transition-all"><i class="fa-solid fa-plus text-sm"></i></button>
+              </form>
             </div>
           </div>
         `}).join('');
@@ -892,10 +957,60 @@
       const date = document.getElementById('event-date').value;
       if(!title.trim() || !date || !currentUser) return;
       try {
-        await setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'events')), { title, date, createdAt: Date.now() });
+        await setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'events')), { title, date, checklist: [], createdAt: Date.now() });
         document.getElementById('event-title').value = ''; document.getElementById('event-date').value = '';
       } catch (err) {
         handleWriteError(err, 'добавление события');
+      }
+    };
+
+    // Развернуть/свернуть список задач события
+    window.toggleEventExpand = (id) => {
+      if (expandedEvents.has(id)) expandedEvents.delete(id); else expandedEvents.add(id);
+      renderData('events');
+    };
+
+    // Добавить задачу к событию
+    window.addChecklistItem = async (e, eventId) => {
+      e.preventDefault();
+      if (!currentUser) return;
+      const input = document.getElementById(`checklist-input-${eventId}`);
+      const text = input.value.trim();
+      if (!text) return;
+      const ev = dataState.events.find(x => x.id === eventId);
+      if (!ev) return;
+      const checklist = [...(ev.checklist || []), { id: `${Date.now()}${Math.floor(Math.random()*1000)}`, text, done: false }];
+      try {
+        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'events', eventId), { checklist }, {merge: true});
+        input.value = '';
+      } catch (err) {
+        handleWriteError(err, 'добавление задачи к событию');
+      }
+    };
+
+    // Переключить статус задачи события: не сделано / выполнено
+    window.toggleChecklistItem = async (eventId, itemId) => {
+      if (!currentUser) return;
+      const ev = dataState.events.find(x => x.id === eventId);
+      if (!ev) return;
+      const checklist = (ev.checklist || []).map(item => item.id === itemId ? { ...item, done: !item.done } : item);
+      try {
+        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'events', eventId), { checklist }, {merge: true});
+      } catch (e) {
+        handleWriteError(e, 'изменение статуса задачи');
+      }
+    };
+
+    // Удалить задачу события
+    window.deleteChecklistItem = async (eventId, itemId) => {
+      if (!currentUser) return;
+      const ev = dataState.events.find(x => x.id === eventId);
+      if (!ev) return;
+      const checklist = (ev.checklist || []).filter(item => item.id !== itemId);
+      try {
+        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'events', eventId), { checklist }, {merge: true});
+      } catch (e) {
+        handleWriteError(e, 'удаление задачи события');
       }
     };
 
