@@ -5,10 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Домашняя CRM</title>
   
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- FontAwesome Иконки -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   
   <style>
@@ -25,7 +23,6 @@
     }
   </style>
 
-  <!-- Проверка на запуск локально без сервера -->
   <script>
     if (window.location.protocol === 'file:') {
       alert("ВНИМАНИЕ! Вы открыли файл напрямую с компьютера (file://).\n\nИз-за политик безопасности браузера модули Firebase не будут работать. Пожалуйста, загрузите этот файл на GitHub Pages или используйте локальный сервер (например, Live Server в VS Code).");
@@ -34,7 +31,6 @@
 </head>
 <body class="bg-slate-50 font-sans text-slate-900 pb-24 sm:pb-8">
 
-  <!-- Шапка -->
   <header class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-20">
     <div class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
       <div class="flex items-center gap-3">
@@ -53,7 +49,6 @@
 
   <div class="max-w-4xl mx-auto flex flex-col sm:flex-row gap-6 p-4 mt-2">
     
-    <!-- Навигация -->
     <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 sm:relative sm:border-t-0 sm:border-none sm:bg-transparent sm:w-64 z-20 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] sm:shadow-none pb-safe sm:pb-0 overflow-x-auto no-scrollbar">
       <ul class="flex sm:flex-col justify-start sm:justify-start gap-2 p-2 sm:p-0 min-w-max sm:min-w-0">
         
@@ -102,22 +97,33 @@
         <li class="flex-1 sm:flex-none">
           <button onclick="window.switchTab('events')" id="nav-events" class="w-full flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-1 sm:gap-3 p-3 sm:px-4 sm:py-3.5 rounded-xl transition-all text-slate-600 hover:bg-slate-200 hover:text-slate-900">
             <i class="fa-solid fa-calendar-day text-xl"></i>
-            <span class="text-xs sm:text-base font-medium">Событие</span>
+            <span class="text-xs sm:text-base font-medium">События</span>
+          </button>
+        </li>
+
+        <li class="flex-1 sm:flex-none">
+          <button onclick="window.switchTab('solomon')" id="nav-solomon" class="w-full flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-1 sm:gap-3 p-3 sm:px-4 sm:py-3.5 rounded-xl transition-all text-slate-600 hover:bg-slate-200 hover:text-slate-900">
+            <i class="fa-solid fa-star text-xl"></i>
+            <span class="text-xs sm:text-base font-medium">Соломон</span>
+          </button>
+        </li>
+
+        <li class="flex-1 sm:flex-none">
+          <button onclick="window.switchTab('sport')" id="nav-sport" class="w-full flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-1 sm:gap-3 p-3 sm:px-4 sm:py-3.5 rounded-xl transition-all text-slate-600 hover:bg-slate-200 hover:text-slate-900">
+            <i class="fa-solid fa-dumbbell text-xl"></i>
+            <span class="text-xs sm:text-base font-medium">Спорт</span>
           </button>
         </li>
       </ul>
     </nav>
 
-    <!-- Основной контент -->
     <main class="flex-1 bg-white p-4 sm:p-7 rounded-2xl shadow-sm border border-slate-200 min-h-[60vh]">
       
-      <!-- Loader (Теперь с поддержкой вывода ошибок) -->
       <div id="loader" class="flex flex-col items-center justify-center min-h-[40vh] text-indigo-600">
         <i class="fa-solid fa-spinner fa-spin text-4xl mb-4"></i>
         <p class="font-medium">Загрузка данных...</p>
       </div>
 
-      <!-- ВКЛАДКА: ДЕЛА -->
       <div id="tab-tasks" class="space-y-5 fade-in hidden">
         <div class="flex items-center justify-between flex-wrap gap-2">
           <h2 class="text-2xl font-bold text-gray-800">Домашние дела</h2>
@@ -155,7 +161,6 @@
         <div id="tasks-list" class="space-y-3"></div>
       </div>
 
-      <!-- ВКЛАДКА: ПОКУПКИ -->
       <div id="tab-shopping" class="space-y-6 fade-in hidden">
         <h2 class="text-2xl font-bold text-gray-800">Список покупок</h2>
         <form onsubmit="window.addShoppingItem(event)" class="flex gap-2 bg-slate-50 p-4 rounded-xl border border-slate-100 shadow-sm">
@@ -167,7 +172,6 @@
         <div id="shopping-list" class="space-y-3"></div>
       </div>
 
-      <!-- ВКЛАДКА: КОНТАКТЫ -->
       <div id="tab-contacts" class="space-y-6 fade-in hidden">
         <h2 class="text-2xl font-bold text-gray-800">Полезные контакты</h2>
         <form onsubmit="window.addContact(event)" class="flex flex-col sm:flex-row gap-2 bg-slate-50 p-4 rounded-xl border border-slate-100 shadow-sm">
@@ -181,7 +185,6 @@
         <div id="contacts-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
       </div>
 
-      <!-- ВКЛАДКА: ФИНАНСЫ -->
       <div id="tab-finances" class="space-y-6 fade-in hidden">
         <div class="flex justify-between items-center bg-gradient-to-r from-violet-500 to-fuchsia-600 p-6 rounded-2xl text-white shadow-lg">
           <div>
@@ -204,20 +207,9 @@
         <div id="finances-list" class="space-y-3"></div>
       </div>
 
-      <!-- ВКЛАДКА: ЗАПАСЫ -->
       <div id="tab-inventory" class="space-y-6 fade-in hidden">
         <h2 class="text-2xl font-bold text-gray-800">Домашние запасы</h2>
         
-        <div class="flex flex-wrap gap-2 items-center -mb-2">
-          <span class="text-sm text-slate-500 font-medium">Быстро добавить:</span>
-          <button type="button" onclick="window.quickFillInv('Корм для кошек', 'Кухня')" class="text-xs bg-amber-50 text-amber-700 px-3 py-1.5 rounded-full hover:bg-amber-100 transition-colors flex items-center gap-1 border border-amber-200 shadow-sm">
-            🐈 Корм для кошек
-          </button>
-          <button type="button" onclick="window.quickFillInv('Наполнитель для лотка', 'Ванная')" class="text-xs bg-amber-50 text-amber-700 px-3 py-1.5 rounded-full hover:bg-amber-100 transition-colors flex items-center gap-1 border border-amber-200 shadow-sm">
-            🐈 Наполнитель
-          </button>
-        </div>
-
         <form onsubmit="window.addInventory(event)" class="flex flex-col sm:flex-row gap-2 bg-slate-50 p-4 rounded-xl border border-slate-100 shadow-sm">
           <input type="text" id="inv-name" placeholder="Что храним? (напр. Аспирин)" class="flex-1 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" required>
           <input type="text" id="inv-location" placeholder="Где? (напр. Кладовка)" class="w-full sm:w-1/3 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
@@ -228,7 +220,6 @@
         <div id="inventory-list" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
       </div>
 
-      <!-- ВКЛАДКА: ЗАМЕТКИ -->
       <div id="tab-notes" class="space-y-6 fade-in hidden">
         <h2 class="text-2xl font-bold text-gray-800">Семейные заметки</h2>
         <form onsubmit="window.addNote(event)" class="flex flex-col gap-2 bg-slate-50 p-4 rounded-xl border border-slate-100 shadow-sm">
@@ -241,17 +232,149 @@
         <div id="notes-list" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
       </div>
 
-      <!-- ВКЛАДКА: СОБЫТИЕ -->
       <div id="tab-events" class="space-y-6 fade-in hidden">
         <h2 class="text-2xl font-bold text-gray-800">Семейные события</h2>
         <form onsubmit="window.addEvent(event)" class="flex flex-col sm:flex-row gap-2 bg-slate-50 p-4 rounded-xl border border-slate-100 shadow-sm">
-          <input type="text" id="event-title" placeholder="Что за событие? (напр. День рождения Яны)" class="flex-1 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500" required>
+          <input type="text" id="event-title" placeholder="Что за событие?" class="flex-1 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500" required>
+          <select id="event-assignee" class="w-full sm:w-36 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white">
+            <option value="Общее">👥 Общее</option>
+            <option value="Папа">👨 Папа</option>
+            <option value="Мама">👩 Мама</option>
+          </select>
           <input type="date" id="event-date" class="w-full sm:w-48 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500" required>
           <button type="submit" class="bg-teal-600 text-white p-3 rounded-lg hover:bg-teal-700 transition-all active:scale-95 flex items-center justify-center gap-2">
             <i class="fa-solid fa-plus"></i> <span class="sm:hidden">Добавить</span>
           </button>
         </form>
         <div id="events-list" class="space-y-3"></div>
+      </div>
+
+      <!-- ВКЛАДКА: СОЛОМОН -->
+      <div id="tab-solomon" class="space-y-6 fade-in hidden">
+        <h2 class="text-2xl font-bold text-gray-800">Соломон</h2>
+
+        <!-- Быстрые упражнения с таймером -->
+        <div class="mb-6 bg-slate-50 p-4 rounded-xl border border-slate-100">
+          <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wide mb-3 flex items-center gap-2"><i class="fa-solid fa-bolt text-indigo-500"></i> Быстрые упражнения</h3>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            
+            <!-- Лежать на животе -->
+            <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+              <div class="mb-3 flex items-center justify-between">
+                <div class="flex items-center gap-2 text-slate-800"><span class="text-xl">🧘‍♂️</span> <h4 class="font-bold">Лежать на животе</h4></div>
+                <span id="solomon-timer-1-display" class="font-mono font-bold text-xl text-indigo-600 hidden animate-pulse">03:00</span>
+              </div>
+              
+              <div id="solomon-controls-1" class="flex gap-1.5">
+                <button onclick="window.startSolomonTimer('Лежать на животе', 180, 'solomon-controls-1', 'solomon-cancel-1', 'solomon-timer-1-display')" class="flex-1 bg-indigo-50 text-indigo-700 font-bold py-2 rounded-lg hover:bg-indigo-100 transition-colors text-xs border border-indigo-200 shadow-sm">3 мин</button>
+                <button onclick="window.startSolomonTimer('Лежать на животе', 300, 'solomon-controls-1', 'solomon-cancel-1', 'solomon-timer-1-display')" class="flex-1 bg-indigo-50 text-indigo-700 font-bold py-2 rounded-lg hover:bg-indigo-100 transition-colors text-xs border border-indigo-200 shadow-sm">5 мин</button>
+                <button onclick="window.startSolomonTimer('Лежать на животе', 420, 'solomon-controls-1', 'solomon-cancel-1', 'solomon-timer-1-display')" class="flex-1 bg-indigo-50 text-indigo-700 font-bold py-2 rounded-lg hover:bg-indigo-100 transition-colors text-xs border border-indigo-200 shadow-sm">7 мин</button>
+              </div>
+              
+              <button id="solomon-cancel-1" onclick="window.cancelSolomonTimer('solomon-controls-1', 'solomon-cancel-1', 'solomon-timer-1-display')" class="hidden w-full bg-slate-100 text-slate-600 font-semibold py-2 rounded-lg hover:bg-red-50 hover:text-red-600 transition-colors text-sm border border-slate-200 flex items-center justify-center gap-2">
+                <i class="fa-solid fa-stop"></i> Стоп таймер
+              </button>
+            </div>
+
+            <!-- Катание на фитболе -->
+            <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+              <div class="mb-3 flex items-center justify-between">
+                <div class="flex items-center gap-2 text-slate-800"><span class="text-xl">⚽</span> <h4 class="font-bold">Катание на фитболе</h4></div>
+                <span id="solomon-timer-2-display" class="font-mono font-bold text-xl text-indigo-600 hidden animate-pulse">02:00</span>
+              </div>
+              
+              <div id="solomon-controls-2" class="flex gap-1.5">
+                <button onclick="window.startSolomonTimer('Катание на фитболе', 120, 'solomon-controls-2', 'solomon-cancel-2', 'solomon-timer-2-display')" class="w-full bg-indigo-50 text-indigo-700 font-bold py-2 rounded-lg hover:bg-indigo-100 transition-colors text-xs border border-indigo-200 shadow-sm">2 минуты</button>
+              </div>
+              
+              <button id="solomon-cancel-2" onclick="window.cancelSolomonTimer('solomon-controls-2', 'solomon-cancel-2', 'solomon-timer-2-display')" class="hidden w-full bg-slate-100 text-slate-600 font-semibold py-2 rounded-lg hover:bg-red-50 hover:text-red-600 transition-colors text-sm border border-slate-200 flex items-center justify-center gap-2">
+                <i class="fa-solid fa-stop"></i> Стоп таймер
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+        <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wide mb-3 flex items-center gap-2 mt-8"><i class="fa-solid fa-pen text-slate-400"></i> Ручная запись</h3>
+        <form onsubmit="window.addSolomon(event)" class="flex flex-col sm:flex-row gap-2 bg-slate-50 p-4 rounded-xl border border-slate-100 shadow-sm">
+          <input type="text" id="solomon-title" placeholder="Что записать?" class="flex-1 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+          <input type="text" id="solomon-notes" placeholder="Доп. информация (опционально)" class="w-full sm:w-1/3 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          <button type="submit" class="bg-indigo-600 text-white px-5 p-3 rounded-lg hover:bg-indigo-700 transition-all flex items-center justify-center shadow-sm">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+        </form>
+        <div id="solomon-list" class="space-y-3 mt-6"></div>
+      </div>
+
+      <!-- ВКЛАДКА: СПОРТ -->
+      <div id="tab-sport" class="space-y-6 fade-in hidden">
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <h2 class="text-2xl font-bold text-gray-800">Спорт / Тренировки</h2>
+          <button type="button" onclick="window.openAddCustomSportModal()" class="bg-orange-500 hover:bg-orange-600 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-sm transition-all flex items-center gap-2">
+            <i class="fa-solid fa-plus"></i> Добавить тренировку
+          </button>
+        </div>
+
+        <!-- Быстрые тренировки -->
+        <div class="mb-6 bg-slate-50 p-4 rounded-xl border border-slate-100">
+          <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wide mb-3 flex items-center gap-2"><i class="fa-solid fa-bolt text-orange-400"></i> Быстрые тренировки (Сегодня)</h3>
+          
+          <div id="quick-sport-grid" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            
+            <!-- Пресс -->
+            <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+              <div class="mb-3 flex items-center justify-between">
+                <div class="flex items-center gap-2 text-slate-800"><span class="text-xl">🔥</span> <h4 class="font-bold">Пресс</h4></div>
+                <span class="text-xs font-semibold bg-orange-50 text-orange-600 px-2 py-1 rounded-md">20 раз</span>
+              </div>
+              <button onclick="window.quickAddSport('Пресс', '20 раз')" class="w-full bg-orange-500 text-white font-semibold py-2 rounded-lg hover:bg-orange-600 active:scale-95 transition-all text-sm shadow-sm flex items-center justify-center gap-2">
+                <i class="fa-solid fa-check"></i> Выполнил
+              </button>
+            </div>
+            
+            <!-- Отжимания -->
+            <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+              <div class="mb-3 flex items-center justify-between">
+                <div class="flex items-center gap-2 text-slate-800"><span class="text-xl">💪</span> <h4 class="font-bold">Отжимания</h4></div>
+                <span class="text-xs font-semibold bg-orange-50 text-orange-600 px-2 py-1 rounded-md">20 раз</span>
+              </div>
+              <button onclick="window.quickAddSport('Отжимания', '20 раз')" class="w-full bg-orange-500 text-white font-semibold py-2 rounded-lg hover:bg-orange-600 active:scale-95 transition-all text-sm shadow-sm flex items-center justify-center gap-2">
+                <i class="fa-solid fa-check"></i> Выполнил
+              </button>
+            </div>
+            
+            <!-- Планка с исправленным таймером -->
+            <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+              <div class="mb-3 flex items-center justify-between">
+                <div class="flex items-center gap-2 text-slate-800"><span class="text-xl">⏱️</span> <h4 class="font-bold">Планка</h4></div>
+                <span id="plank-timer-display" class="font-mono font-bold text-xl text-orange-500 hidden animate-pulse">00:30</span>
+              </div>
+              
+              <div id="plank-controls" class="flex gap-1.5">
+                <button onclick="window.startPlank(30)" class="flex-1 bg-orange-100 text-orange-700 font-bold py-2 rounded-lg hover:bg-orange-200 transition-colors text-xs border border-orange-200 shadow-sm">30с</button>
+                <button onclick="window.startPlank(50)" class="flex-1 bg-orange-100 text-orange-700 font-bold py-2 rounded-lg hover:bg-orange-200 transition-colors text-xs border border-orange-200 shadow-sm">50с</button>
+                <button onclick="window.startPlank(60)" class="flex-1 bg-orange-100 text-orange-700 font-bold py-2 rounded-lg hover:bg-orange-200 transition-colors text-xs border border-orange-200 shadow-sm">60с</button>
+              </div>
+              
+              <button id="plank-cancel" onclick="window.cancelPlank()" class="hidden w-full bg-slate-100 text-slate-600 font-semibold py-2 rounded-lg hover:bg-red-50 hover:text-red-600 transition-colors text-sm border border-slate-200 flex items-center justify-center gap-2">
+                <i class="fa-solid fa-stop"></i> Остановить
+              </button>
+            </div>
+            
+          </div>
+        </div>
+
+        <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wide mb-3 flex items-center gap-2 mt-8"><i class="fa-solid fa-pen text-slate-400"></i> Ручная запись</h3>
+        <form onsubmit="window.addSport(event)" class="flex flex-col sm:flex-row gap-2 bg-slate-50 p-4 rounded-xl border border-slate-100 shadow-sm">
+          <input type="text" id="sport-activity" placeholder="Вид активности (напр. Бег)" class="flex-1 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" required>
+          <input type="text" id="sport-duration" placeholder="Длительность / Подходы" class="w-full sm:w-1/3 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+          <input type="date" id="sport-date" class="w-full sm:w-40 p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" required>
+          <button type="submit" class="bg-orange-500 text-white px-5 p-3 rounded-lg hover:bg-orange-600 transition-all flex items-center justify-center shadow-sm">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+        </form>
+        <div id="sport-list" class="space-y-3 mt-6"></div>
       </div>
 
     </main>
@@ -272,13 +395,35 @@
     </div>
   </div>
 
-  <!-- FIREBASE СКРИПТЫ И ЛОГИКА -->
+  <!-- МОДАЛЬНОЕ ОКНО ДОБАВЛЕНИЯ КАСТОМНОЙ ТРЕНИРОВКИ -->
+  <div id="custom-sport-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 backdrop-blur-[2px] p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 fade-in">
+      <div class="flex justify-between items-center mb-5">
+        <h3 class="text-lg font-bold text-slate-800">Новая быстрая тренировка</h3>
+        <button onclick="window.closeAddCustomSportModal()" class="text-slate-400 hover:text-slate-600 w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <form onsubmit="window.saveCustomQuickSport(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 mb-1">Название</label>
+          <input type="text" id="custom-sport-name" placeholder="Напр. Приседания" class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" required>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 mb-1">Норма / Повторения / Время</label>
+          <input type="text" id="custom-sport-target" placeholder="Напр. 30 раз или 1 мин" class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" required>
+        </div>
+        <div class="flex gap-2 mt-6">
+          <button type="button" onclick="window.closeAddCustomSportModal()" class="flex-1 p-3 rounded-lg border border-slate-200 text-slate-600 font-medium hover:bg-slate-50 transition-all">Отмена</button>
+          <button type="submit" class="flex-1 p-3 rounded-lg bg-orange-500 text-white font-medium hover:bg-orange-600 transition-all">Добавить</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, collection, onSnapshot, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    // === ВАШИ НАСТРОЙКИ FIREBASE (ИНТЕГРИРОВАНЫ) ===
     const firebaseConfig = {
       apiKey: "AIzaSyB-1HYDIr3PIkpN8WJYMg9Pfa28sbrWAnw",
       authDomain: "home-crm-bbf39.firebaseapp.com",
@@ -290,7 +435,6 @@
 
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'home-crm-html-app';
 
-    // Функция для вывода ошибок прямо на экран
     function showError(icon, title, subtitle) {
       const loader = document.getElementById('loader');
       loader.classList.remove('text-indigo-600');
@@ -311,21 +455,21 @@
       auth = getAuth(app);
       db = getFirestore(app);
     } catch (e) {
-      showError(
-        'fa-triangle-exclamation', 
-        'Ошибка инициализации Firebase', 
-        e.message
-      );
+      showError('fa-triangle-exclamation', 'Ошибка инициализации Firebase', e.message);
       throw e;
     }
 
     let currentUser = null;
-    let dataState = { tasks: [], shopping: [], contacts: [], finances: [], inventory: [], notes: [], events: [] };
+    let dataState = { tasks: [], shopping: [], contacts: [], finances: [], inventory: [], notes: [], events: [], solomon: [], sport: [], custom_sports: [] };
     let taskFilter = 'all';
     let taskDayFilter = null;
     let expandedEvents = new Set();
 
-    // Инициализация авторизации
+    // Таймеры
+    let plankInterval = null;
+    let activeTimerInterval = null;
+    let audioCtx = null;
+
     const initAuth = async () => {
       try {
         if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
@@ -335,13 +479,8 @@
         }
       } catch (error) {
         console.error("Ошибка авторизации:", error);
-        
         if (error.code === 'auth/operation-not-allowed') {
-          showError(
-            'fa-user-lock', 
-            'Анонимная авторизация отключена!', 
-            'Зайдите в Firebase Console -> Authentication -> вкладка Sign-in method -> включите провайдер "Anonymous".'
-          );
+          showError('fa-user-lock', 'Анонимная авторизация отключена!', 'Зайдите в Firebase Console -> Authentication -> вкладка Sign-in method -> включите провайдер "Anonymous".');
         } else if (error.code === 'auth/network-request-failed') {
           showError('fa-wifi', 'Нет подключения', 'Проверьте соединение с интернетом.');
         } else {
@@ -359,13 +498,17 @@
         document.getElementById('sync-status').innerHTML = '<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Синхронизировано';
         document.getElementById('sync-status').className = 'text-xs text-green-600 font-medium flex items-center gap-1';
         document.getElementById('loader').style.display = 'none';
+        
+        const today = new Date().toISOString().split('T')[0];
+        const sportDateInput = document.getElementById('sport-date');
+        if (sportDateInput && !sportDateInput.value) sportDateInput.value = today;
+
         window.switchTab('tasks');
       }
     });
 
-    // Функция подписки на коллекции
     function setupListeners() {
-      const collections = ['tasks', 'shopping', 'contacts', 'finances', 'inventory', 'notes', 'events'];
+      const collections = ['tasks', 'shopping', 'contacts', 'finances', 'inventory', 'notes', 'events', 'solomon', 'sport', 'custom_sports'];
       
       collections.forEach(colName => {
         const ref = collection(db, 'artifacts', appId, 'public', 'data', colName);
@@ -412,11 +555,13 @@
           }
           return `
           <div class="group flex items-center justify-between p-4 rounded-xl border transition-all duration-300 ${t.completed ? 'bg-slate-50 border-slate-200 opacity-75' : 'bg-white border-slate-200 shadow-sm hover:shadow-md'}">
-            <div class="flex items-center gap-4 flex-1 cursor-pointer min-w-0" onclick="window.toggleTask('${t.id}', ${t.completed}, '${escapeHTML(t.title)}', '${escapeHTML(t.assignee)}')">
-              <i class="${t.completed ? 'fa-solid fa-circle-check text-green-500 text-2xl' : 'fa-regular fa-circle text-slate-300 text-2xl group-hover:text-indigo-400'} shrink-0"></i>
+            <div class="flex items-center gap-4 flex-1 min-w-0">
+              <button onclick="window.toggleTask('${t.id}', ${t.completed}, '${escapeHTML(t.title)}', '${escapeHTML(t.assignee)}')" class="shrink-0 focus:outline-none p-1 -ml-1">
+                <i class="${t.completed ? 'fa-solid fa-circle-check text-green-500 text-2xl' : 'fa-regular fa-circle text-slate-300 hover:text-indigo-400 transition-colors text-2xl'}"></i>
+              </button>
               <div class="min-w-0">
-                <p class="font-medium ${t.completed ? 'text-slate-500 line-through' : 'text-slate-800'} truncate">${escapeHTML(t.title)}</p>
-                <div class="flex items-center gap-1.5 mt-1 flex-wrap">
+                <p class="font-medium ${t.completed ? 'text-slate-500 line-through' : 'text-slate-800'} break-words whitespace-normal leading-tight">${escapeHTML(t.title)}</p>
+                <div class="flex items-center gap-1.5 mt-2 flex-wrap">
                   <span class="text-xs font-semibold inline-block px-2 py-0.5 rounded-full ${badgeClass}">${emoji} ${escapeHTML(t.assignee)}</span>
                   ${statusBadge}
                   ${dateBadge}
@@ -424,8 +569,8 @@
               </div>
             </div>
             <div class="flex items-center shrink-0 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all">
-              <button onclick="window.openEditModal('tasks', '${t.id}')" class="text-slate-300 hover:text-indigo-500 p-2"><i class="fa-solid fa-pen"></i></button>
-              <button onclick="window.deleteDocItem('tasks', '${t.id}')" class="text-slate-300 hover:text-red-500 p-2"><i class="fa-solid fa-trash"></i></button>
+              <button onclick="window.openEditModal('tasks', '${t.id}')" class="text-emerald-400 hover:text-emerald-500 p-2 transition-colors"><i class="fa-solid fa-pen"></i></button>
+              <button onclick="window.deleteDocItem('tasks', '${t.id}')" class="text-emerald-400 hover:text-emerald-500 p-2 transition-colors"><i class="fa-solid fa-trash"></i></button>
             </div>
           </div>
         `};
@@ -465,13 +610,15 @@
         }
         container.innerHTML = dataState.shopping.map(i => `
           <div class="group flex items-center justify-between p-4 rounded-xl border transition-all duration-300 ${i.bought ? 'bg-slate-50 border-slate-200 opacity-75' : 'bg-white border-slate-200 shadow-sm hover:shadow-md'}">
-            <div class="flex items-center gap-4 flex-1 cursor-pointer" onclick="window.toggleShopping('${i.id}', ${i.bought}, '${escapeHTML(i.item)}')">
-              <i class="${i.bought ? 'fa-solid fa-circle-check text-emerald-500 text-2xl' : 'fa-regular fa-circle text-slate-300 text-2xl group-hover:text-emerald-400'}"></i>
-              <p class="font-medium ${i.bought ? 'text-slate-500 line-through' : 'text-slate-800'}">${escapeHTML(i.item)}</p>
+            <div class="flex items-center gap-4 flex-1 min-w-0">
+              <button onclick="window.toggleShopping('${i.id}', ${i.bought}, '${escapeHTML(i.item)}')" class="shrink-0 focus:outline-none p-1 -ml-1">
+                <i class="${i.bought ? 'fa-solid fa-circle-check text-emerald-500 text-2xl' : 'fa-regular fa-circle text-slate-300 hover:text-emerald-400 transition-colors text-2xl'}"></i>
+              </button>
+              <p class="font-medium ${i.bought ? 'text-slate-500 line-through' : 'text-slate-800'} break-words whitespace-normal leading-tight">${escapeHTML(i.item)}</p>
             </div>
             <div class="flex items-center shrink-0 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all">
-              <button onclick="window.openEditModal('shopping', '${i.id}')" class="text-slate-300 hover:text-emerald-600 p-2"><i class="fa-solid fa-pen"></i></button>
-              <button onclick="window.deleteDocItem('shopping', '${i.id}')" class="text-slate-300 hover:text-red-500 p-2"><i class="fa-solid fa-trash"></i></button>
+              <button onclick="window.openEditModal('shopping', '${i.id}')" class="text-emerald-400 hover:text-emerald-500 p-2 transition-colors"><i class="fa-solid fa-pen"></i></button>
+              <button onclick="window.deleteDocItem('shopping', '${i.id}')" class="text-emerald-400 hover:text-emerald-500 p-2 transition-colors"><i class="fa-solid fa-trash"></i></button>
             </div>
           </div>
         `).join('');
@@ -486,11 +633,11 @@
         container.innerHTML = dataState.contacts.map(c => `
           <div class="group bg-white p-5 rounded-xl border border-slate-200 shadow-sm relative hover:shadow-md transition-shadow">
             <div class="absolute top-3 right-3 flex items-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all">
-              <button onclick="window.openEditModal('contacts', '${c.id}')" class="text-slate-300 hover:text-blue-600 p-1.5"><i class="fa-solid fa-pen"></i></button>
-              <button onclick="window.deleteDocItem('contacts', '${c.id}')" class="text-slate-300 hover:text-red-500 p-1.5"><i class="fa-solid fa-trash"></i></button>
+              <button onclick="window.openEditModal('contacts', '${c.id}')" class="text-emerald-400 hover:text-emerald-500 p-1.5 transition-colors"><i class="fa-solid fa-pen"></i></button>
+              <button onclick="window.deleteDocItem('contacts', '${c.id}')" class="text-emerald-400 hover:text-emerald-500 p-1.5 transition-colors"><i class="fa-solid fa-trash"></i></button>
             </div>
             <div class="flex justify-between items-start pr-6">
-              <div><h3 class="font-bold text-slate-800 text-lg">${escapeHTML(c.name)}</h3><p class="text-sm text-slate-500">${escapeHTML(c.role)}</p></div>
+              <div><h3 class="font-bold text-slate-800 text-lg break-words whitespace-normal leading-tight">${escapeHTML(c.name)}</h3><p class="text-sm text-slate-500 break-words whitespace-normal leading-tight">${escapeHTML(c.role)}</p></div>
               <div class="bg-blue-50 p-2.5 rounded-full text-blue-600"><i class="fa-solid fa-phone"></i></div>
             </div>
             <a href="tel:${c.phone}" class="text-blue-600 font-semibold hover:underline mt-2 inline-block">${escapeHTML(c.phone)}</a>
@@ -509,18 +656,18 @@
         }
         container.innerHTML = dataState.finances.map(f => `
           <div class="flex items-center justify-between p-4 bg-white rounded-xl border border-slate-200 shadow-sm group hover:shadow-md transition-shadow">
-            <div class="flex items-center gap-4">
-              <div class="p-2 rounded-full text-xl ${f.type === 'income' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-500'}">
+            <div class="flex items-center gap-4 min-w-0">
+              <div class="p-2 rounded-full text-xl shrink-0 ${f.type === 'income' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-500'}">
                 <i class="fa-solid ${f.type === 'income' ? 'fa-circle-arrow-up' : 'fa-circle-arrow-down'}"></i>
               </div>
-              <div>
-                <p class="font-medium text-slate-800">${escapeHTML(f.description)}</p>
+              <div class="min-w-0">
+                <p class="font-medium text-slate-800 break-words whitespace-normal leading-tight">${escapeHTML(f.description)}</p>
                 <p class="font-semibold ${f.type === 'income' ? 'text-green-600' : 'text-red-500'}">${f.type === 'income' ? '+' : '-'}${f.amount.toLocaleString('ru-RU')} ₽</p>
               </div>
             </div>
             <div class="flex items-center shrink-0 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all">
-              <button onclick="window.openEditModal('finances', '${f.id}')" class="text-slate-300 hover:text-violet-600 p-2"><i class="fa-solid fa-pen"></i></button>
-              <button onclick="window.deleteDocItem('finances', '${f.id}')" class="text-slate-300 hover:text-red-500 p-2"><i class="fa-solid fa-trash"></i></button>
+              <button onclick="window.openEditModal('finances', '${f.id}')" class="text-emerald-400 hover:text-emerald-500 p-2 transition-colors"><i class="fa-solid fa-pen"></i></button>
+              <button onclick="window.deleteDocItem('finances', '${f.id}')" class="text-emerald-400 hover:text-emerald-500 p-2 transition-colors"><i class="fa-solid fa-trash"></i></button>
             </div>
           </div>
         `).join('');
@@ -532,27 +679,46 @@
           container.innerHTML = `<div class="col-span-full text-center py-10 bg-slate-50 rounded-xl border border-dashed border-slate-300"><i class="fa-solid fa-box text-4xl text-slate-300 mb-3 block"></i><p class="text-slate-500 font-medium">Ваша кладовка пуста.</p></div>`;
           return;
         }
-        container.innerHTML = dataState.inventory.map(i => `
-          <div class="flex justify-between items-center p-4 bg-white border border-slate-200 rounded-xl shadow-sm group hover:shadow-md transition-shadow">
-            <div class="flex items-center gap-3 min-w-0">
-              <div class="bg-amber-50 p-2 rounded-lg text-amber-500 shrink-0"><i class="fa-solid fa-box"></i></div>
-              <div class="min-w-0">
-                <p class="font-medium text-slate-800 truncate">${escapeHTML(i.name)}</p>
-                <div class="flex flex-wrap items-center gap-1.5 mt-1">
-                  <span class="text-xs font-semibold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md">${escapeHTML(i.location)}</span>
-                  <span class="text-xs font-medium ${formatLastPurchased(i.lastPurchased).className} px-2 py-0.5 rounded-md flex items-center gap-1">
-                    <i class="fa-solid fa-clock-rotate-left text-[10px]"></i> ${formatLastPurchased(i.lastPurchased).text}
-                  </span>
+        
+        container.innerHTML = dataState.inventory.map(i => {
+          const isBought = i.status !== 'need_to_buy';
+          
+          let dateHtml = '';
+          if (i.lastPurchased) {
+             const tsDate = new Date(i.lastPurchased);
+             const dateStr = `${String(tsDate.getDate()).padStart(2,'0')}.${String(tsDate.getMonth()+1).padStart(2,'0')}.${tsDate.getFullYear()}`;
+             dateHtml = `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded-md ${formatLastPurchased(i.lastPurchased).className} flex items-center gap-1 border border-slate-100">
+                <i class="fa-solid fa-calendar-check"></i> Куплено: ${dateStr}
+             </span>`;
+          }
+
+          return `
+          <div class="flex justify-between items-center p-4 border border-slate-200 rounded-xl shadow-sm group hover:shadow-md transition-all ${isBought ? 'bg-white' : 'bg-amber-50/50'}">
+            <div class="flex items-start gap-3 min-w-0 w-full">
+              
+              <button onclick="window.toggleInventoryStatus('${i.id}', '${i.status}')" class="shrink-0 focus:outline-none mt-0.5 p-1 -ml-1">
+                <i class="${isBought ? 'fa-solid fa-circle-check text-emerald-500' : 'fa-regular fa-circle text-amber-400 hover:text-amber-500'} text-2xl transition-colors"></i>
+              </button>
+
+              <div class="min-w-0 flex-1">
+                <p class="font-medium text-slate-800 break-words whitespace-normal leading-tight">${escapeHTML(i.name)}</p>
+                <div class="flex flex-col gap-1.5 mt-1.5 items-start">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span class="text-xs font-semibold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md">${escapeHTML(i.location)}</span>
+                    <span class="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded ${isBought ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-100 text-amber-700'}">
+                       ${isBought ? 'В наличии' : 'Нужно купить'}
+                    </span>
+                  </div>
+                  ${dateHtml}
                 </div>
               </div>
             </div>
-            <div class="flex items-center shrink-0">
-              <button onclick="window.markPurchased('inventory', '${i.id}')" title="Отметить, что купили сегодня" class="text-slate-300 hover:text-emerald-500 p-2"><i class="fa-solid fa-cart-circle-check"></i></button>
-              <button onclick="window.openEditModal('inventory', '${i.id}')" class="text-slate-300 hover:text-amber-500 p-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all"><i class="fa-solid fa-pen"></i></button>
-              <button onclick="window.deleteDocItem('inventory', '${i.id}')" class="text-slate-300 hover:text-red-500 p-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all"><i class="fa-solid fa-trash"></i></button>
+            <div class="flex flex-col sm:flex-row items-center shrink-0 ml-2">
+              <button onclick="window.openEditModal('inventory', '${i.id}')" class="text-emerald-400 hover:text-emerald-500 p-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all"><i class="fa-solid fa-pen"></i></button>
+              <button onclick="window.deleteDocItem('inventory', '${i.id}')" class="text-emerald-400 hover:text-emerald-500 p-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all"><i class="fa-solid fa-trash"></i></button>
             </div>
           </div>
-        `).join('');
+        `}).join('');
       }
 
       if(type === 'notes') {
@@ -564,11 +730,11 @@
         container.innerHTML = dataState.notes.map(n => `
           <div class="bg-[#fff9e6] p-5 rounded-2xl border border-amber-200/50 shadow-sm relative group hover:shadow-md transition-shadow">
             <div class="absolute top-3 right-3 flex items-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all">
-              <button onclick="window.openEditModal('notes', '${n.id}')" class="text-amber-300 hover:text-amber-600 p-1.5"><i class="fa-solid fa-pen"></i></button>
-              <button onclick="window.deleteDocItem('notes', '${n.id}')" class="text-amber-300 hover:text-red-500 p-1.5"><i class="fa-solid fa-trash"></i></button>
+              <button onclick="window.openEditModal('notes', '${n.id}')" class="text-emerald-400 hover:text-emerald-500 p-1.5 transition-colors"><i class="fa-solid fa-pen"></i></button>
+              <button onclick="window.deleteDocItem('notes', '${n.id}')" class="text-emerald-400 hover:text-emerald-500 p-1.5 transition-colors"><i class="fa-solid fa-trash"></i></button>
             </div>
-            <h3 class="font-bold text-slate-800 mb-2 pr-14 border-b border-amber-200/50 pb-2">${escapeHTML(n.title)}</h3>
-            <p class="text-slate-700 text-sm whitespace-pre-wrap leading-relaxed">${escapeHTML(n.content)}</p>
+            <h3 class="font-bold text-slate-800 mb-2 pr-14 border-b border-amber-200/50 pb-2 break-words whitespace-normal leading-tight">${escapeHTML(n.title)}</h3>
+            <p class="text-slate-700 text-sm whitespace-pre-wrap leading-relaxed break-words">${escapeHTML(n.content)}</p>
           </div>
         `).join('');
       }
@@ -579,18 +745,26 @@
           container.innerHTML = `<div class="text-center py-10 bg-slate-50 rounded-xl border border-dashed border-slate-300"><i class="fa-solid fa-calendar-day text-4xl text-slate-300 mb-3 block"></i><p class="text-slate-500 font-medium">Нет запланированных событий.</p></div>`;
           return;
         }
+        
         const sorted = [...dataState.events].sort((a, b) => (a.date || '').localeCompare(b.date || ''));
         container.innerHTML = sorted.map(ev => {
           const info = formatEventDate(ev.date);
           const checklist = ev.checklist || [];
           const doneCount = checklist.filter(c => c.done).length;
           const isExpanded = expandedEvents.has(ev.id);
+          const isCompleted = ev.completed || false;
+          
+          const emoji = ev.assignee === 'Папа' ? '👨' : ev.assignee === 'Мама' ? '👩' : '👥';
+          const badgeClass = ev.assignee === 'Папа' ? 'bg-blue-50 text-blue-600' : ev.assignee === 'Мама' ? 'bg-rose-50 text-rose-600' : 'bg-slate-100 text-slate-600';
+          const assigneeName = ev.assignee || 'Общее';
+
           const progressBadge = checklist.length
             ? `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full ${doneCount === checklist.length ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}">${doneCount}/${checklist.length}</span>`
             : '';
           const progressBar = checklist.length
             ? `<div class="w-full h-1 rounded-full bg-slate-100 mt-1.5 overflow-hidden"><div class="h-full rounded-full ${doneCount === checklist.length ? 'bg-emerald-500' : 'bg-teal-500'} transition-all" style="width:${Math.round(doneCount/checklist.length*100)}%"></div></div>`
             : '';
+            
           const sortedChecklist = [...checklist].sort((a, b) => (a.done === b.done) ? 0 : (a.done ? 1 : -1));
           const checklistHtml = sortedChecklist.map(item => `
             <div class="flex items-start gap-2 group/item py-2">
@@ -599,32 +773,45 @@
               </button>
               <div class="flex-1 min-w-0">
                 <p class="text-sm break-words ${item.done ? 'text-slate-400 line-through' : 'text-slate-700'}">${escapeHTML(item.text)}</p>
-                <span class="inline-block mt-1 text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded ${item.done ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}">${item.done ? 'Выполнено' : 'В работе'}</span>
               </div>
-              <button onclick="window.deleteChecklistItem('${ev.id}', '${item.id}')" class="text-slate-300 hover:text-red-500 opacity-100 sm:opacity-0 sm:group-hover/item:opacity-100 transition-all p-1 shrink-0 mt-0.5"><i class="fa-solid fa-xmark"></i></button>
+              <button onclick="window.deleteChecklistItem('${ev.id}', '${item.id}')" class="text-emerald-400 hover:text-emerald-500 opacity-100 sm:opacity-0 sm:group-hover/item:opacity-100 transition-all p-1 shrink-0 mt-0.5"><i class="fa-solid fa-xmark"></i></button>
             </div>
           `).join('');
+          
           return `
-          <div class="group rounded-xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+          <div class="group rounded-xl border transition-all duration-300 ${isCompleted ? 'bg-slate-50 border-slate-200 opacity-80' : 'border-slate-200 bg-white shadow-sm hover:shadow-md'} overflow-hidden">
             <div class="flex items-center justify-between p-4 cursor-pointer" onclick="window.toggleEventExpand('${ev.id}')">
+              
               <div class="flex items-center gap-4 flex-1 min-w-0">
-                <div class="shrink-0 w-14 h-14 rounded-xl flex flex-col items-center justify-center ${info.boxClass}">
-                  <span class="text-lg font-bold leading-none">${info.day}</span>
-                  <span class="text-[10px] font-semibold uppercase leading-none mt-1">${info.month}</span>
+                <button onclick="event.stopPropagation(); window.toggleEventComplete('${ev.id}', ${isCompleted})" class="shrink-0 focus:outline-none p-1">
+                  <i class="${isCompleted ? 'fa-solid fa-circle-check text-emerald-500' : 'fa-regular fa-circle text-slate-300 hover:text-teal-400'} text-2xl transition-colors"></i>
+                </button>
+                
+                <div class="shrink-0 w-12 h-12 rounded-xl flex flex-col items-center justify-center ${isCompleted ? 'bg-slate-100 text-slate-400' : info.boxClass}">
+                  <span class="text-base font-bold leading-none">${info.day}</span>
+                  <span class="text-[9px] font-semibold uppercase leading-none mt-1">${info.month}</span>
                 </div>
+                
                 <div class="min-w-0">
                   <div class="flex items-center gap-2">
-                    <p class="font-medium text-slate-800 truncate">${escapeHTML(ev.title)}</p>
+                    <p class="font-medium ${isCompleted ? 'text-slate-500 line-through' : 'text-slate-800'} break-words whitespace-normal leading-tight">${escapeHTML(ev.title)}</p>
                     ${progressBadge}
                   </div>
-                  <p class="text-xs font-semibold mt-1 ${info.textClass}">${info.label}</p>
+                  
+                  <div class="flex flex-wrap items-center gap-1.5 mt-1.5">
+                    <span class="text-[10px] font-semibold inline-block px-1.5 py-0.5 rounded ${badgeClass}">${emoji} ${escapeHTML(assigneeName)}</span>
+                    <span class="text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded ${isCompleted ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}">${isCompleted ? 'Выполнено' : 'В работе'}</span>
+                    <span class="text-[10px] font-semibold ${isCompleted ? 'text-slate-400' : info.textClass}">${info.label}</span>
+                  </div>
+                  
                   ${progressBar}
                 </div>
               </div>
-              <div class="flex items-center shrink-0 gap-1">
+              
+              <div class="flex items-center shrink-0 gap-1 ml-2">
                 <div class="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all flex items-center">
-                  <button onclick="event.stopPropagation(); window.openEditModal('events', '${ev.id}')" class="text-slate-300 hover:text-teal-600 p-2"><i class="fa-solid fa-pen"></i></button>
-                  <button onclick="event.stopPropagation(); window.deleteDocItem('events', '${ev.id}')" class="text-slate-300 hover:text-red-500 p-2"><i class="fa-solid fa-trash"></i></button>
+                  <button onclick="event.stopPropagation(); window.openEditModal('events', '${ev.id}')" class="text-emerald-400 hover:text-emerald-500 p-2 transition-colors"><i class="fa-solid fa-pen"></i></button>
+                  <button onclick="event.stopPropagation(); window.deleteDocItem('events', '${ev.id}')" class="text-emerald-400 hover:text-emerald-500 p-2 transition-colors"><i class="fa-solid fa-trash"></i></button>
                 </div>
                 <i class="fa-solid fa-chevron-down text-slate-300 transition-transform ml-1 ${isExpanded ? 'rotate-180' : ''}"></i>
               </div>
@@ -639,9 +826,125 @@
           </div>
         `}).join('');
       }
+
+      if(type === 'solomon') {
+        const container = document.getElementById('solomon-list');
+        if(!dataState.solomon.length) {
+          container.innerHTML = `<div class="text-center py-10 bg-slate-50 rounded-xl border border-dashed border-slate-300"><i class="fa-solid fa-star text-4xl text-slate-300 mb-3 block"></i><p class="text-slate-500 font-medium">Здесь пока ничего нет.</p></div>`;
+          return;
+        }
+        container.innerHTML = dataState.solomon.map(s => `
+          <div class="group bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative hover:shadow-md transition-shadow">
+             <div class="absolute top-2 right-2 flex items-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all">
+              <button onclick="window.openEditModal('solomon', '${s.id}')" class="text-emerald-400 hover:text-emerald-500 p-1.5 transition-colors"><i class="fa-solid fa-pen"></i></button>
+              <button onclick="window.deleteDocItem('solomon', '${s.id}')" class="text-emerald-400 hover:text-emerald-500 p-1.5 transition-colors"><i class="fa-solid fa-trash"></i></button>
+            </div>
+            <div class="flex items-start gap-3 pr-14">
+              <div class="bg-indigo-50 p-2 rounded-lg text-indigo-500 shrink-0 mt-0.5"><i class="fa-solid fa-star"></i></div>
+              <div class="min-w-0 w-full">
+                <p class="font-bold text-slate-800 break-words whitespace-normal leading-tight">${escapeHTML(s.title)}</p>
+                ${s.notes ? `<p class="text-sm text-slate-600 mt-1.5 break-words whitespace-normal">${escapeHTML(s.notes)}</p>` : ''}
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      if(type === 'sport') {
+        const container = document.getElementById('sport-list');
+        
+        // Рендерим динамические кастомные карточки быстрых тренировок
+        const quickGrid = document.getElementById('quick-sport-grid');
+        let customCardsHtml = `
+            <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+              <div class="mb-3 flex items-center justify-between">
+                <div class="flex items-center gap-2 text-slate-800"><span class="text-xl">🔥</span> <h4 class="font-bold">Пресс</h4></div>
+                <span class="text-xs font-semibold bg-orange-50 text-orange-600 px-2 py-1 rounded-md">20 раз</span>
+              </div>
+              <button onclick="window.quickAddSport('Пресс', '20 раз')" class="w-full bg-orange-500 text-white font-semibold py-2 rounded-lg hover:bg-orange-600 active:scale-95 transition-all text-sm shadow-sm flex items-center justify-center gap-2">
+                <i class="fa-solid fa-check"></i> Выполнил
+              </button>
+            </div>
+            
+            <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+              <div class="mb-3 flex items-center justify-between">
+                <div class="flex items-center gap-2 text-slate-800"><span class="text-xl">💪</span> <h4 class="font-bold">Отжимания</h4></div>
+                <span class="text-xs font-semibold bg-orange-50 text-orange-600 px-2 py-1 rounded-md">20 раз</span>
+              </div>
+              <button onclick="window.quickAddSport('Отжимания', '20 раз')" class="w-full bg-orange-500 text-white font-semibold py-2 rounded-lg hover:bg-orange-600 active:scale-95 transition-all text-sm shadow-sm flex items-center justify-center gap-2">
+                <i class="fa-solid fa-check"></i> Выполнил
+              </button>
+            </div>
+            
+            <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+              <div class="mb-3 flex items-center justify-between">
+                <div class="flex items-center gap-2 text-slate-800"><span class="text-xl">⏱️</span> <h4 class="font-bold">Планка</h4></div>
+                <span id="plank-timer-display" class="font-mono font-bold text-xl text-orange-500 hidden animate-pulse">00:30</span>
+              </div>
+              
+              <div id="plank-controls" class="flex gap-1.5">
+                <button onclick="window.startPlank(30)" class="flex-1 bg-orange-100 text-orange-700 font-bold py-2 rounded-lg hover:bg-orange-200 transition-colors text-xs border border-orange-200 shadow-sm">30с</button>
+                <button onclick="window.startPlank(50)" class="flex-1 bg-orange-100 text-orange-700 font-bold py-2 rounded-lg hover:bg-orange-200 transition-colors text-xs border border-orange-200 shadow-sm">50с</button>
+                <button onclick="window.startPlank(60)" class="flex-1 bg-orange-100 text-orange-700 font-bold py-2 rounded-lg hover:bg-orange-200 transition-colors text-xs border border-orange-200 shadow-sm">60с</button>
+              </div>
+              
+              <button id="plank-cancel" onclick="window.cancelPlank()" class="hidden w-full bg-slate-100 text-slate-600 font-semibold py-2 rounded-lg hover:bg-red-50 hover:text-red-600 transition-colors text-sm border border-slate-200 flex items-center justify-center gap-2">
+                <i class="fa-solid fa-stop"></i> Остановить
+              </button>
+            </div>
+        `;
+
+        if (dataState.custom_sports && dataState.custom_sports.length) {
+          customCardsHtml += dataState.custom_sports.map(cs => `
+            <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow relative group">
+              <button onclick="window.deleteDocItem('custom_sports', '${cs.id}')" class="absolute top-2 right-2 text-slate-300 hover:text-red-500 p-1 opacity-0 group-hover:opacity-100 transition-all"><i class="fa-solid fa-trash text-xs"></i></button>
+              <div class="mb-3 flex items-center justify-between pr-4">
+                <div class="flex items-center gap-2 text-slate-800"><span class="text-xl">🏃</span> <h4 class="font-bold truncate">${escapeHTML(cs.name)}</h4></div>
+                <span class="text-xs font-semibold bg-orange-50 text-orange-600 px-2 py-1 rounded-md shrink-0">${escapeHTML(cs.target)}</span>
+              </div>
+              <button onclick="window.quickAddSport('${escapeHTML(cs.name)}', '${escapeHTML(cs.target)}')" class="w-full bg-orange-500 text-white font-semibold py-2 rounded-lg hover:bg-orange-600 active:scale-95 transition-all text-sm shadow-sm flex items-center justify-center gap-2">
+                <i class="fa-solid fa-check"></i> Выполнил
+              </button>
+            </div>
+          `).join('');
+        }
+        quickGrid.innerHTML = customCardsHtml;
+
+        if(!dataState.sport.length) {
+          container.innerHTML = `<div class="text-center py-10 bg-slate-50 rounded-xl border border-dashed border-slate-300"><i class="fa-solid fa-dumbbell text-4xl text-slate-300 mb-3 block"></i><p class="text-slate-500 font-medium">Нет записей о тренировках.</p></div>`;
+          return;
+        }
+        
+        const sorted = [...dataState.sport].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        
+        container.innerHTML = sorted.map(sp => {
+           let dateStr = '';
+           if (sp.date) {
+             const tsDate = new Date(sp.date + 'T00:00:00');
+             dateStr = `${String(tsDate.getDate()).padStart(2,'0')}.${String(tsDate.getMonth()+1).padStart(2,'0')}.${tsDate.getFullYear()}`;
+           }
+
+           return `
+          <div class="group bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative hover:shadow-md transition-shadow flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="bg-orange-50 p-2.5 rounded-lg text-orange-500 shrink-0"><i class="fa-solid fa-dumbbell"></i></div>
+              <div class="min-w-0">
+                <p class="font-bold text-slate-800 break-words whitespace-normal leading-tight">${escapeHTML(sp.activity)}</p>
+                <div class="flex items-center gap-2 mt-1 flex-wrap">
+                  ${sp.duration ? `<span class="text-xs font-medium bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md">${escapeHTML(sp.duration)}</span>` : ''}
+                  <span class="text-xs font-semibold text-orange-600 bg-orange-50 px-2 py-0.5 rounded-md flex items-center gap-1"><i class="fa-regular fa-calendar"></i> ${dateStr}</span>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center shrink-0 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all">
+              <button onclick="window.openEditModal('sport', '${sp.id}')" class="text-emerald-400 hover:text-emerald-500 p-2 transition-colors"><i class="fa-solid fa-pen"></i></button>
+              <button onclick="window.deleteDocItem('sport', '${sp.id}')" class="text-emerald-400 hover:text-emerald-500 p-2 transition-colors"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </div>
+        `}).join('');
+      }
     }
 
-    // Форматирование даты события: число/месяц + метка "сегодня/через N дней/прошло"
     function formatEventDate(dateStr) {
       const months = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
       if (!dateStr) return { day: '?', month: '', label: '', boxClass: 'bg-slate-100 text-slate-500', textClass: 'text-slate-400' };
@@ -657,7 +960,6 @@
       return { day: d.getDate(), month: months[d.getMonth()], label, boxClass, textClass };
     }
 
-    // Форматирование даты последней покупки для запасов
     function formatLastPurchased(ts) {
       if (!ts) return { text: 'Ещё не покупали', className: 'bg-slate-100 text-slate-500' };
       const days = Math.floor((Date.now() - ts) / 86400000);
@@ -670,7 +972,6 @@
       return { text, className };
     }
 
-    // Неделя (Пн-Вс) для быстрого добавления/фильтра дел по дню
     function getCurrentWeekDays() {
       const labels = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
       const today = new Date(); today.setHours(0,0,0,0);
@@ -710,9 +1011,6 @@
       }).join('');
     }
 
-    // === ГЛОБАЛЬНЫЕ ФУНКЦИИ (ДЛЯ ВЫЗОВА ИЗ HTML) ===
-
-    // Клик по дню недели: подставить дату в форму добавления и отфильтровать список
     window.selectTaskDay = (iso) => {
       taskDayFilter = (taskDayFilter === iso) ? null : iso;
       const dateInput = document.getElementById('task-date');
@@ -742,25 +1040,21 @@
       renderData('tasks');
     };
 
-    // Переключение вкладок
     window.switchTab = (tabId) => {
-      ['tasks', 'shopping', 'contacts', 'finances', 'inventory', 'notes', 'events'].forEach(t => {
+      ['tasks', 'shopping', 'contacts', 'finances', 'inventory', 'notes', 'events', 'solomon', 'sport'].forEach(t => {
         document.getElementById(`tab-${t}`).style.display = 'none';
-        
-        // Сброс стилей кнопок меню
         const btn = document.getElementById(`nav-${t}`);
-        btn.className = `w-full flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-1 sm:gap-3 p-3 sm:px-4 sm:py-3.5 rounded-xl transition-all text-slate-600 hover:bg-slate-200 hover:text-slate-900`;
+        if(btn) btn.className = `w-full flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-1 sm:gap-3 p-3 sm:px-4 sm:py-3.5 rounded-xl transition-all text-slate-600 hover:bg-slate-200 hover:text-slate-900`;
       });
       
-      document.getElementById(`tab-${tabId}`).style.display = 'block';
+      const tab = document.getElementById(`tab-${tabId}`);
+      if(tab) tab.style.display = 'block';
       
-      // Активный стиль кнопки
       const activeBtn = document.getElementById(`nav-${tabId}`);
-      const bgColors = { tasks: 'bg-indigo-600', shopping: 'bg-emerald-600', contacts: 'bg-blue-600', finances: 'bg-violet-600', inventory: 'bg-amber-500', notes: 'bg-rose-500', events: 'bg-teal-600' };
-      activeBtn.className = `w-full flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-1 sm:gap-3 p-3 sm:px-4 sm:py-3.5 rounded-xl transition-all text-white shadow-md ${bgColors[tabId]}`;
+      const bgColors = { tasks: 'bg-indigo-600', shopping: 'bg-emerald-600', contacts: 'bg-blue-600', finances: 'bg-violet-600', inventory: 'bg-amber-500', notes: 'bg-rose-500', events: 'bg-teal-600', solomon: 'bg-indigo-600', sport: 'bg-orange-500' };
+      if(activeBtn) activeBtn.className = `w-full flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-1 sm:gap-3 p-3 sm:px-4 sm:py-3.5 rounded-xl transition-all text-white shadow-md ${bgColors[tabId]}`;
     };
 
-    // Фильтр дел: Все / Папа / Мама
     window.setTaskFilter = (filter) => {
       taskFilter = filter;
       const activeClasses = { all: 'bg-indigo-600 text-white', 'Папа': 'bg-blue-600 text-white', 'Мама': 'bg-rose-500 text-white' };
@@ -774,19 +1068,15 @@
       renderData('tasks');
     };
 
-    // Единый обработчик ошибок записи в Firestore
     function handleWriteError(e, action) {
       console.error(`Ошибка (${action}):`, e);
       let msg = e.message || String(e);
       if (e.code === 'permission-denied') {
-        msg = 'Firestore заблокировал запись (permission-denied). Откройте Firebase Console → Firestore Database → вкладка Rules и разрешите доступ авторизованным пользователям, например:\n\nallow read, write: if request.auth != null;\n\nЗатем нажмите Publish.';
-      } else if (e.code === 'not-found' || (e.message && e.message.includes('database'))) {
-        msg = 'Похоже, база Firestore ещё не создана в этом проекте. Откройте Firebase Console → Firestore Database → Create database.';
+        msg = 'Firestore заблокировал запись (permission-denied). Откройте Firebase Console → Firestore Database → вкладка Rules и разрешите доступ.';
       }
       alert(`Не удалось выполнить действие "${action}":\n\n${msg}`);
     }
 
-    // Удаление любого документа (с подтверждением)
     window.deleteDocItem = async (colName, id) => {
       if(!currentUser) return;
       if(!confirm('Удалить этот пункт? Это действие нельзя отменить.')) return;
@@ -797,17 +1087,7 @@
       }
     };
 
-    // Отметить "куплено сегодня" для запаса
-    window.markPurchased = async (colName, id) => {
-      if(!currentUser) return;
-      try {
-        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', colName, id), { lastPurchased: Date.now() }, {merge: true});
-      } catch (e) {
-        handleWriteError(e, 'отметка покупки');
-      }
-    };
-
-    // === РЕДАКТИРОВАНИЕ (универсальное модальное окно) ===
+    // === РЕДАКТИРОВАНИЕ ===
     let editState = { type: null, id: null };
 
     const editFieldConfig = {
@@ -845,7 +1125,8 @@
         title: 'Редактировать запас',
         fields: [
           { key: 'name', label: 'Что храним', kind: 'text', required: true },
-          { key: 'location', label: 'Где', kind: 'text' }
+          { key: 'location', label: 'Где', kind: 'text' },
+          { key: 'status', label: 'Статус', kind: 'select', options: [['need_to_buy','Нужно купить'], ['bought','В наличии']] }
         ]
       },
       notes: {
@@ -859,6 +1140,22 @@
         title: 'Редактировать событие',
         fields: [
           { key: 'title', label: 'Что за событие', kind: 'text', required: true },
+          { key: 'assignee', label: 'Исполнитель', kind: 'select', options: [['Общее','👥 Общее'], ['Папа','👨 Папа'], ['Мама','👩 Мама']] },
+          { key: 'date', label: 'Дата', kind: 'date', required: true }
+        ]
+      },
+      solomon: {
+        title: 'Редактировать',
+        fields: [
+          { key: 'title', label: 'Заголовок', kind: 'text', required: true },
+          { key: 'notes', label: 'Доп. информация', kind: 'textarea' }
+        ]
+      },
+      sport: {
+        title: 'Редактировать тренировку',
+        fields: [
+          { key: 'activity', label: 'Вид активности', kind: 'text', required: true },
+          { key: 'duration', label: 'Длительность / Подходы', kind: 'text' },
           { key: 'date', label: 'Дата', kind: 'date', required: true }
         ]
       }
@@ -872,7 +1169,10 @@
 
       document.getElementById('edit-modal-title').innerText = config.title;
       document.getElementById('edit-modal-body').innerHTML = config.fields.map(f => {
-        const val = item[f.key] !== undefined && item[f.key] !== null ? item[f.key] : '';
+        let val = item[f.key] !== undefined && item[f.key] !== null ? item[f.key] : '';
+        if (type === 'events' && f.key === 'assignee' && !val) val = 'Общее';
+        if (type === 'inventory' && f.key === 'status' && !val) val = 'bought';
+
         const labelHtml = `<label class="block text-xs font-semibold text-slate-500 mb-1">${f.label}</label>`;
         if (f.kind === 'textarea') {
           return `<div>${labelHtml}<textarea id="edit-field-${f.key}" class="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 min-h-[100px] resize-y">${escapeHTML(val)}</textarea></div>`;
@@ -919,12 +1219,10 @@
       }
     };
 
-    // Закрытие модалки по клику на фон
     document.getElementById('edit-modal').addEventListener('click', (e) => {
       if (e.target.id === 'edit-modal') window.closeEditModal();
     });
 
-    // Добавление Задачи
     window.addTask = async (e) => {
       e.preventDefault();
       const title = document.getElementById('task-title').value;
@@ -934,14 +1232,13 @@
       try {
         await setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'tasks')), { title, assignee, date, completed: false, createdAt: Date.now() });
         document.getElementById('task-title').value = '';
-        document.getElementById('task-assignee').value = '';
+        document.getElementById('task-assignee').value = 'Общее';
         if (!taskDayFilter) document.getElementById('task-date').value = '';
       } catch (err) {
         handleWriteError(err, 'добавление задачи');
       }
     };
 
-    // Очистить все выполненные дела разом
     window.clearCompletedTasks = async () => {
       const completed = dataState.tasks.filter(t => t.completed);
       if (!completed.length) { alert('Нет выполненных дел для очистки.'); return; }
@@ -953,17 +1250,15 @@
       }
     };
 
-    // Переключение Задачи
     window.toggleTask = async (id, isCompleted, title, assignee) => {
       if(!currentUser) return;
       try {
-        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'tasks', id), { title, assignee, completed: !isCompleted }, {merge: true});
+        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'tasks', id), { completed: !isCompleted }, {merge: true});
       } catch (e) {
         handleWriteError(e, 'изменение задачи');
       }
     };
 
-    // Добавление Покупки
     window.addShoppingItem = async (e) => {
       e.preventDefault();
       const item = document.getElementById('shopping-item').value;
@@ -979,13 +1274,12 @@
     window.toggleShopping = async (id, isBought, item) => {
       if(!currentUser) return;
       try {
-        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'shopping', id), { item, bought: !isBought }, {merge: true});
+        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'shopping', id), { bought: !isBought }, {merge: true});
       } catch (e) {
         handleWriteError(e, 'изменение покупки');
       }
     };
 
-    // Контакты
     window.addContact = async (e) => {
       e.preventDefault();
       const name = document.getElementById('contact-name').value;
@@ -1000,7 +1294,6 @@
       }
     };
 
-    // Финансы
     window.addFinance = async (e) => {
       e.preventDefault();
       const desc = document.getElementById('finance-desc').value;
@@ -1015,26 +1308,34 @@
       }
     };
 
-    // Запасы
     window.addInventory = async (e) => {
       e.preventDefault();
       const name = document.getElementById('inv-name').value;
       const location = document.getElementById('inv-location').value || 'Дом';
       if(!name.trim() || !currentUser) return;
       try {
-        await setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'inventory')), { name, location, lastPurchased: null, createdAt: Date.now() });
+        await setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'inventory')), { name, location, status: 'need_to_buy', lastPurchased: null, createdAt: Date.now() });
         document.getElementById('inv-name').value = ''; document.getElementById('inv-location').value = '';
       } catch (err) {
         handleWriteError(err, 'добавление запаса');
       }
     };
 
-    window.quickFillInv = (name, loc) => {
-      document.getElementById('inv-name').value = name;
-      document.getElementById('inv-location').value = loc;
+    window.toggleInventoryStatus = async (id, currentStatus) => {
+      if(!currentUser) return;
+      try {
+        const isCurrentlyBought = currentStatus && currentStatus !== 'need_to_buy';
+        const newStatus = isCurrentlyBought ? 'need_to_buy' : 'bought';
+        const updates = { status: newStatus };
+        if (newStatus === 'bought') {
+          updates.lastPurchased = Date.now();
+        }
+        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'inventory', id), updates, {merge: true});
+      } catch (e) {
+        handleWriteError(e, 'изменение статуса запаса');
+      }
     };
 
-    // Заметки
     window.addNote = async (e) => {
       e.preventDefault();
       const title = document.getElementById('note-title').value;
@@ -1048,27 +1349,34 @@
       }
     };
 
-    // События
     window.addEvent = async (e) => {
       e.preventDefault();
       const title = document.getElementById('event-title').value;
+      const assignee = document.getElementById('event-assignee').value || 'Общее';
       const date = document.getElementById('event-date').value;
       if(!title.trim() || !date || !currentUser) return;
       try {
-        await setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'events')), { title, date, checklist: [], createdAt: Date.now() });
-        document.getElementById('event-title').value = ''; document.getElementById('event-date').value = '';
+        await setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'events')), { title, assignee, date, checklist: [], completed: false, createdAt: Date.now() });
+        document.getElementById('event-title').value = ''; document.getElementById('event-assignee').value = 'Общее'; document.getElementById('event-date').value = '';
       } catch (err) {
         handleWriteError(err, 'добавление события');
       }
     };
 
-    // Развернуть/свернуть список задач события
+    window.toggleEventComplete = async (eventId, isCompleted) => {
+      if (!currentUser) return;
+      try {
+        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'events', eventId), { completed: !isCompleted }, {merge: true});
+      } catch (e) {
+        handleWriteError(e, 'изменение статуса события');
+      }
+    };
+
     window.toggleEventExpand = (id) => {
       if (expandedEvents.has(id)) expandedEvents.delete(id); else expandedEvents.add(id);
       renderData('events');
     };
 
-    // Добавить задачу к событию
     window.addChecklistItem = async (e, eventId) => {
       e.preventDefault();
       if (!currentUser) return;
@@ -1086,7 +1394,6 @@
       }
     };
 
-    // Переключить статус задачи события: не сделано / выполнено
     window.toggleChecklistItem = async (eventId, itemId) => {
       if (!currentUser) return;
       const ev = dataState.events.find(x => x.id === eventId);
@@ -1099,7 +1406,6 @@
       }
     };
 
-    // Удалить задачу события
     window.deleteChecklistItem = async (eventId, itemId) => {
       if (!currentUser) return;
       const ev = dataState.events.find(x => x.id === eventId);
@@ -1112,7 +1418,190 @@
       }
     };
 
-    // Утилита для безопасности от XSS
+    window.addSolomon = async (e) => {
+      e.preventDefault();
+      const title = document.getElementById('solomon-title').value;
+      const notes = document.getElementById('solomon-notes').value;
+      if(!title.trim() || !currentUser) return;
+      try {
+        await setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'solomon')), { title, notes, createdAt: Date.now() });
+        document.getElementById('solomon-title').value = ''; document.getElementById('solomon-notes').value = '';
+      } catch (err) {
+        handleWriteError(err, 'добавление записи Соломон');
+      }
+    };
+
+    // === ТРЕНИРОВКИ И ТАЙМЕРЫ ===
+
+    window.addSport = async (e) => {
+      e.preventDefault();
+      const activity = document.getElementById('sport-activity').value;
+      const duration = document.getElementById('sport-duration').value;
+      const date = document.getElementById('sport-date').value;
+      if(!activity.trim() || !date || !currentUser) return;
+      try {
+        await setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'sport')), { activity, duration, date, createdAt: Date.now() });
+        document.getElementById('sport-activity').value = ''; 
+        document.getElementById('sport-duration').value = ''; 
+      } catch (err) {
+        handleWriteError(err, 'добавление тренировки');
+      }
+    };
+
+    window.quickAddSport = async (activity, duration) => {
+      if(!currentUser) return;
+      const date = new Date().toISOString().split('T')[0];
+      try {
+        await setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'sport')), { activity, duration, date, createdAt: Date.now() });
+      } catch (err) {
+        handleWriteError(err, 'быстрое добавление тренировки');
+      }
+    };
+
+    window.openAddCustomSportModal = () => {
+      const modal = document.getElementById('custom-sport-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    };
+
+    window.closeAddCustomSportModal = () => {
+      const modal = document.getElementById('custom-sport-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    };
+
+    window.saveCustomQuickSport = async (e) => {
+      e.preventDefault();
+      if (!currentUser) return;
+      const name = document.getElementById('custom-sport-name').value.trim();
+      const target = document.getElementById('custom-sport-target').value.trim();
+      if (!name || !target) return;
+      try {
+        await setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', 'custom_sports')), { name, target, createdAt: Date.now() });
+        document.getElementById('custom-sport-name').value = '';
+        document.getElementById('custom-sport-target').value = '';
+        window.closeAddCustomSportModal();
+      } catch (err) {
+        handleWriteError(err, 'сохранение быстрой тренировки');
+      }
+    };
+
+    function playBeep() {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const oscillator = audioCtx.createOscillator();
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(500, audioCtx.currentTime);
+        oscillator.connect(audioCtx.destination);
+        oscillator.start();
+        setTimeout(() => oscillator.stop(), 500);
+      } catch(e) { console.log("Audio not supported or blocked", e); }
+    }
+
+    // Универсальный таймер для планки
+    window.startPlank = (seconds) => {
+      if (plankInterval) clearInterval(plankInterval);
+      
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+
+      let timeLeft = seconds;
+      
+      const controls = document.getElementById('plank-controls');
+      const cancelBtn = document.getElementById('plank-cancel');
+      const display = document.getElementById('plank-timer-display');
+      
+      controls.classList.add('hidden');
+      cancelBtn.classList.remove('hidden');
+      display.classList.remove('hidden');
+      
+      const updateDisplay = () => {
+         const m = Math.floor(timeLeft / 60);
+         const s = timeLeft % 60;
+         display.innerText = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      };
+      
+      updateDisplay();
+
+      plankInterval = setInterval(() => {
+        timeLeft--;
+        if (timeLeft < 0) {
+          clearInterval(plankInterval);
+          window.cancelPlank(); 
+          playBeep();
+          window.quickAddSport('Планка', `${seconds} сек`);
+        } else {
+          updateDisplay();
+        }
+      }, 1000);
+    };
+
+    window.cancelPlank = () => {
+      if (plankInterval) clearInterval(plankInterval);
+      plankInterval = null;
+      
+      const controls = document.getElementById('plank-controls');
+      const cancelBtn = document.getElementById('plank-cancel');
+      const display = document.getElementById('plank-timer-display');
+      if(controls) controls.classList.remove('hidden');
+      if(cancelBtn) cancelBtn.classList.add('hidden');
+      if(display) display.classList.add('hidden');
+    };
+
+    // Универсальный таймер для раздела Соломон
+    window.startSolomonTimer = (activityName, seconds, controlsId, cancelId, displayId) => {
+      if (activeTimerInterval) clearInterval(activeTimerInterval);
+      
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+
+      let timeLeft = seconds;
+      
+      const controls = document.getElementById(controlsId);
+      const cancelBtn = document.getElementById(cancelId);
+      const display = document.getElementById(displayId);
+      
+      if(controls) controls.classList.add('hidden');
+      if(cancelBtn) cancelBtn.classList.remove('hidden');
+      if(display) display.classList.remove('hidden');
+      
+      const updateDisplay = () => {
+         const m = Math.floor(timeLeft / 60);
+         const s = timeLeft % 60;
+         display.innerText = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      };
+      
+      updateDisplay();
+
+      activeTimerInterval = setInterval(() => {
+        timeLeft--;
+        if (timeLeft < 0) {
+          clearInterval(activeTimerInterval);
+          window.cancelSolomonTimer(controlsId, cancelId, displayId);
+          playBeep();
+          
+          // Автоматическая запись в спорт или отдельный лог
+          const mins = Math.round(seconds / 60);
+          window.quickAddSport(activityName, `${mins >= 1 ? mins + ' мин' : seconds + ' сек'}`);
+        } else {
+          updateDisplay();
+        }
+      }, 1000);
+    };
+
+    window.cancelSolomonTimer = (controlsId, cancelId, displayId) => {
+      if (activeTimerInterval) clearInterval(activeTimerInterval);
+      activeTimerInterval = null;
+      
+      const controls = document.getElementById(controlsId);
+      const cancelBtn = document.getElementById(cancelId);
+      const display = document.getElementById(displayId);
+      if(controls) controls.classList.remove('hidden');
+      if(cancelBtn) cancelBtn.classList.add('hidden');
+      if(display) display.classList.add('hidden');
+    };
+
     function escapeHTML(str) {
       if(!str) return '';
       return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag]));
