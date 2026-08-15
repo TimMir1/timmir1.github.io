@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="ru" class="h-full antialiased dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PlayButton CRM — Производство наград</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Roboto Mono', 'monospace'],
+                    },
+                    colors: {
+                        youtube: '#FF0000',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Roboto+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Vue 3 -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
+    <!-- Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <style>
+        [v-cloak] { display: none; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.5); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(107, 114, 128, 0.8); }
+        .dark ::-webkit-scrollbar-thumb { background: rgba(71, 85, 105, 0.8); }
+        .dark ::-webkit-scrollbar-thumb:hover { background: rgba(100, 116, 139, 1); }
+
+        .modal-enter-active, .modal-leave-active { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .modal-enter-from, .modal-leave-to { opacity: 0; transform: translateY(20px) scale(0.95); }
+        @media (max-width: 640px) {
+            .modal-enter-from, .modal-leave-to { transform: translateY(100%); }
+        }
+
+        .drag-over {
+            border: 2px dashed #f59e0b !important;
+            background-color: rgba(245, 158, 11, 0.05) !important;
+        }
+
+        /* Анимация пульса для ИИ / важных уведомлений */
+        .glow-pulse { animation: glowPulse 2s infinite; }
+        @keyframes glowPulse {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        /* Специфичные шрифты для превью шильдика */
+        .preview-presented-to { letter-spacing: 0.2em; }
+        .preview-channel-name { font-family: 'Inter', sans-serif; font-weight: 800; line-height: 1.1; word-break: break-word; }
+        .preview-plaque-text { font-family: 'Inter', sans-serif; font-weight: 400; line-height: 1.3; word-break: break-word; }
+    </style>
+</head>
+<body class="h-full bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300 selection:bg-amber-500 selection:text-white overflow-hidden">
+    <div id="app" v-cloak class="h-screen flex flex-col w-full">
+        
+        <!-- Шапка панели -->
+        <header class="flex-none bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 z-30">
+            <div class="w-full px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                
+                <div class="flex items-center space-x-3 sm:space-x-4">
+                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-youtube to-amber-500 flex items-center justify-center text-white text-xl shadow-lg shadow-red-500/30 flex-shrink-0">
+                        <i class="fa-solid fa-play ml-1"></i>
+                    </div>
+                    <div class="hidden sm:block">
+                        <div class="flex items-center space-x-2">
+                            <h1 class="font-bold text-lg tracking-tight">PlayButton CRM</h1>
+                            <span class="bg-red-100 dark:bg-red-500/10 text-youtube dark:text-red-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-red-200 dark:border-red-500/20">PRO</span>
+                        </div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Производство наград • Smart Dashboard</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-2 sm:space-x-3">
+                    <button @click="toggleTheme" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors shadow-sm">
+                        <i :class="isDark ? 'fa-solid fa-sun text-amber-400' : 'fa-solid fa-moon text-indigo-500'"></i>
+                    </button>
+
+                    <button @click="showArchiveModal = true" class="hidden md:flex items-center space-x-2 px-3 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors shadow-sm text-sm font-medium">
+                        <i class="fa-solid fa-box-archive text-indigo-500"></i>
+                        <span>Архив</span>
+                    </button>
+
+                    <button @click="showAnalyticsModal = true" class="hidden md:flex items-center space-x-2 px-3 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors shadow-sm text-sm font-medium border border-transparent hover:border-emerald-500/30">
+                        <i class="fa-solid fa-chart-pie text-emerald-500"></i>
+                        <span>Аналитика</span>
+                    </button>
+
+                    <button @click="showSettingsModal = true" class="hidden lg:flex items-center justify-center w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors shadow-sm">
+                        <i class="fa-solid fa-sliders"></i>
+                    </button>
+
+                    <button @click="openCreateModal" class="flex items-center space-x-2 px-4 h-10 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 font-bold transition-all shadow-md active:scale-95 text-sm">
+                        <i class="fa-solid fa-plus"></i>
+                        <span class="hidden sm:inline">Новый заказ</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 w-full px-4 sm:px-6 lg:px-8 py-6 flex flex-col overflow-hidden">
+            
+            <!-- Метрики -->
+            <div class="flex-none overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 mb-4 sm:mb-6 custom-scrollbar">
+                <div class="flex sm:grid sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 min-w-[max-content] sm:min-w-full">
+                    <div class="w-48 sm:w-auto p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
+                        <div>
+                            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">В работе</div>
+                            <div class="text-2xl font-bold text-slate-900 dark:text-white mt-0.5">{{ activeOrdersCount }} <span class="text-xs font-normal text-slate-400">шт</span></div>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-gears"></i>
+                        </div>
+                    </div>
+
+                    <div class="w-48 sm:w-auto p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors" @click="showArchiveModal = true">
+                        <div>
+                            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Завершено</div>
+                            <div class="text-2xl font-bold text-slate-900 dark:text-white mt-0.5">{{ archivedOrdersCount }} <span class="text-xs font-normal text-slate-400">шт</span></div>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-box-archive"></i>
+                        </div>
+                    </div>
+
+                    <div class="w-48 sm:w-auto p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
+                        <div>
+                            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Оборот (активные)</div>
+                            <div class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">{{ (totalRevenueActive/1000).toFixed(1) }} <span class="text-xs font-normal text-slate-400">тыс. ₽</span></div>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-wallet"></i>
+                        </div>
+                    </div>
+
+                    <div class="w-48 sm:w-auto p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
+                        <div>
+                            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Чистая маржа</div>
+                            <div class="text-2xl font-bold text-sky-600 dark:text-sky-400 mt-0.5">{{ (totalProfitActive/1000).toFixed(1) }} <span class="text-xs font-normal text-slate-400">тыс. ₽</span></div>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-sky-100 dark:bg-sky-500/10 text-sky-600 dark:text-sky-400 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-coins"></i>
+                        </div>
+                    </div>
+
+                    <div class="w-48 sm:w-auto p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
+                        <div>
+                            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Долг клиентов</div>
+                            <div class="text-2xl font-bold text-red-500 mt-0.5">{{ (totalOutstanding/1000).toFixed(1) }} <span class="text-xs font-normal text-slate-400">тыс. ₽</span></div>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-red-100 dark:bg-red-500/10 text-red-500 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-hand-holding-dollar"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex-none flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4">
+                <div class="relative w-full md:w-80">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-sm"></i>
+                    <input v-model="searchQuery" placeholder="Поиск по каналу, клиенту..." 
+                           class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-sm transition-all">
+                </div>
+
+                <div class="flex items-center space-x-2 w-full md:w-auto overflow-x-auto pb-1 -mx-4 px-4 md:mx-0 md:px-0 custom-scrollbar">
+                    <button @click="filterType = 'all'" :class="filterType === 'all' ? 'bg-slate-800 text-white dark:bg-slate-200 dark:text-slate-900' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700'" class="px-4 py-2 rounded-xl transition-all shadow-sm text-xs font-medium whitespace-nowrap">Все ({{ activeOrdersCount }})</button>
+                    <button @click="filterType = 'silver'" :class="filterType === 'silver' ? 'bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700'" class="px-4 py-2 rounded-xl transition-all shadow-sm text-xs font-medium flex items-center whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-slate-400 mr-2"></span> Серебро</button>
+                    <button @click="filterType = 'gold'" :class="filterType === 'gold' ? 'bg-amber-100 dark:bg-amber-500/20 text-amber-800 dark:text-amber-400' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700'" class="px-4 py-2 rounded-xl transition-all shadow-sm text-xs font-medium flex items-center whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-amber-400 mr-2"></span> Золото</button>
+                    <button @click="filterType = 'custom'" :class="filterType === 'custom' ? 'bg-purple-100 dark:bg-purple-500/20 text-purple-800 dark:text-purple-400' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700'" class="px-4 py-2 rounded-xl transition-all shadow-sm text-xs font-medium flex items-center whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-purple-400 mr-2"></span> Индивидуально</button>
+                </div>
+            </div>
+
+            <div class="flex-1 flex overflow-x-auto lg:grid lg:grid-cols-4 gap-4 pb-4 snap-x snap-mandatory lg:snap-none custom-scrollbar -mx-4 px-4 lg:mx-0 lg:px-0 h-0">
+                <div v-for="status in kanbanStatuses" :key="status.id" 
+                     @dragover.prevent
+                     @drop="onDrop(status.id)"
+                     @dragenter.prevent="dragTargetStatus = status.id"
+                     @dragleave="dragTargetStatus = null"
+                     :class="{'drag-over': dragTargetStatus === status.id}"
+                     class="flex-none w-[85vw] sm:w-[45vw] lg:w-auto h-full flex flex-col rounded-2xl border bg-slate-100/50 dark:bg-slate-900/40 border-slate-200 dark:border-slate-800 snap-center transition-colors">
+                    
+                    <div class="flex-none p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between rounded-t-2xl bg-white/50 dark:bg-slate-900/60 backdrop-blur-sm">
+                        <div class="flex items-center space-x-2.5">
+                            <span :class="status.badgeColor" class="w-2.5 h-2.5 rounded-full shadow-sm"></span>
+                            <h3 class="font-bold text-xs uppercase tracking-wider text-slate-700 dark:text-slate-300">{{ status.title }}</h3>
+                        </div>
+                        <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 shadow-sm">
+                            {{ getFilteredOrdersByStatus(status.id).length }}
+                        </span>
+                    </div>
+
+                    <div class="flex-1 p-3 space-y-3 overflow-y-auto custom-scrollbar">
+                        <div v-for="order in getFilteredOrdersByStatus(status.id)" :key="order.id" 
+                            draggable="true"
+                            @dragstart="onDragStart(order)"
+                            @click="selectOrder(order)"
+                            class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80 rounded-2xl p-4 shadow-sm hover:shadow-md cursor-grab active:cursor-grabbing transition-all transform hover:-translate-y-0.5 group">
+                            
+                            <div class="flex items-center justify-between mb-3">
+                                <span :class="order.type === 'silver' ? 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300' : order.type === 'gold' ? 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400' : 'bg-purple-50 text-purple-700 dark:bg-purple-500/10 dark:text-purple-400'" 
+                                      class="text-[10px] font-bold px-2 py-1 rounded-lg flex items-center uppercase tracking-wide">
+                                    <i class="fa-solid fa-play mr-1.5 opacity-70 text-[9px]"></i>
+                                    {{ order.type === 'silver' ? 'Серебро' : order.type === 'gold' ? 'Золото' : 'Кастом' }}
+                                </span>
+
+                                <span :class="getSourceObj(order.source).bg" class="text-[10px] font-bold px-2 py-1 rounded-lg flex items-center transition-colors">
+                                    <i :class="[getSourceObj(order.source).icon, getSourceObj(order.source).color]" class="mr-1.5 opacity-90 text-[11px]"></i>
+                                    <span :class="getSourceObj(order.source).color">{{ getSourceObj(order.source).title }}</span>
+                                </span>
+                            </div>
+
+                            <div class="mb-2">
+                                <span :class="(order.paymentStatus || 'waiting') === 'paid' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400' : (order.paymentStatus || 'waiting') === 'on_completion' ? 'bg-sky-50 text-sky-700 dark:bg-sky-500/10 dark:text-sky-400' : 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400'"
+                                      class="text-[10px] font-bold px-2 py-1 rounded-lg inline-flex items-center">
+                                    <i :class="paymentStatuses.find(p => p.id === (order.paymentStatus || 'waiting'))?.icon" class="mr-1.5 text-[9px] opacity-80"></i>
+                                    {{ paymentStatuses.find(p => p.id === (order.paymentStatus || 'waiting'))?.title }}
+                                </span>
+                            </div>
+
+                            <h4 class="font-bold text-sm mb-2 group-hover:text-red-500 transition-colors text-slate-900 dark:text-white truncate">
+                                {{ order.channelName || 'Без названия канала' }}
+                            </h4>
+
+                            <div class="bg-slate-50 dark:bg-slate-950/50 border border-slate-100 dark:border-slate-800 rounded-xl p-2.5 mb-3">
+                                <div class="text-[9px] uppercase font-bold text-slate-400 mb-0.5">Шильдик:</div>
+                                <div class="text-xs font-mono text-slate-700 dark:text-amber-300/90 truncate">"{{ order.plaqueText || 'Без текста' }}"</div>
+                            </div>
+
+                            <div class="flex items-end justify-between pt-3 border-t border-slate-100 dark:border-slate-800">
+                                <div class="flex flex-col">
+                                    <span class="text-[10px] text-slate-400 uppercase font-bold mb-0.5">Заказчик</span>
+                                    <span class="text-xs font-medium text-slate-700 dark:text-slate-300 truncate max-w-[100px]">{{ order.clientName || 'Аноним' }}</span>
+                                </div>
+                                <div class="text-right flex flex-col">
+                                    <span class="font-bold text-sm text-slate-900 dark:text-white leading-none mb-1">{{ order.price.toLocaleString() }} ₽</span>
+                                    <span class="text-[9px] text-emerald-600 dark:text-emerald-400 font-bold uppercase">+{{ (order.price - order.costPrice).toLocaleString() }} ₽ маржа</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div v-if="getFilteredOrdersByStatus(status.id).length === 0" 
+                             class="h-full min-h-[120px] flex flex-col items-center justify-center text-center p-6 border-2 border-dashed rounded-2xl border-slate-200 dark:border-slate-800">
+                            <i class="fa-solid fa-wind text-2xl text-slate-300 dark:text-slate-700 mb-2"></i>
+                            <span class="text-xs text-slate-400 font-medium">Перетащите заказ сюда</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <Transition name="modal">
+            <div v-if="showModal" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-sm p-0 sm:p-4">
+                <div class="bg-white dark:bg-slate-900 w-full max-w-5xl max-h-[92vh] sm:h-auto h-[95vh] rounded-t-3xl sm:rounded-2xl shadow-2xl flex flex-col overflow-hidden relative">
+                    
+                    <!-- Header -->
+                    <div class="flex-none p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-white dark:bg-slate-900 z-10">
+                        <div class="flex items-center space-x-4">
+                            <div :class="form.type === 'silver' ? 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300' : form.type === 'gold' ? 'bg-amber-100 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400' : 'bg-purple-100 text-purple-600 dark:bg-purple-500/20 dark:text-purple-400'" 
+                                 class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-inner transition-colors">
+                                <i class="fa-solid fa-award"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight">
+                                    {{ isEditing ? 'Редактирование заказа' : 'Новый заказ' }} #{{ isEditing ? form.id : 'NEW' }}
+                                </h2>
+                                <div class="flex items-center text-[11px] text-slate-500 mt-1 space-x-2">
+                                    <span>Создан: {{ isEditing ? formatDate(form.createdAt) : 'Только что' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button @click="closeModal" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+                            <i class="fa-solid fa-xmark text-lg"></i>
+                        </button>
+                    </div>
+
+                    <!-- Body -->
+                    <div class="flex-1 overflow-y-auto p-4 sm:p-6 custom-scrollbar bg-slate-50/50 dark:bg-slate-950/30">
+                        
+                        <!-- Archive Banner if Shipped and Paid -->
+                        <div v-if="isEditing && form.status === 'shipped' && form.paymentStatus === 'paid'" class="mb-6 glow-pulse bg-gradient-to-r from-emerald-500 to-teal-500 p-4 rounded-2xl flex items-center justify-between text-white shadow-lg relative overflow-hidden">
+                            <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 pointer-events-none"></div>
+                            <div class="relative z-10">
+                                <h4 class="font-bold text-lg flex items-center"><i class="fa-solid fa-circle-check mr-2"></i> Заказ отгружен и оплачен</h4>
+                                <p class="text-sm text-emerald-50 mt-1">Перенесите его в архив, чтобы освободить место на доске.</p>
+                            </div>
+                            <button @click="archiveOrder(form)" class="relative z-10 px-5 py-2.5 bg-white text-emerald-600 rounded-xl font-bold shadow-md hover:scale-105 active:scale-95 transition-all flex items-center space-x-2">
+                                <i class="fa-solid fa-box-archive"></i>
+                                <span>В архив</span>
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            
+                            <!-- Left Col: Form fields -->
+                            <div class="space-y-6">
+                                <!-- Опции -->
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="space-y-1.5">
+                                        <label class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Тип награды</label>
+                                        <select v-model="form.type" @change="recalculatePrice" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-amber-500 focus:border-amber-500 shadow-sm">
+                                            <option value="silver">Серебро</option>
+                                            <option value="gold">Золото</option>
+                                            <option value="custom">Индивидуально</option>
+                                        </select>
+                                    </div>
+                                    <div class="space-y-1.5">
+                                        <label class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Источник</label>
+                                        <select v-model="form.source" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-amber-500 focus:border-amber-500 shadow-sm">
+                                            <option v-for="src in sources" :key="src.id" :value="src.id">{{ src.title }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Контент -->
+                                <div class="space-y-4 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                                    <div class="space-y-1.5">
+                                        <label class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Название канала <span class="text-red-500">*</span></label>
+                                        <input v-model="form.channelName" placeholder="ВВЕДИТЕ НАЗВАНИЕ" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 font-bold focus:ring-2 focus:ring-amber-500 shadow-inner">
+                                    </div>
+                                    <div class="space-y-1.5">
+                                        <div class="flex justify-between items-center">
+                                            <label class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Текст шильдика</label>
+                                            <span class="text-[10px] text-slate-400">Рекомендуется до 3 строк</span>
+                                        </div>
+                                        <textarea v-model="form.plaqueText" rows="3" placeholder="FOR PASSING 100,000 SUBSCRIBERS" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-mono focus:ring-2 focus:ring-amber-500 shadow-inner resize-none"></textarea>
+                                    </div>
+                                </div>
+
+                                <!-- Клиент & Статусы -->
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div class="space-y-1.5">
+                                        <label class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Имя клиента</label>
+                                        <input v-model="form.clientName" placeholder="Иван Иванов" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-amber-500 shadow-sm">
+                                    </div>
+                                    <div class="space-y-1.5">
+                                        <label class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Контакты / @tag</label>
+                                        <div class="flex space-x-2">
+                                            <input v-model="form.clientContact" placeholder="@telegram / Телефон" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-amber-500 shadow-sm">
+                                            <a v-if="form.clientContact && form.source === 'telegram'" :href="'https://t.me/' + form.clientContact.replace('@', '')" target="_blank" class="flex-none w-10 flex items-center justify-center bg-sky-100 text-sky-600 rounded-xl hover:bg-sky-200 transition-colors">
+                                                <i class="fa-paper-plane"></i>
+                                            </a>
+                                            <a v-if="form.clientContact && form.source === 'instagram'" :href="'https://instagram.com/' + form.clientContact.replace('@', '')" target="_blank" class="flex-none w-10 flex items-center justify-center bg-pink-100 text-pink-600 rounded-xl hover:bg-pink-200 transition-colors">
+                                                <i class="fa-brands fa-instagram"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    <div class="space-y-1.5">
+                                        <label class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Статус оплаты</label>
+                                        <select v-model="form.paymentStatus" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-amber-500 shadow-sm">
+                                            <option v-for="ps in paymentStatuses" :key="ps.id" :value="ps.id">{{ ps.title }}</option>
+                                        </select>
+                                    </div>
+                                    <div class="space-y-1.5">
+                                        <label class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Этап работы</label>
+                                        <select v-model="form.status" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-amber-500 shadow-sm">
+                                            <option v-for="st in allStatuses" :key="st.id" :value="st.id">{{ st.title }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Финансы -->
+                                <div class="bg-slate-100 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-3">
+                                    <div class="flex items-center justify-between">
+                                        <h3 class="text-sm font-bold text-slate-700 dark:text-slate-300"><i class="fa-solid fa-calculator mr-2 text-slate-400"></i>Финансы</h3>
+                                        <div class="text-right">
+                                            <div class="text-[10px] text-slate-500 font-bold uppercase">Цена продажи</div>
+                                            <input type="number" v-model.number="form.price" class="w-24 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 text-right font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500">
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2 text-xs">
+                                        <div class="flex justify-between p-2 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700">
+                                            <span class="text-slate-500">Материал (АКП)</span>
+                                            <input type="number" v-model.number="form.costAcp" class="w-16 bg-transparent text-right font-medium focus:outline-none focus:text-amber-500">
+                                        </div>
+                                        <div class="flex justify-between p-2 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700">
+                                            <span class="text-slate-500">Фрезеровка</span>
+                                            <input type="number" v-model.number="form.costCutting" class="w-16 bg-transparent text-right font-medium focus:outline-none focus:text-amber-500">
+                                        </div>
+                                        <div class="flex justify-between p-2 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700">
+                                            <span class="text-slate-500">Гравировка</span>
+                                            <input type="number" v-model.number="form.costEngraving" class="w-16 bg-transparent text-right font-medium focus:outline-none focus:text-amber-500">
+                                        </div>
+                                        <div class="flex justify-between p-2 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700">
+                                            <span class="text-slate-500">Сборка/Клей</span>
+                                            <input type="number" v-model.number="form.costGlue" class="w-16 bg-transparent text-right font-medium focus:outline-none focus:text-amber-500">
+                                        </div>
+                                    </div>
+                                    <div class="flex justify-between items-center pt-2 border-t border-slate-200 dark:border-slate-700">
+                                        <span class="text-xs font-bold text-slate-500">Себестоимость: <span class="text-slate-900 dark:text-white">{{ currentCost.toLocaleString() }} ₽</span></span>
+                                        <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400">Маржа: +{{ currentMargin.toLocaleString() }} ₽</span>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- Right Col: Visual Plaque Preview -->
+                            <div class="hidden lg:flex flex-col items-center justify-center p-6 bg-slate-100 dark:bg-slate-900/50 rounded-3xl border border-slate-200 dark:border-slate-800">
+                                <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-6"><i class="fa-solid fa-eye mr-2"></i> Визуальный предпросмотр</h3>
+                                
+                                <div class="w-full max-w-[280px] aspect-[3/4] rounded-2xl border-[10px] shadow-2xl relative flex flex-col items-center justify-center p-6 text-center transition-all duration-700"
+                                     :class="form.type === 'gold' ? 'border-amber-400 bg-gradient-to-b from-amber-100 to-amber-200 dark:from-amber-700 dark:to-amber-900 shadow-amber-500/20' : form.type === 'custom' ? 'border-purple-400 bg-gradient-to-b from-purple-100 to-purple-200 dark:from-purple-800 dark:to-purple-950 shadow-purple-500/20' : 'border-slate-300 bg-gradient-to-b from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-800 shadow-slate-500/20'">
+                                     
+                                     <!-- Play Icon -->
+                                     <div class="w-16 h-12 bg-white/40 dark:bg-white/10 rounded-lg shadow-inner flex items-center justify-center mb-8 backdrop-blur-sm">
+                                         <i class="fa-solid fa-play text-2xl drop-shadow-sm" :class="form.type === 'gold' ? 'text-amber-600 dark:text-amber-300' : 'text-slate-500 dark:text-slate-300'"></i>
+                                     </div>
+
+                                     <div class="text-[9px] uppercase font-bold tracking-[0.2em] mb-3 text-slate-600 dark:text-slate-300 opacity-80">Presented to</div>
+                                     
+                                     <div class="text-2xl preview-channel-name mb-4 text-slate-900 dark:text-white max-w-full truncate px-2">
+                                         {{ form.channelName || 'Имя Канала' }}
+                                     </div>
+                                     
+                                     <div class="text-[10px] preview-plaque-text text-slate-700 dark:text-slate-300 max-w-[90%] whitespace-pre-wrap leading-tight opacity-90">
+                                         {{ form.plaqueText || 'FOR PASSING 100,000 SUBSCRIBERS' }}
+                                     </div>
+
+                                     <!-- Glass overlay -->
+                                     <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent pointer-events-none rounded-xl"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer actions -->
+                    <div class="flex-none p-4 sm:p-5 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/80 flex justify-end space-x-3">
+                        <button @click="closeModal" class="px-5 py-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 font-medium transition-colors text-sm">Отмена</button>
+                        <button @click="saveOrder" class="px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold shadow-md shadow-amber-500/20 transition-all active:scale-95 text-sm flex items-center">
+                            <i class="fa-solid fa-check mr-2"></i> Сохранить
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </Transition>
+
+        <Transition name="modal">
+            <div v-if="showAnalyticsModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm p-4">
+                <div class="bg-slate-50 dark:bg-slate-950 w-full max-w-6xl h-[90vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden relative">
+                    
+                    <div class="flex-none p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-white dark:bg-slate-900">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400 flex items-center justify-center text-2xl shadow-inner">
+                                <i class="fa-solid fa-chart-pie"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-900 dark:text-white">Аналитика & Отчёты</h2>
+                                <p class="text-xs text-slate-500">Статистика по всем заказам за всё время</p>
+                            </div>
+                        </div>
+                        <button @click="showAnalyticsModal = false" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 transition-colors">
+                            <i class="fa-solid fa-xmark text-xl"></i>
+                        </button>
+                    </div>
+
+                    <div class="flex-1 overflow-y-auto p-6 custom-scrollbar space-y-6">
+                        
+                        <!-- AI Insights Banner -->
+                        <div class="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
+                            <div class="absolute right-0 top-0 opacity-20 transform translate-x-4 -translate-y-4">
+                                <i class="fa-solid fa-robot text-8xl"></i>
+                            </div>
+                            <div class="relative z-10 w-full md:w-3/4">
+                                <div class="text-xs font-bold uppercase tracking-widest text-indigo-200 mb-2 flex items-center">
+                                    <i class="fa-solid fa-bolt mr-2 text-amber-300"></i> AI Анализ бизнеса
+                                </div>
+                                <p class="text-lg font-medium leading-snug">
+                                    Самый прибыльный канал продаж — <span class="font-bold border-b-2 border-amber-400 pb-0.5">{{ topSource.name }}</span> ({{ topSource.percentage }}% от всех заказов). 
+                                    Рекомендуем увеличить рекламный бюджет на эту платформу.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            
+                            <!-- Источники трафика -->
+                            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+                                <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-5">Источники заказов</h3>
+                                <div class="space-y-5">
+                                    <div v-for="source in sourceAnalytics" :key="source.name" class="flex items-center group">
+                                        <div class="w-10 h-10 rounded-xl flex items-center justify-center mr-4 transition-transform group-hover:scale-110" :class="source.bgClass">
+                                            <i class="text-lg" :class="source.iconClass"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <div class="flex justify-between text-sm mb-1.5">
+                                                <span class="font-bold text-slate-700 dark:text-slate-300">{{ source.name }}</span>
+                                                <span class="font-bold text-slate-900 dark:text-white">{{ source.count }} шт. ({{ source.percentage }}%)</span>
+                                            </div>
+                                            <div class="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                                                <div class="h-full rounded-full transition-all duration-1000 ease-out" :class="source.colorClass" :style="{ width: source.percentage + '%' }"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Типы кнопок -->
+                            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+                                <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-5">Популярность наград</h3>
+                                <div class="space-y-5">
+                                    <div v-for="type in typeAnalytics" :key="type.name" class="flex items-center group">
+                                        <div class="w-10 h-10 rounded-xl flex items-center justify-center mr-4 transition-transform group-hover:scale-110" :class="type.bgClass">
+                                            <i class="text-lg fa-solid fa-play"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <div class="flex justify-between text-sm mb-1.5">
+                                                <span class="font-bold text-slate-700 dark:text-slate-300">{{ type.name }}</span>
+                                                <span class="font-bold text-slate-900 dark:text-white">{{ type.count }} шт. ({{ type.percentage }}%)</span>
+                                            </div>
+                                            <div class="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                                                <div class="h-full rounded-full transition-all duration-1000 ease-out" :class="type.colorClass" :style="{ width: type.percentage + '%' }"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Финансы Overview -->
+                        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row justify-between items-center gap-6">
+                            <div class="w-full md:w-1/3 text-center md:text-left">
+                                <div class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-1">Всего оборот</div>
+                                <div class="text-4xl font-bold text-slate-900 dark:text-white">{{ (totalRevenue/1000).toFixed(0) }} <span class="text-xl text-slate-400">тыс. ₽</span></div>
+                            </div>
+                            <div class="hidden md:block w-px h-16 bg-slate-200 dark:bg-slate-800"></div>
+                            <div class="w-full md:w-1/3 text-center">
+                                <div class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-1">Чистая прибыль</div>
+                                <div class="text-4xl font-bold text-emerald-500">{{ (totalProfit/1000).toFixed(0) }} <span class="text-xl opacity-70">тыс. ₽</span></div>
+                            </div>
+                            <div class="hidden md:block w-px h-16 bg-slate-200 dark:bg-slate-800"></div>
+                            <div class="w-full md:w-1/3 text-center md:text-right">
+                                <div class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-1">Средний чек</div>
+                                <div class="text-4xl font-bold text-sky-500">{{ Math.round(totalRevenue / (orders.length || 1)).toLocaleString() }} <span class="text-xl opacity-70">₽</span></div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </Transition>
+
+        <Transition name="modal">
+            <div v-if="showArchiveModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm p-4">
+                <div class="bg-slate-50 dark:bg-slate-950 w-full max-w-5xl h-[85vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden relative">
+                    
+                    <div class="flex-none p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-white dark:bg-slate-900">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 rounded-2xl bg-purple-100 text-purple-600 dark:bg-purple-500/20 dark:text-purple-400 flex items-center justify-center text-2xl shadow-inner">
+                                <i class="fa-solid fa-box-archive"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-900 dark:text-white">Архив заказов</h2>
+                                <p class="text-xs text-slate-500">Завершённые и отгруженные кнопки</p>
+                            </div>
+                        </div>
+                        <button @click="showArchiveModal = false" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 transition-colors">
+                            <i class="fa-solid fa-xmark text-xl"></i>
+                        </button>
+                    </div>
+
+                    <div class="flex-1 overflow-y-auto p-4 sm:p-6 custom-scrollbar bg-slate-100/50 dark:bg-slate-900/30">
+                        <div v-if="archivedOrders.length === 0" class="h-full flex flex-col items-center justify-center text-center">
+                            <i class="fa-solid fa-ghost text-6xl text-slate-300 dark:text-slate-700 mb-4"></i>
+                            <h3 class="text-lg font-bold text-slate-500">Архив пуст</h3>
+                            <p class="text-sm text-slate-400">Здесь будут храниться завершённые заказы</p>
+                        </div>
+                        
+                        <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div v-for="order in archivedOrders" :key="order.id" class="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm opacity-90 hover:opacity-100 transition-opacity flex flex-col">
+                                <div class="flex justify-between items-start mb-2">
+                                    <span class="text-xs font-bold text-slate-500">#{{ order.id }}</span>
+                                    <span class="text-[10px] bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded text-slate-500"><i class="fa-solid fa-check text-emerald-500 mr-1"></i> Завершён</span>
+                                </div>
+                                <h4 class="font-bold text-slate-900 dark:text-white truncate mb-1">{{ order.channelName }}</h4>
+                                <p class="text-xs text-slate-500 mb-4">{{ order.clientName }}</p>
+                                
+                                <div class="mt-auto pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                                    <span class="font-bold text-slate-900 dark:text-white">{{ order.price.toLocaleString() }} ₽</span>
+                                    <button @click="selectOrder(order)" class="text-xs font-bold text-amber-500 hover:text-amber-600 transition-colors">Подробнее</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </Transition>
+    </div>
+
+    <script>
+        const { createApp, ref, computed, onMounted } = Vue;
+
+        const initialData = {
+          "orders": [
+            {
+              "id": 3160, "type": "custom", "source": "avito", "channelName": "Presented to  Natalia Smorodina  For surpassing 100,000 followers", "plaqueText": "", "clientName": "Виталий", "clientContact": "",
+              "price": 10700, "costAcp": 1393, "costGlue": 30, "costEngraving": 500, "costCutting": 1500, "costPrice": 3423,
+              "paymentStatus": "paid", "deadline": "2026-08-19", "status": "accepted", "trackNumber": "", "createdAt": "2026-08-15T08:22:12.007Z", "consumedSheetFraction": 0,
+              "history": [
+                { "text": "Оплата: \"Ждём оплату\" → \"Оплачен\"", "time": "2026-08-15T08:22:22.889Z" },
+                { "text": "Заказ создан", "time": "2026-08-15T08:22:12.007Z" }
+              ]
+            },
+            {
+              "id": 4964, "type": "silver", "source": "avito", "channelName": "Это Саша", "plaqueText": "", "clientName": "Александр", "clientContact": "",
+              "price": 6700, "costAcp": 1000, "costGlue": 30, "costEngraving": 500, "costCutting": 1500, "costPrice": 3030,
+              "paymentStatus": "paid", "deadline": "2026-08-18", "status": "accepted", "trackNumber": "", "createdAt": "2026-08-14T16:00:19.727Z", "consumedSheetFraction": 0.25,
+              "history": [
+                { "text": "Оплата: \"Ждём оплату\" → \"Оплачен\"", "time": "2026-08-15T08:22:31.047Z" },
+                { "text": "Изменена стоимость АКП", "time": "2026-08-14T16:00:37.043Z" },
+                { "text": "Изменена стоимость АКП", "time": "2026-08-14T16:00:36.858Z" },
+                { "text": "Изменена стоимость АКП", "time": "2026-08-14T16:00:36.687Z" },
+                { "text": "Изменена стоимость АКП", "time": "2026-08-14T16:00:36.153Z" },
+                { "text": "Заказ создан", "time": "2026-08-14T16:00:19.727Z" }
+              ]
+            },
+            {
+              "id": 6401, "type": "silver", "source": "avito", "channelName": "STRELKOV FEDOR", "plaqueText": "", "clientName": " FEDOR", "clientContact": "",
+              "price": 6700, "costAcp": 1000, "costGlue": 30, "costEngraving": 500, "costCutting": 1500, "costPrice": 3030,
+              "paymentStatus": "paid", "deadline": "2026-08-18", "status": "accepted", "trackNumber": "", "createdAt": "2026-08-14T15:59:44.019Z", "consumedSheetFraction": 0.25,
+              "history": [
+                { "text": "Оплата: \"Ждём оплату\" → \"Оплачен\"", "time": "2026-08-15T08:22:36.784Z" },
+                { "text": "Изменена стоимость АКП", "time": "2026-08-14T16:01:11.794Z" },
+                { "text": "Изменена стоимость АКП", "time": "2026-08-14T16:01:11.662Z" },
+                { "text": "Изменена стоимость АКП", "time": "2026-08-14T16:01:11.511Z" },
+                { "text": "Изменена стоимость АКП", "time": "2026-08-14T16:01:10.959Z" },
+                { "text": "Заказ создан", "time": "2026-08-14T15:59:44.019Z" }
+              ]
+            },
+            {
+              "id": 4457, "type": "silver", "source": "telegram", "channelName": "Levitas presents", "plaqueText": "", "clientName": "Yuri Levitas", "clientContact": "@Yuri_Levitas",
+              "price": 6700, "costAcp": 1000, "costGlue": 30, "costEngraving": 500, "costCutting": 1500, "costPrice": 3030,
+              "paymentStatus": "paid", "deadline": "2026-08-18", "status": "accepted", "trackNumber": "", "createdAt": "2026-08-14T12:13:43.934Z", "consumedSheetFraction": 0.25,
+              "history": [
+                { "text": "Оплата: \"Ждём оплату\" → \"Оплачен\"", "time": "2026-08-15T08:22:44.421Z" },
+                { "text": "Изменена стоимость АКП", "time": "2026-08-14T16:00:49.278Z" },
+                { "text": "Изменена стоимость АКП", "time": "2026-08-14T16:00:49.098Z" },
+                { "text": "Изменена стоимость АКП", "time": "2026-08-14T16:00:48.963Z" },
+                { "text": "Изменена стоимость АКП", "time": "2026-08-14T16:00:48.556Z" },
+                { "text": "Заказ создан", "time": "2026-08-14T12:13:43.934Z" }
+              ]
+            },
+            {
+              "id": 3680, "type": "custom", "source": "avito", "channelName": "Агекяну Давиду Арменовичу Болельщику ФК Спартак За преданность и любовь к клубу и футболу", "plaqueText": "Агекяну Давиду Арменовичу\nБолельщику ФК Спартак\nЗа преданность и любовь к клубу и футболу", "clientName": "Лидия", "clientContact": "",
+              "price": 10200, "costAcp": 1000, "costGlue": 0, "costEngraving": 2500, "costCutting": 1500, "costPrice": 5000,
+              "paymentStatus": "on_completion", "deadline": "2026-08-12", "status": "cnc", "trackNumber": "", "createdAt": "2026-08-11T13:50:03.616Z", "consumedSheetFraction": 0,
+              "history": [
+                { "text": "Оплата: \"Ждём оплату\" → \"Оплата по факту изгот.\"", "time": "2026-08-15T08:22:55.901Z" },
+                { "text": "Статус изменен с \"Макет / Очередь\" на \"ЧПУ & Сборка\"", "time": "2026-08-11T13:51:27.095Z" },
+                { "text": "Изменена стоимость клея", "time": "2026-08-11T13:51:19.461Z" },
+                { "text": "Изменена стоимость АКП", "time": "2026-08-11T13:51:13.927Z" },
+                { "text": "Изменена стоимость АКП", "time": "2026-08-11T13:51:13.453Z" },
+                { "text": "Изменена стоимость АКП", "time": "2026-08-11T13:51:13.307Z" },
+                { "text": "Изменена стоимость АКП", "time": "2026-08-11T13:51:12.768Z" },
+                { "text": "Изменена стоимость гравировки", "time": "2026-08-11T13:50:55.895Z" },
+                { "text": "Изменена стоимость гравировки", "time": "2026-08-11T13:50:55.760Z" },
+                { "text": "Изменена стоимость гравировки", "time": "2026-08-11T13:50:55.283Z" },
+                { "text": "Изменена стоимость гравировки", "time": "2026-08-11T13:50:54.854Z" },
+                { "text": "Изменен текст шильдика", "time": "2026-08-11T13:50:15.558Z" },
+                { "text": "Заказ создан", "time": "2026-08-11T13:50:03.616Z" }
+              ]
+            },
+            {
+              "id": 1072, "type": "silver", "source": "avito", "channelName": "PogFrog", "plaqueText": "FOR PASSING 100,000 SUBSCRIBERS", "clientName": "Сергей", "clientContact": "Сергей",
+              "price": 6700, "costAcp": 1300, "costGlue": 30, "costEngraving": 500, "costCutting": 1500, "costPrice": 3330,
+              "paymentStatus": "paid", "deadline": "2026-08-11", "status": "shipped", "trackNumber": "", "createdAt": "2026-08-09T11:12:35.009Z", "consumedSheetFraction": 0.25,
+              "history": [
+                { "text": "Статус изменен с \"Готов к выдаче\" на \"Отправлен\"", "time": "2026-08-12T11:41:36.970Z" },
+                { "text": "Статус изменен с \"ЧПУ & Сборка\" на \"Готов к выдаче\"", "time": "2026-08-11T13:49:02.199Z" },
+                { "text": "Изменён срок сдачи", "time": "2026-08-09T11:14:08.186Z" },
+                { "text": "Оплата: \"Ждём оплату\" → \"Оплачен\"", "time": "2026-08-09T11:13:26.897Z" },
+                { "text": "Статус изменен с \"Макет / Очередь\" на \"ЧПУ & Сборка\"", "time": "2026-08-09T11:13:22.285Z" },
+                { "text": "Изменено название канала", "time": "2026-08-09T11:13:09.254Z" },
+                { "text": "Копия заказа #501", "time": "2026-08-09T11:12:35.009Z" }
+              ]
+            },
+            {
+              "id": 501, "type": "silver", "source": "avito", "channelName": "ГЛЕБ ТУЗОВИЧ", "plaqueText": "FOR PASSING 100,000 SUBSCRIBERS", "clientName": "", "clientContact": "@glebchickonmyneck",
+              "price": 6700, "costAcp": 1300, "costGlue": 30, "costEngraving": 500, "costCutting": 1500, "costPrice": 3330,
+              "paymentStatus": "paid", "deadline": "2026-08-11", "status": "shipped", "trackNumber": "", "createdAt": "2026-08-09T05:19:58.164Z", "consumedSheetFraction": 0.25,
+              "history": [
+                { "text": "Оплата: \"Оплата по факту изгот.\" → \"Оплачен\"", "time": "2026-08-14T12:14:33.701Z" },
+                { "text": "Оплата: \"Оплачен\" → \"Оплата по факту изгот.\"", "time": "2026-08-14T12:14:19.808Z" },
+                { "text": "Статус изменен с \"Готов к выдаче\" на \"Отправлен\"", "time": "2026-08-12T11:41:46.617Z" },
+                { "text": "Оплата: \"—\" → \"Оплачен\"", "time": "2026-08-11T13:49:10.451Z" },
+                { "text": "Статус изменен с \"ЧПУ & Сборка\" на \"Готов к выдаче\"", "time": "2026-08-11T13:49:08.973Z" },
+                { "text": "Изменена стоимость клея", "time": "2026-08-09T11:12:20.470Z" },
+                { "text": "Изменена стоимость клея", "time": "2026-08-09T11:12:20.100Z" },
+                { "text": "Изменена стоимость гравировки", "time": "2026-08-09T11:12:17.586Z" },
+                { "text": "Изменена стоимость гравировки", "time": "2026-08-09T11:12:16.665Z" },
+                { "text": "Изменена стоимость гравировки", "time": "2026-08-09T11:12:16.499Z" },
+                { "text": "Изменена стоимость гравировки", "time": "2026-08-09T11:12:16.311Z" },
+                { "text": "Изменена стоимость гравировки", "time": "2026-08-09T11:12:15.789Z" },
+                { "text": "Изменена стоимость АКП", "time": "2026-08-09T11:12:12.921Z" },
+                { "text": "Изменена стоимость АКП", "time": "2026-08-09T11:12:12.744Z" },
+                { "text": "Изменена стоимость АКП", "time": "2026-08-09T11:12:12.300Z" },
+                { "text": "Изменена стоимость АКП", "time": "2026-08-09T11:12:11.129Z" },
+                { "text": "Изменена стоимость АКП", "time": "2026-08-09T11:12:10.880Z" },
+                { "text": "Изменена стоимость АКП", "time": "2026-08-09T11:12:10.638Z" },
+                { "text": "Изменена стоимость резки", "time": "2026-08-09T11:12:08.112Z" },
+                { "text": "Изменена стоимость резки", "time": "2026-08-09T11:12:08.018Z" },
+                { "text": "Изменена стоимость резки", "time": "2026-08-09T11:12:07.534Z" },
+                { "text": "Изменена стоимость резки", "time": "2026-08-09T11:12:07.117Z" },
+                { "text": "Изменена стоимость АКП", "time": "2026-08-09T11:12:04.629Z" },
+                { "text": "Изменена стоимость АКП", "time": "2026-08-09T11:12:03.147Z" },
+                { "text": "Изменена стоимость АКП", "time": "2026-08-09T11:12:03.028Z" },
+                { "text": "Изменена стоимость АКП", "time": "2026-08-09T11:12:02.842Z" },
+                { "text": "Изменена стоимость АКП", "time": "2026-08-09T11:12:02.283Z" },
+                { "text": "Изменена стоимость АКП", "time": "2026-08-09T11:12:01.879Z" },
+                { "text": "Изменён срок сдачи", "time": "2026-08-09T11:11:49.454Z" },
+                { "text": "Изменено название канала", "time": "2026-08-09T05:31:08.867Z" },
+                { "text": "Изменено название канала", "time": "2026-08-09T05:31:08.479Z" },
+                { "text": "Изменено название канала", "time": "2026-08-09T05:31:08.276Z" },
+                { "text": "Изменено название канала", "time": "2026-08-09T05:31:08.131Z" },
+                { "text": "Изменено название канала", "time": "2026-08-09T05:31:07.837Z" }
+              ]
+            }
+          ],
+          "settings": {
+            "silverPrice": 6700, "goldPrice": 7600, "customPrice": 8500,
+            "acpSheetPrice": 17000, "gluePrice": 30, "engravingPrice": 500, "cuttingPrice": 1500
+          }
+        };
+
+        const app = createApp({
+            setup() {
+                const orders = ref([]);
+                const isDark = ref(true);
+                const searchQuery = ref('');
+                const filterType = ref('all');
+                
+                // Modals
+                const showModal = ref(false);
+                const showAnalyticsModal = ref(false);
+                const showArchiveModal = ref(false);
+                const showSettingsModal = ref(false);
+                
+                const isEditing = ref(false);
+                const dragTargetStatus = ref(null);
+                const draggedOrder = ref(null);
+
+                const defaultForm = () => ({
+                    id: Math.floor(Math.random() * 10000),
+                    type: 'silver',
+                    source: 'instagram',
+                    channelName: '',
+                    plaqueText: 'FOR PASSING 100,000 SUBSCRIBERS',
+                    clientName: '',
+                    clientContact: '',
+                    price: 6700,
+                    costAcp: 1000,
+                    costGlue: 30,
+                    costEngraving: 500,
+                    costCutting: 1500,
+                    costPrice: 3030,
+                    paymentStatus: 'waiting',
+                    status: 'accepted',
+                    createdAt: new Date().toISOString()
+                });
+
+                const form = ref(defaultForm());
+
+                const sources = [
+                    { id: 'avito', title: 'Avito', icon: 'fa-solid fa-bag-shopping', color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-500/10' },
+                    { id: 'telegram', title: 'Telegram', icon: 'fa-paper-plane', color: 'text-sky-500', bg: 'bg-sky-50 dark:bg-sky-500/10' },
+                    { id: 'instagram', title: 'Instagram', icon: 'fa-brands fa-instagram', color: 'text-pink-500', bg: 'bg-pink-50 dark:bg-pink-500/10' }
+                ];
+
+                const allStatuses = [
+                    { id: 'accepted', title: 'Макет / Очередь', badgeColor: 'bg-slate-400' },
+                    { id: 'cnc', title: 'ЧПУ & Сборка', badgeColor: 'bg-amber-400' },
+                    { id: 'ready', title: 'Готов к выдаче', badgeColor: 'bg-sky-400' },
+                    { id: 'shipped', title: 'Отправлен', badgeColor: 'bg-purple-400' },
+                    { id: 'archived', title: 'Архив', badgeColor: 'bg-emerald-400' }
+                ];
+
+                const kanbanStatuses = allStatuses.filter(s => s.id !== 'archived');
+
+                const paymentStatuses = [
+                    { id: 'waiting', title: 'Ждём оплату', icon: 'fa-solid fa-hourglass-half' },
+                    { id: 'paid', title: 'Оплачен', icon: 'fa-solid fa-check' },
+                    { id: 'on_completion', title: 'По готовности', icon: 'fa-solid fa-handshake' }
+                ];
+
+                // Load Data
+                onMounted(() => {
+                    // Принудительно устанавливаем новые данные и перезаписываем локальный кэш, 
+                    // чтобы вы сразу увидели обновленный список при перезагрузке
+                    orders.value = initialData.orders;
+                    saveData();
+
+                    // Apply theme
+                    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                        document.documentElement.classList.add('dark');
+                        isDark.value = true;
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                        isDark.value = false;
+                    }
+                });
+
+                const saveData = () => {
+                    localStorage.setItem('playbutton_data', JSON.stringify({ orders: orders.value }));
+                };
+
+                const toggleTheme = () => {
+                    isDark.value = !isDark.value;
+                    if (isDark.value) {
+                        document.documentElement.classList.add('dark');
+                        localStorage.theme = 'dark';
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                        localStorage.theme = 'light';
+                    }
+                };
+
+                // Computed
+                const activeOrdersCount = computed(() => orders.value.filter(o => o.status !== 'archived').length);
+                const archivedOrdersCount = computed(() => orders.value.filter(o => o.status === 'archived').length);
+                const totalRevenue = computed(() => orders.value.reduce((sum, o) => sum + (o.price || 0), 0));
+                const totalProfit = computed(() => orders.value.reduce((sum, o) => sum + ((o.price || 0) - (o.costPrice || 0)), 0));
+                
+                const totalRevenueActive = computed(() => orders.value.filter(o => o.status !== 'archived').reduce((sum, o) => sum + (o.price || 0), 0));
+                const totalProfitActive = computed(() => orders.value.filter(o => o.status !== 'archived').reduce((sum, o) => sum + ((o.price || 0) - (o.costPrice || 0)), 0));
+
+                const totalOutstanding = computed(() => {
+                    return orders.value.filter(o => o.paymentStatus !== 'paid' && o.status !== 'archived').reduce((sum, o) => sum + o.price, 0);
+                });
+
+                const filteredOrders = computed(() => {
+                    let result = orders.value;
+                    if (filterType.value !== 'all') {
+                        result = result.filter(o => o.type === filterType.value);
+                    }
+                    if (searchQuery.value) {
+                        const q = searchQuery.value.toLowerCase();
+                        result = result.filter(o => 
+                            (o.channelName && o.channelName.toLowerCase().includes(q)) || 
+                            (o.clientName && o.clientName.toLowerCase().includes(q))
+                        );
+                    }
+                    return result;
+                });
+
+                const archivedOrders = computed(() => filteredOrders.value.filter(o => o.status === 'archived').sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)));
+
+                const getFilteredOrdersByStatus = (statusId) => {
+                    return filteredOrders.value.filter(o => o.status === statusId && o.status !== 'archived');
+                };
+
+                const getSourceObj = (srcId) => {
+                    return sources.find(s => s.id === srcId) || sources[0];
+                };
+
+                // Cost Calcs
+                const currentCost = computed(() => {
+                    return (form.value.costAcp || 0) + (form.value.costCutting || 0) + (form.value.costEngraving || 0) + (form.value.costGlue || 0);
+                });
+                const currentMargin = computed(() => (form.value.price || 0) - currentCost.value);
+
+                const recalculatePrice = () => {
+                    if (form.value.type === 'silver') form.value.price = 6700;
+                    if (form.value.type === 'gold') { form.value.price = 7600; form.value.costAcp = 1200; }
+                    if (form.value.type === 'custom') form.value.price = 8500;
+                };
+
+                // Actions
+                const openCreateModal = () => {
+                    form.value = defaultForm();
+                    isEditing.value = false;
+                    showModal.value = true;
+                };
+
+                const selectOrder = (order) => {
+                    form.value = JSON.parse(JSON.stringify(order));
+                    isEditing.value = true;
+                    showModal.value = true;
+                };
+
+                const closeModal = () => {
+                    showModal.value = false;
+                };
+
+                const saveOrder = () => {
+                    form.value.costPrice = currentCost.value;
+                    if (isEditing.value) {
+                        const idx = orders.value.findIndex(o => o.id === form.value.id);
+                        if (idx !== -1) orders.value[idx] = { ...form.value };
+                    } else {
+                        orders.value.push({ ...form.value });
+                    }
+                    saveData();
+                    closeModal();
+                };
+
+                const archiveOrder = (orderForm) => {
+                    orderForm.status = 'archived';
+                    saveOrder(); // will close modal and save
+                    triggerConfetti();
+                };
+
+                // Drag & Drop
+                const onDragStart = (order) => { draggedOrder.value = order; };
+                const onDrop = (statusId) => {
+                    dragTargetStatus.value = null;
+                    if (draggedOrder.value && draggedOrder.value.status !== statusId) {
+                        const order = orders.value.find(o => o.id === draggedOrder.value.id);
+                        if (order) {
+                            order.status = statusId;
+                            saveData();
+                            // If dropped to Shipped and Paid, suggest archive? Not needed, modal does it.
+                        }
+                    }
+                    draggedOrder.value = null;
+                };
+
+                const triggerConfetti = () => {
+                    if (typeof confetti !== 'undefined') {
+                        confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, zIndex: 9999 });
+                    }
+                };
+
+                const formatDate = (isoString) => {
+                    if (!isoString) return '';
+                    return new Date(isoString).toLocaleDateString('ru-RU', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+                };
+
+                // Analytics Computed
+                const sourceAnalytics = computed(() => {
+                    const total = orders.value.length || 1;
+                    return sources.map(src => {
+                        const count = orders.value.filter(o => o.source === src.id).length;
+                        return {
+                            name: src.title, count,
+                            percentage: Math.round((count / total) * 100),
+                            bgClass: src.id === 'instagram' ? 'bg-pink-100 text-pink-600 dark:bg-pink-500/20' : src.id === 'telegram' ? 'bg-sky-100 text-sky-600 dark:bg-sky-500/20' : 'bg-blue-100 text-blue-600 dark:bg-blue-500/20',
+                            colorClass: src.id === 'instagram' ? 'bg-pink-500' : src.id === 'telegram' ? 'bg-sky-500' : 'bg-blue-500',
+                            iconClass: src.icon
+                        };
+                    }).sort((a,b) => b.count - a.count);
+                });
+
+                const typeAnalytics = computed(() => {
+                    const total = orders.value.length || 1;
+                    return [
+                        { id: 'silver', name: 'Серебро', bg: 'bg-slate-200 text-slate-700', color: 'bg-slate-500' },
+                        { id: 'gold', name: 'Золото', bg: 'bg-amber-100 text-amber-600', color: 'bg-amber-500' },
+                        { id: 'custom', name: 'Кастом', bg: 'bg-purple-100 text-purple-600', color: 'bg-purple-500' }
+                    ].map(t => {
+                        const count = orders.value.filter(o => o.type === t.id).length;
+                        return {
+                            name: t.name, count,
+                            percentage: Math.round((count / total) * 100),
+                            bgClass: t.bg, colorClass: t.color
+                        };
+                    }).sort((a,b) => b.count - a.count);
+                });
+
+                const topSource = computed(() => sourceAnalytics.value[0] || { name: 'Неизвестно', percentage: 0 });
+
+                return {
+                    orders, isDark, searchQuery, filterType, activeOrdersCount, archivedOrdersCount,
+                    totalRevenue, totalProfit, totalRevenueActive, totalProfitActive, totalOutstanding,
+                    filteredOrders, kanbanStatuses, paymentStatuses, allStatuses, sources,
+                    showModal, showAnalyticsModal, showArchiveModal, showSettingsModal, isEditing, form, currentCost, currentMargin,
+                    archivedOrders,
+                    toggleTheme, openCreateModal, closeModal, selectOrder, saveOrder, recalculatePrice, archiveOrder,
+                    onDragStart, onDrop, dragTargetStatus, getFilteredOrdersByStatus, getSourceObj, formatDate,
+                    sourceAnalytics, typeAnalytics, topSource
+                };
+            }
+        });
+
+        app.mount('#app');
+    </script>
+</body>
+</html>
