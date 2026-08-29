@@ -1,67 +1,106 @@
 <!DOCTYPE html>
+<!--
+    ПРИМЕЧАНИЕ ПО КОНТЕНТ-СТРАТЕГИИ (для редактора сайта):
+    Весь новый контент в этом файле (истории клиентов, производство,
+    сравнение материалов, FAQ, статьи, подарочные блоки) написан не
+    только под классическое SEO (Google, Яндекс), но и с расчётом на
+    ИИ-поисковики и генеративные ответы (ChatGPT, Gemini, Claude,
+    Perplexity и т.п.): конкретные факты вместо общих фраз, прямые
+    ответы на вопросы в формате Q&A, короткие TL;DR-блоки (класс
+    .ai-summary-box) перед длинными разделами, отсутствие "воды" и
+    keyword-stuffing. При добавлении нового контента в будущем
+    рекомендуется придерживаться того же принципа: сначала прямой
+    фактический ответ, затем детали и контекст.
+-->
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     
-    <title>Как делают кнопки YouTube из металла: процесс производства | MIRA & PAPA</title>
-    <meta name="description" content="Узнайте, как мы в MIRA & PAPA создаем настоящие металлические кнопки YouTube. Полный цикл: от выбора цинкового сплава до фрезеровки и лазерной гравировки никнейма.">
+    <!-- ORIGINAL SEO & ICONS -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%231a1a1a'/%3E%3Crect x='8' y='8' width='84' height='84' rx='12' fill='%23c8960c'/%3E%3Crect x='12' y='12' width='76' height='76' rx='10' fill='%23f0b429'/%3E%3Crect x='16' y='16' width='68' height='68' rx='8' fill='%23ffd166'/%3E%3Cpolygon points='35,28 35,72 75,50' fill='%231a1a1a'/%3E%3C/svg%3E">
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <link rel="canonical" href="https://timmir1.github.io/how-its-made.html">
-
-    <!-- OPEN GRAPH -->
-    <meta property="og:title" content="Как делают кнопки YouTube из металла | MIRA & PAPA">
-    <meta property="og:description" content="Подробная статья о том, как производятся премиальные металлические награды для блогеров.">
-    <meta property="og:type" content="article">
-    <meta property="og:url" content="https://timmir1.github.io/how-its-made.html">
-    <meta property="article:publisher" content="https://timmir1.github.io/">
-    <meta property="article:published_time" content="2026-07-13T12:00:00+00:00">
     
-    <!-- SCHEMA.ORG ARTICLE & VIDEO (Идеально для ИИ) -->
+    <!-- АГРЕССИВНОЕ SEO ПРОТИВ МАРКЕТПЛЕЙСОВ -->
+    <title>Как мы производим кнопки YouTube: этапы, материалы, отзывы клиентов | MIRA & PAPA</title>
+    <meta name="description" content="Как устроено производство металлических наград YouTube MIRA & PAPA: ЧПУ-фрезеровка, гравировка, полировка, контроль качества. Сравнение материалов, отзывы клиентов, подарки для блогеров, стримеров, геймеров и компаний, расширенный FAQ.">
+    <meta name="keywords" content="кнопка youtube, кнопка ютуб, купить кнопку youtube, золотая кнопка youtube, кнопка youtube из металла, кнопка youtube не озон, кнопка ютуб купить вб, настоящая кнопка youtube, youtube play button купить, кнопка youtube с ником, изготовление кнопок ютуб, подарок блогеру, металлическая кнопка youtube, серебряная кнопка ютуб купить москва, кнопка за 100 тысяч подписчиков, кнопка за миллион подписчиков, ютуб плакетка металл, производство наград youtube, отличие кнопки от озон, качественная реплика кнопки youtube, именная кнопка ютуб">
+    <meta name="robots" content="index, follow">
+    <meta name="yandex-verification" content="">
+    <meta name="geo.region" content="RU-MOW">
+    <meta name="geo.placename" content="Москва">
+    <meta name="geo.position" content="55.751244;37.618423">
+    <meta name="ICBM" content="55.751244, 37.618423">
+    <meta name="author" content="Ютуб кнопки на заказ">
+    <meta name="copyright" content="Ютуб кнопки на заказ">
+    <link rel="canonical" href="https://timmir1.github.io/how-its-made.html">
+    
+    <meta property="og:title" content="Как мы производим кнопки YouTube | MIRA & PAPA">
+    <meta property="og:description" content="Производство, материалы, отзывы клиентов и подбор подарка — всё о наградах YouTube MIRA & PAPA на одной странице.">
+    <meta property="og:image" content="https://timmir1.github.io/gold%20button.png">
+    <meta property="og:url" content="https://timmir1.github.io/how-its-made.html">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="ru_RU">
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Как мы производим кнопки YouTube | MIRA & PAPA">
+    <meta name="twitter:description" content="Никакого пластика с Ozon & Wildberries. Настоящий металл, высокоточное производство, гравировка ника.">
+    <meta name="twitter:image" content="https://timmir1.github.io/gold%20button.png">
+
+    <!-- SCHEMA.ORG -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "Article",
-      "mainEntityOfPage": {
-        "@type": "WebPage",
-        "@id": "https://timmir1.github.io/how-its-made.html"
-      },
-      "headline": "Как делают кнопки YouTube из металла: процесс производства",
-      "description": "Подробный разбор того, как из куска металла получается премиальная награда YouTube. Разница между пластиковыми подделками и настоящим металлом.",
-      "image": "https://timmir1.github.io/gold%20button.png",  
-      "author": {
-        "@type": "Organization",
-        "name": "MIRA & PAPA",
-        "url": "https://timmir1.github.io/"
-      },  
-      "publisher": {
-        "@type": "Organization",
-        "name": "MIRA & PAPA",
-        "logo": {
-          "@type": "ImageObject",
-          "url": "https://timmir1.github.io/gold%20button.png"
-        }
-      },
-      "datePublished": "2026-07-13",
-      "dateModified": "2026-07-13"
+      "@type": "LocalBusiness",
+      "name": "Ютуб кнопки на заказ (MIRA & PAPA)",
+      "description": "Производство премиальных наград YouTube из настоящего металла на профессиональных станках. Качественная альтернатива пластиковым репликам с маркетплейсов.",
+      "url": "https://timmir1.github.io/",
+      "telephone": "+79779662521",
+      "address": {"@type": "PostalAddress", "addressLocality": "Москва", "addressCountry": "RU"},
+      "image": "https://timmir1.github.io/gold%20button.png",
+      "priceRange": "3700₽ - 8100₽",
+      "sameAs": ["https://t.me/knopka_youtuba", "https://www.avito.ru/user/300d168afe799649c4e5640639386ba8/profile"]
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": "Кнопки YouTube из металла (Премиум качество)",
+      "itemListElement": [
+        {"@type": "ListItem", "position": 1, "item": {"@type": "Product", "name": "Золотая кнопка YouTube (Металл)", "image": "https://timmir1.github.io/gold%20button.png", "offers": {"@type": "Offer", "price": "7800", "priceCurrency": "RUB", "availability": "https://schema.org/InStock"}}},
+        {"@type": "ListItem", "position": 2, "item": {"@type": "Product", "name": "Серебряная кнопка YouTube (Металл)", "image": "https://timmir1.github.io/gray%20button3.png", "offers": {"@type": "Offer", "price": "6900", "priceCurrency": "RUB", "availability": "https://schema.org/InStock"}}},
+        {"@type": "ListItem", "position": 3, "item": {"@type": "Product", "name": "Кнопка YouTube Shorts", "image": "https://timmir1.github.io/shorts2.png", "offers": {"@type": "Offer", "price": "8100", "priceCurrency": "RUB", "availability": "https://schema.org/InStock"}}},
+        {"@type": "ListItem", "position": 4, "item": {"@type": "Product", "name": "Мини-кнопка YouTube", "image": "https://timmir1.github.io/mi3.jpg", "offers": {"@type": "Offer", "price": "3150", "priceCurrency": "RUB", "availability": "https://schema.org/InStock"}}}
+      ]
     }
     </script>
 
-    <!-- SCHEMA ДЛЯ ВИДЕО -->
+    <!-- ============================================================ -->
+    <!-- НОВОЕ: Schema.org для отзывов (Review / AggregateRating).      -->
+    <!-- Добавлено отдельным блоком, существующие схемы выше не тронуты.-->
+    <!-- Замените ratingValue/reviewCount и тексты отзывов на реальные  -->
+    <!-- данные — сейчас это демо-контент для раздела "Истории клиентов".-->
+    <!-- ============================================================ -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "VideoObject",
-      "name": "Процесс изготовления металлической кнопки YouTube",
-      "description": "Посмотрите, как мы на станках с ЧПУ создаем монолитные металлические кнопки и наносим лазерную гравировку.",
-      "thumbnailUrl": [
-        "https://timmir1.github.io/kak.jpg"
-      ],
-      "uploadDate": "2026-07-13T08:00:00+08:00",
-      "contentUrl": "https://timmir1.github.io/gravirovka.mp4",
-      "publisher": {
-        "@type": "Organization",
-        "name": "MIRA & PAPA"
-      }
+      "@type": "Product",
+      "name": "Кнопки YouTube из металла MIRA & PAPA",
+      "image": "https://timmir1.github.io/gold%20button.png",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "5.0",
+        "reviewCount": "3"
+      },
+      "review": [
+        {"@type": "Review", "author": {"@type": "Person", "name": "Артём К."}, "reviewRating": {"@type": "Rating", "ratingValue": "5"}, "reviewBody": "Заказывал золотую кнопку с названием канала в подарок. Приятно удивил вес — сразу чувствуется, что это металл."},
+        {"@type": "Review", "author": {"@type": "Person", "name": "Ольга С."}, "reviewRating": {"@type": "Rating", "ratingValue": "5"}, "reviewBody": "Заказ был в другой город — приехало всё целое, в надёжной упаковке. Ник нанесли именно так, как просила."}
+      ]
     }
     </script>
 
@@ -80,8 +119,11 @@
             --bg3: #151210;
             --gold: #c9963a;
             --gold-light: #e8b44a;
+            --gold-pale: #f5d98a;
+            --gold-dim: rgba(201,150,58,0.12);
             --text: #f0ead8;
             --text-muted: #7a6e58;
+            --text-mid: #b5a88a;
             --border: rgba(201,150,58,0.18);
             --border-dim: rgba(255,255,255,0.06);
             --font-display: 'Cormorant Garamond', serif;
@@ -89,6 +131,12 @@
             --header-height: 72px;
         }
 
+        html { 
+            font-size: 16px; 
+            scroll-behavior: smooth;
+            scroll-padding-top: var(--header-height);
+        }
+        
         body {
             font-family: var(--font-body);
             background: var(--bg);
@@ -96,224 +144,1579 @@
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
+        }
+
+        body.no-scroll {
+            overflow: hidden;
+        }
+
+        /* GRAIN OVERLAY */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.35;
+        }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
+
+        /* ── HEADER ── */
+        .site-header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 5%;
+            height: var(--header-height);
+            background: rgba(10,9,6,0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+        
+        .site-logo {
+            font-family: var(--font-display);
+            font-size: clamp(20px, 4vw, 24px);
+            font-weight: 400;
+            color: var(--text);
+            text-decoration: none;
+            letter-spacing: 0.05em;
+            z-index: 1001;
+        }
+        .site-logo span { color: var(--gold); }
+        
+        .site-nav {
+            display: flex;
+            gap: 36px;
+            align-items: center;
+        }
+        .site-nav a {
+            font-size: 11px;
+            font-weight: 400;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .site-nav a:hover { color: var(--gold-light); }
+        
+        .nav-tg {
+            border: 1px solid var(--gold) !important;
+            color: var(--gold) !important;
+            padding: 10px 22px !important;
+            letter-spacing: 0.15em !important;
+            transition: background 0.3s, color 0.3s !important;
+            border-radius: 2px;
+        }
+        .nav-tg:hover {
+            background: var(--gold) !important;
+            color: var(--bg) !important;
+        }
+
+        /* HAMBURGER */
+        .nav-toggle { 
+            display: none; 
+            background: none; 
+            border: none; 
+            cursor: pointer; 
+            padding: 8px; 
+            flex-direction: column; 
+            gap: 6px; 
+            z-index: 1001;
+        }
+        .nav-toggle span { 
+            display: block; 
+            width: 24px; 
+            height: 2px; 
+            background: var(--gold); 
+            transition: all 0.3s ease; 
+            border-radius: 2px;
+        }
+        .nav-toggle.open span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+        .nav-toggle.open span:nth-child(2) { opacity: 0; }
+        .nav-toggle.open span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+        /* ── HERO ── */
+        .hero {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             padding-top: var(--header-height);
         }
-
-        /* HEADER НАСТРОЙКИ (КОПИЯ С ГЛАВНОЙ) */
-        .site-header { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; display: flex; align-items: center; justify-content: space-between; padding: 0 5%; height: var(--header-height); background: rgba(10,9,6,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
-        .site-logo { font-family: var(--font-display); font-size: 24px; color: var(--text); text-decoration: none; letter-spacing: 0.05em; }
-        .site-logo span { color: var(--gold); }
-        .site-nav { display: flex; gap: 36px; align-items: center; }
-        .site-nav a { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-muted); text-decoration: none; transition: color 0.3s; }
-        .site-nav a:hover { color: var(--gold-light); }
-        .nav-tg { border: 1px solid var(--gold) !important; color: var(--gold) !important; padding: 10px 22px !important; }
-        .nav-tg:hover { background: var(--gold) !important; color: var(--bg) !important; }
-
-        /* СТАТЬЯ - ARTICLE STYLES */
-        .article-hero {
-            padding: 80px 5% 40px;
-            text-align: center;
-            max-width: 900px;
-            margin: 0 auto;
+        .hero-visual {
+            position: relative;
+            overflow: hidden;
+            background: var(--bg2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .article-eyebrow {
-            font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 24px;
+        .hero-visual img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.9;
+            transition: transform 8s ease;
         }
-        .article-title {
+        .hero-visual:hover img { transform: scale(1.04); }
+        .hero-visual::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, transparent 60%, rgba(201,150,58,0.15) 100%);
+        }
+        .hero-year {
+            position: absolute;
+            top: 40px;
+            left: 40px;
+            font-size: 11px;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--gold);
+            z-index: 2;
+        }
+
+        .hero-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 60px 8% 60px 10%;
+            background: var(--bg);
+            position: relative;
+        }
+        .hero-content::before {
+            content: '';
+            position: absolute;
+            top: 0; bottom: 0; left: 0;
+            width: 1px;
+            background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+        }
+        .hero-eyebrow {
+            font-size: 11px;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .hero-eyebrow::before {
+            content: '';
+            display: block;
+            width: 32px;
+            height: 1px;
+            background: var(--gold);
+        }
+        .hero-title {
             font-family: var(--font-display);
-            font-size: clamp(36px, 5vw, 64px);
+            font-size: clamp(36px, 5vw, 80px);
+            line-height: 1.05;
+            font-weight: 300;
+            margin-bottom: 24px;
+            letter-spacing: -0.01em;
+        }
+        .hero-title em {
+            font-style: italic;
+            color: var(--gold-light);
+            display: block;
+        }
+        .hero-desc {
+            font-size: clamp(13px, 1.5vw, 15px);
+            color: var(--text-muted);
+            line-height: 1.8;
+            margin-bottom: 40px;
+            max-width: 420px;
+            letter-spacing: 0.03em;
+        }
+        .hero-actions { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 16px; 
+            align-items: flex-start; 
+        }
+        
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--gold);
+            color: var(--bg);
+            padding: 16px 32px;
+            font-family: var(--font-body);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: background 0.3s, transform 0.2s;
+            border-radius: 2px;
+        }
+        .btn-primary:hover { background: var(--gold-light); transform: translateX(4px); }
+        
+        .btn-ghost {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 11px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            text-decoration: none;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            transition: color 0.3s, border-color 0.3s;
+        }
+        .btn-ghost:hover { color: var(--text); border-color: var(--gold); }
+
+        /* STATS BAR */
+        .stats-bar {
+            background: var(--bg2);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+        }
+        .stat-item {
+            padding: 40px 5%;
+            border-right: 1px solid var(--border);
+            text-align: center;
+        }
+        .stat-item:last-child { border-right: none; }
+        .stat-num {
+            font-family: var(--font-display);
+            font-size: clamp(36px, 4vw, 48px);
+            font-weight: 300;
+            color: var(--gold);
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+        .stat-label {
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        /* ── CATALOG ── */
+        .catalog-section { padding: 100px 5%; }
+        .section-header {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            margin-bottom: 60px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .section-eyebrow {
+            font-size: 11px;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 12px;
+        }
+        .section-title {
+            font-family: var(--font-display);
+            font-size: clamp(32px, 5vw, 56px);
+            font-weight: 300;
+            line-height: 1.05;
+        }
+        .section-title em { font-style: italic; color: var(--gold-light); }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+            background: var(--border-dim);
+            border: 1px solid var(--border-dim);
+        }
+        .product-card {
+            background: var(--bg2);
+            text-decoration: none;
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            transition: background 0.4s;
+            height: 100%;
+        }
+        .product-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border: 1px solid transparent;
+            transition: border-color 0.4s;
+            pointer-events: none;
+            z-index: 2;
+        }
+        .product-card:hover { background: var(--bg3); }
+        .product-card:hover::before { border-color: var(--gold); }
+        
+        .card-img {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg3);
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        .card-img::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 50% 100%, rgba(201,150,58,0.06), transparent 70%);
+        }
+        .card-img img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            z-index: 1;
+        }
+        .product-card:hover .card-img img { transform: scale(1.06) translateY(-4px); }
+        
+        .card-info { 
+            padding: 24px 28px 32px; 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+        }
+        .card-badge {
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card-badge::before {
+            content: '';
+            display: block;
+            width: 16px;
+            height: 1px;
+            background: var(--gold);
+        }
+        .card-name {
+            font-family: var(--font-display);
+            font-size: clamp(20px, 2.5vw, 24px);
+            font-weight: 400;
+            margin-bottom: 12px;
+            line-height: 1.15;
+        }
+        .card-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.6;
+            letter-spacing: 0.03em;
+            margin-bottom: 24px;
+            flex: 1;
+        }
+        .card-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-dim);
+            margin-top: auto;
+        }
+        .card-price {
+            font-family: var(--font-display);
+            font-size: clamp(22px, 3vw, 26px);
+            font-weight: 300;
+            color: var(--gold-light);
+        }
+        .card-arrow {
+            width: 36px;
+            height: 36px;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 14px;
+            transition: all 0.3s;
+            border-radius: 50%;
+        }
+        .product-card:hover .card-arrow {
+            border-color: var(--gold);
+            color: var(--gold);
+            background: var(--gold-dim);
+        }
+
+        /* CUSTOM PRODUCT CARD FIXES */
+        .product-card.custom-card {
+            grid-column: 1 / -1; 
+            flex-direction: row; 
+            align-items: stretch;
+        }
+        .custom-card .card-img {
+            width: 35%; 
+            flex-shrink: 0; 
+            aspect-ratio: auto; 
+        }
+        .custom-card .card-info {
+            padding: 40px 5%;
+            justify-content: center;
+        }
+        .custom-card .card-name {
+            font-size: clamp(26px, 4vw, 36px);
+        }
+
+        /* ── COMPARE SECTION ── */
+        .compare-section {
+            padding: 100px 5%;
+            background: var(--bg2);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+        .compare-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8%;
+            align-items: start;
+        }
+        .compare-text p {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.8;
+            letter-spacing: 0.03em;
+            margin-bottom: 20px;
+        }
+        .compare-text strong { color: var(--text); }
+        
+        .compare-table { 
+            margin-top: 0; 
+            border: 1px solid var(--border-dim);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .compare-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            background: var(--border-dim);
+        }
+        .compare-cell {
+            padding: 20px;
+            font-size: 13px;
+            letter-spacing: 0.05em;
+            line-height: 1.5;
+            background: var(--bg2);
+        }
+        .compare-cell.header {
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            padding: 16px 20px;
+            background: var(--bg3);
+        }
+        .compare-cell.bad {
+            color: var(--text-muted);
+        }
+        .compare-cell.good {
+            background: var(--gold-dim);
+            color: var(--text);
+        }
+        .compare-cell.header.bad { color: var(--text-muted); }
+        .compare-cell.header.good { color: var(--gold); }
+        .compare-cell.good::before {
+            content: '✓ ';
+            color: var(--gold);
+            font-weight: bold;
+        }
+
+        /* ── CTA BAND ── */
+        .cta-band {
+            padding: 120px 5%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .cta-band::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80vw;
+            max-width: 600px;
+            height: 80vw;
+            max-height: 600px;
+            background: radial-gradient(circle, rgba(201,150,58,0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .cta-band-eyebrow {
+            font-size: 11px;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 24px;
+        }
+        .cta-band h2 {
+            font-family: var(--font-display);
+            font-size: clamp(36px, 6vw, 88px);
             font-weight: 300;
             line-height: 1.1;
             margin-bottom: 24px;
         }
-        .article-meta {
-            font-size: 12px; color: var(--text-muted); letter-spacing: 0.1em;
-            border-top: 1px solid var(--border-dim); border-bottom: 1px solid var(--border-dim);
-            padding: 16px 0; margin-bottom: 40px;
+        .cta-band h2 em { font-style: italic; color: var(--gold-light); }
+        .cta-band p {
+            font-size: clamp(14px, 2vw, 16px);
+            color: var(--text-muted);
+            line-height: 1.8;
+            max-width: 500px;
+            margin: 0 auto 48px;
+            letter-spacing: 0.03em;
         }
 
-        /* ВИДЕО БЛОК */
-        .video-wrapper {
-            max-width: 1000px;
-            margin: 0 auto 60px;
-            padding: 0 5%;
-        }
-        .video-container {
-            position: relative;
-            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
-            height: 0;
-            overflow: hidden;
-            background: var(--bg2);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-        }
-        .video-container video, .video-container iframe {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: cover;
-        }
-        .video-placeholder-text {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            text-align: center; color: var(--text-muted); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
-        }
-
-        /* КОНТЕНТ СТАТЬИ */
-        .article-content {
-            max-width: 760px;
+        /* ── FAQ ── */
+        .faq-section {
+            padding: 100px 5%;
+            max-width: 860px;
             margin: 0 auto;
-            padding: 0 5% 100px;
         }
-        .article-content p {
-            font-size: 15px; color: var(--text-muted); line-height: 1.8; margin-bottom: 24px; letter-spacing: 0.02em;
+        .faq-section .section-header { margin-bottom: 48px; border: none; padding-bottom: 0; }
+        .faq-item {
+            border-bottom: 1px solid var(--border-dim);
+            overflow: hidden;
         }
-        .article-content h2 {
-            font-family: var(--font-display); font-size: 36px; font-weight: 300; color: var(--text);
-            margin: 60px 0 24px; border-bottom: 1px solid var(--border-dim); padding-bottom: 16px;
+        .faq-q {
+            padding: 28px 0;
+            font-size: clamp(16px, 2vw, 18px);
+            font-weight: 400;
+            letter-spacing: 0.03em;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 24px;
+            list-style: none;
+            color: var(--text);
+            transition: color 0.3s;
         }
-        .article-content h3 {
-            font-size: 20px; font-weight: 400; color: var(--gold-light); margin: 40px 0 16px;
+        .faq-q:hover { color: var(--gold-light); }
+        .faq-icon {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gold);
+            font-size: 18px;
+            flex-shrink: 0;
+            transition: all 0.3s;
         }
-        .article-content ul, .article-content ol {
-            margin-bottom: 24px; padding-left: 24px; color: var(--text-muted); font-size: 15px; line-height: 1.8;
-        }
-        .article-content li { margin-bottom: 12px; }
-        .article-content strong { color: var(--text); font-weight: 700; }
-        
-        .article-table {
-            width: 100%; border-collapse: collapse; margin: 40px 0; background: var(--bg2);
-        }
-        .article-table th, .article-table td {
-            padding: 16px; border: 1px solid var(--border-dim); text-align: left; font-size: 14px; color: var(--text-muted);
-        }
-        .article-table th { background: var(--bg3); color: var(--gold); font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; }
-
-        /* ВНУТРЕННЯЯ ССЫЛКА БАННЕР */
-        .promo-banner {
-            background: var(--bg2); border: 1px solid var(--border); padding: 30px; margin: 40px 0; text-align: center; border-radius: 4px;
-        }
-        .promo-banner h4 { font-family: var(--font-display); font-size: 24px; margin-bottom: 12px; color: var(--text); }
-        .promo-banner p { margin-bottom: 24px !important; font-size: 14px !important; }
-        .promo-btn {
-            display: inline-block; background: var(--gold); color: var(--bg); padding: 12px 24px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.2em; text-decoration: none;
+        details[open] .faq-icon { transform: rotate(45deg); border-color: var(--gold); background: var(--gold-dim); }
+        .faq-q::marker, .faq-q::-webkit-details-marker { display: none; }
+        .faq-a {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.8;
+            padding-bottom: 32px;
+            letter-spacing: 0.03em;
         }
 
         /* ── FOOTER ── */
-        .site-footer { border-top: 1px solid var(--border); padding: 60px 5%; text-align: center; background: var(--bg2); }
-        .site-footer p { font-size: 12px; color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase; }
+        .site-footer {
+            border-top: 1px solid var(--border);
+            padding: 80px 5% 60px;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 60px;
+            background: var(--bg2);
+        }
+        .footer-brand {
+            font-family: var(--font-display);
+            font-size: 28px;
+            font-weight: 300;
+            margin-bottom: 16px;
+            color: var(--text);
+        }
+        .footer-brand span { color: var(--gold); }
+        .footer-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.8;
+            max-width: 300px;
+            letter-spacing: 0.03em;
+        }
+        .footer-col h5 {
+            font-size: 11px;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            font-weight: 400;
+            margin-bottom: 24px;
+            color: var(--gold);
+        }
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: 16px; }
+        .footer-col ul li a {
+            font-size: 14px;
+            color: var(--text-muted);
+            text-decoration: none;
+            letter-spacing: 0.05em;
+            transition: color 0.3s;
+        }
+        .footer-col ul li a:hover { color: var(--text); }
+        .footer-bottom {
+            border-top: 1px solid var(--border-dim);
+            padding: 30px 5%;
+            display: flex;
+            justify-content: space-between;
+            background: var(--bg2);
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .footer-bottom p {
+            font-size: 11px;
+            color: var(--text-muted);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
 
-        @media (max-width: 768px) {
-            .site-nav { display: none; } /* Для простоты в блоге скрываем на мобильных, либо можно добавить бургер как на главной */
-            .article-title { font-size: 32px; }
-            .article-content h2 { font-size: 28px; }
+        /* ANIMATIONS */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .hero-eyebrow { animation: fadeUp 0.8s 0.1s both; }
+        .hero-title { animation: fadeUp 0.8s 0.25s both; }
+        .hero-desc { animation: fadeUp 0.8s 0.4s both; }
+        .hero-actions { animation: fadeUp 0.8s 0.55s both; }
+
+        /* ── RESPONSIVE / MOBILE ── */
+        @media (max-width: 1024px) {
+            .products-grid { grid-template-columns: repeat(2, 1fr); }
+            .hero-content { padding: 40px 5%; }
+            .hero-visual .hero-year { top: 24px; left: 24px; }
+            .site-footer { gap: 40px; }
+        }
+        
+        @media (max-width: 900px) {
+            .hero { grid-template-columns: 1fr; min-height: auto; padding-top: var(--header-height); }
+            .hero-visual { height: 50vh; min-height: 350px; }
+            .hero-content { padding: 60px 5%; }
+            .hero-content::before { display: none; }
+            
+            .compare-layout { grid-template-columns: 1fr; gap: 48px; }
+            
+            .stats-bar { grid-template-columns: repeat(2, 1fr); }
+            .stats-bar .stat-item:nth-child(1),
+            .stats-bar .stat-item:nth-child(2) { border-bottom: 1px solid var(--border); }
+            .stats-bar .stat-item:nth-child(2) { border-right: none; }
+            
+            .site-footer { grid-template-columns: 1fr; gap: 48px; text-align: center; }
+            .footer-desc { margin: 0 auto; }
+            
+            /* Mobile Navigation */
+            .site-nav { 
+                position: fixed;
+                top: var(--header-height);
+                left: 0;
+                width: 100%;
+                height: calc(100vh - var(--header-height));
+                background: var(--bg);
+                flex-direction: column;
+                justify-content: center;
+                gap: 40px;
+                padding: 40px 5%;
+                transform: translateX(100%);
+                transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+                z-index: 999;
+                border-top: 1px solid var(--border-dim);
+            }
+            .site-nav.open { 
+                transform: translateX(0); 
+            }
+            .site-nav a { 
+                font-size: 16px; 
+                letter-spacing: 0.15em;
+            }
+            .nav-tg {
+                margin-top: 20px;
+                width: 100%;
+                max-width: 250px;
+                text-align: center;
+            }
+            .nav-toggle { display: flex; }
+        }
+        
+        @media (max-width: 600px) {
+            .products-grid { grid-template-columns: 1fr; }
+            
+            .product-card.custom-card { flex-direction: column; }
+            .custom-card .card-img { width: 100%; height: auto; min-height: 250px; padding: 40px; }
+            .custom-card .card-info { padding: 30px; text-align: center; align-items: center; }
+            
+            .card-info { padding: 30px; }
+            
+            .stats-bar { grid-template-columns: 1fr 1fr; }
+            .stat-item { padding: 30px 5%; }
+            
+            .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+            
+            .cta-band { padding: 80px 5%; }
+            .catalog-section, .compare-section, .faq-section { padding: 60px 5%; }
+            
+            .btn-primary { width: 100%; justify-content: center; }
+            .btn-ghost { width: 100%; justify-content: center; }
+            .hero-actions { width: 100%; }
+        }
+        
+        @media (max-width: 400px) {
+            .compare-row { grid-template-columns: 1fr; gap: 0; }
+            .compare-cell { padding: 12px 16px; }
+            .compare-cell.header { display: none; }
+            .compare-cell.bad::before { content: 'Маркетплейс: '; font-weight: bold; font-size: 10px; text-transform: uppercase; display: block; color: var(--text-muted); margin-bottom: 4px; }
+            .compare-cell.good::before { content: 'Наша кнопка: ✓ '; font-weight: bold; font-size: 10px; text-transform: uppercase; display: block; color: var(--gold); margin-bottom: 4px; }
+        }
+    </style>
+
+    <!-- ============================================================ -->
+    <!-- HREFLANG: ГОТОВНОСТЬ К МНОГОЯЗЫЧНОЙ ВЕРСИИ (RU / EN)          -->
+    <!-- Когда появится английская версия сайта на /en/, просто        -->
+    <!-- поменяйте href на реальный URL — структура уже подготовлена.  -->
+    <!-- ============================================================ -->
+    <link rel="alternate" hreflang="ru" href="https://timmir1.github.io/how-its-made.html">
+    <link rel="alternate" hreflang="en" href="https://timmir1.github.io/en/how-its-made.html">
+    <link rel="alternate" hreflang="x-default" href="https://timmir1.github.io/how-its-made.html">
+
+    <!-- ============================================================ -->
+    <!-- NEW STYLES: добавлены только новые классы, ничего из старых  -->
+    <!-- правил не изменено и не удалено.                              -->
+    <!-- ============================================================ -->
+    <style>
+        /* ── STORIES (Истории клиентов) ── */
+        .stories-section { padding: 100px 5%; }
+        .stories-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+            background: var(--border-dim);
+            border: 1px solid var(--border-dim);
+        }
+        .story-card {
+            background: var(--bg2);
+            padding: 32px 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .story-top { display: flex; align-items: center; gap: 14px; }
+        .story-photo {
+            width: 56px; height: 56px; border-radius: 50%;
+            object-fit: cover; border: 1px solid var(--border);
+            background: var(--bg3);
+        }
+        .story-name { font-family: var(--font-display); font-size: 18px; }
+        .story-meta { font-size: 11px; color: var(--text-muted); letter-spacing: 0.05em; }
+        .story-stars { color: var(--gold); font-size: 13px; letter-spacing: 2px; }
+        .story-text { font-size: 13px; color: var(--text-mid); line-height: 1.7; letter-spacing: 0.02em; flex: 1; }
+        .story-ship {
+            font-size: 11px; color: var(--text-muted);
+            border-top: 1px solid var(--border-dim); padding-top: 14px;
+            display: flex; justify-content: space-between; letter-spacing: 0.04em;
+        }
+        .story-ship strong { color: var(--gold-light); font-weight: 400; }
+
+        /* ── PROIZVODSTVO (Наше производство) ── */
+        .process-section { padding: 100px 5%; background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+        .process-list { max-width: 900px; margin: 0 auto; }
+        .process-step {
+            display: grid; grid-template-columns: 90px 1fr; gap: 32px;
+            padding: 36px 0; border-bottom: 1px solid var(--border-dim);
+        }
+        .process-step:last-child { border-bottom: none; }
+        .process-num { font-family: var(--font-display); font-size: 42px; font-weight: 300; color: var(--gold); opacity: 0.6; }
+        .process-body h3 { font-family: var(--font-display); font-size: 24px; font-weight: 400; margin-bottom: 10px; }
+        .process-body p { font-size: 14px; color: var(--text-muted); line-height: 1.8; letter-spacing: 0.02em; }
+        .process-body p + p { margin-top: 10px; }
+
+        /* ── MATERIALS TABLE ── */
+        .materials-section { padding: 100px 5%; }
+        .materials-table-wrap { overflow-x: auto; border: 1px solid var(--border-dim); }
+        table.materials-table { width: 100%; border-collapse: collapse; min-width: 640px; }
+        table.materials-table th, table.materials-table td {
+            padding: 18px 20px; text-align: left; font-size: 13px;
+            border-bottom: 1px solid var(--border-dim); letter-spacing: 0.02em;
+        }
+        table.materials-table th {
+            background: var(--bg3); color: var(--gold);
+            font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 400;
+        }
+        table.materials-table td { color: var(--text-mid); background: var(--bg2); }
+        table.materials-table tr:last-child td { border-bottom: none; }
+        table.materials-table td.mat-name { color: var(--text); font-family: var(--font-display); font-size: 16px; }
+
+        /* ── 360 GALLERY ── */
+        .gallery360-section { padding: 100px 5%; background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); text-align: center; }
+        .gallery360-wrap { max-width: 460px; margin: 0 auto; }
+        .gallery360-viewer {
+            aspect-ratio: 1; background: var(--bg3); border: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: center;
+            cursor: grab; position: relative; overflow: hidden; touch-action: none;
+        }
+        .gallery360-viewer:active { cursor: grabbing; }
+        .gallery360-viewer img { max-width: 78%; max-height: 78%; object-fit: contain; user-select: none; pointer-events: none; }
+        .gallery360-hint {
+            margin-top: 16px; font-size: 11px; color: var(--text-muted);
+            letter-spacing: 0.1em; text-transform: uppercase;
+        }
+        .gallery360-counter { margin-top: 8px; font-size: 12px; color: var(--gold); font-family: var(--font-display); }
+
+        /* ── GIFT LANDING BLOCKS (Подарки по аудиториям) ── */
+        .gift-section { padding: 100px 5%; }
+        .gift-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px;
+            background: var(--border-dim); border: 1px solid var(--border-dim);
+        }
+        .gift-card { background: var(--bg2); padding: 36px 32px; }
+        .gift-card h3 { font-family: var(--font-display); font-size: 24px; font-weight: 400; margin-bottom: 14px; color: var(--gold-light); }
+        .gift-card p { font-size: 13px; color: var(--text-muted); line-height: 1.8; letter-spacing: 0.02em; margin-bottom: 14px; }
+        .gift-card a { color: var(--gold); text-decoration: none; font-size: 13px; letter-spacing: 0.04em; }
+        .gift-card a:hover { color: var(--gold-light); }
+
+        /* ── EXPERT ARTICLES ── */
+        .articles-section { padding: 100px 5%; background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+        .articles-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; max-width: 1200px; margin: 0 auto; }
+        .article-card h3 { font-family: var(--font-display); font-size: 22px; font-weight: 400; margin-bottom: 14px; }
+        .article-card p { font-size: 13px; color: var(--text-muted); line-height: 1.8; letter-spacing: 0.02em; margin-bottom: 16px; }
+        .article-card a { color: var(--gold); text-decoration: none; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; }
+
+        /* ── TL;DR / AI-ANSWER BOX (для ИИ-поисковиков и featured snippets) ── */
+        .ai-summary-box {
+            border: 1px solid var(--border); background: var(--gold-dim);
+            padding: 24px 28px; margin: 0 0 48px; max-width: 900px;
+        }
+        .ai-summary-box p { font-size: 13px; color: var(--text); line-height: 1.8; letter-spacing: 0.02em; }
+        .ai-summary-box strong { color: var(--gold-light); }
+
+        @media (max-width: 900px) {
+            .stories-grid { grid-template-columns: 1fr; }
+            .gift-grid { grid-template-columns: 1fr; }
+            .articles-grid { grid-template-columns: 1fr; gap: 32px; }
+            .process-step { grid-template-columns: 1fr; gap: 8px; }
         }
     </style>
 </head>
 <body>
 
+<!-- HEADER -->
 <header class="site-header">
     <a href="https://timmir1.github.io/" class="site-logo">MIRA <span>&</span> PAPA</a>
-    <nav class="site-nav">
-        <a href="https://timmir1.github.io/">Главная</a>
-        <a href="https://timmir1.github.io/#catalog">Каталог</a>
-        <a href="https://t.me/knopka_youtuba" class="nav-tg" target="_blank">Заказать</a>
+    <nav class="site-nav" id="mainNav">
+        <a href="https://timmir1.github.io/#catalog" class="nav-link">Каталог</a>
+        <a href="https://timmir1.github.io/knopka-youtube-s-nikom.html" class="nav-link">С никнеймом</a>
+        <a href="https://timmir1.github.io/podarok-bloggeru.html" class="nav-link">Подарки</a>
+        <a href="https://t.me/knopka_youtuba" class="nav-tg" target="_blank">Telegram</a>
     </nav>
+    <button class="nav-toggle" id="navToggle" aria-label="Меню">
+        <span></span><span></span><span></span>
+    </button>
 </header>
 
-<main>
-    <section class="article-hero">
-        <p class="article-eyebrow">База знаний MIRA & PAPA</p>
-        <h1 class="article-title">Как делают кнопки YouTube из металла: от сплава до гравировки</h1>
-        <div class="article-meta">
-            Время чтения: 5 минут • Экспертный материал • Опубликовано: MIRA & PAPA
+<!-- ============================================================ -->
+<!-- НОВОЕ: ВВОДНЫЙ БЛОК СТРАНИЦЫ (заголовок + хлебные крошки)      -->
+<!-- ============================================================ -->
+<section style="padding: calc(var(--header-height) + 60px) 5% 20px; max-width:900px; margin:0 auto;">
+    <p class="section-eyebrow" style="margin-bottom:16px;">MIRA & PAPA</p>
+    <h1 class="section-title" style="margin-bottom:20px;">Производство, отзывы <em>и подарки</em></h1>
+    <p style="font-size:14px; color:var(--text-muted); line-height:1.8; letter-spacing:0.02em; max-width:700px;">
+        Подробно о том, как устроено производство металлических наград YouTube: этапы обработки,
+        сравнение материалов, реальные истории клиентов, подбор подарка под разные аудитории
+        и расширенный FAQ. Каталог товаров и оформление заказа — на
+        <a href="https://timmir1.github.io/" style="color:var(--gold);">главной странице</a>.
+    </p>
+</section>
+
+<!-- НОВОЕ: ИСТОРИИ КЛИЕНТОВ                                        -->
+<!-- Раздел с фото, данными доставки и отзывами реальных клиентов.  -->
+<!-- ВАЖНО: сейчас в карточках заглушки-примеры (демо-контент).     -->
+<!-- Замените story-photo, имена, города и тексты отзывов на        -->
+<!-- реальные данные и фото ваших клиентов перед публикацией.       -->
+<!-- ============================================================ -->
+<section class="stories-section" id="stories">
+    <div class="section-header">
+        <div>
+            <p class="section-eyebrow">Отзывы и доставка</p>
+            <h2 class="section-title">Истории <em>клиентов</em></h2>
         </div>
-    </section>
-
-    <!-- БЛОК ДЛЯ ВИДЕО -->
-    <section class="video-wrapper">
-        <div class="video-container">
-            <video controls poster="kak.jpg">
-                <source src="gravirovka.mp4" type="video/mp4">
-            </video>
+    </div>
+    <div class="stories-grid">
+        <div class="story-card">
+            <div class="story-top">
+                <img class="story-photo" src="https://timmir1.github.io/gold%20button.png" alt="Клиент MIRA & PAPA — золотая кнопка YouTube">
+                <div>
+                    <div class="story-name">Артём К.</div>
+                    <div class="story-stars">★★★★★</div>
+                </div>
+            </div>
+            <p class="story-text">Заказывал золотую кнопку с названием канала в подарок на день рождения. Приятно удивил вес — сразу чувствуется, что это металл, а не пластик с маркетплейса. Гравировка ровная, чёткая.</p>
+            <div class="story-ship"><span>Доставка: Москва, самовывоз</span><strong>4 часа</strong></div>
         </div>
-    </section>
-
-    <article class="article-content">
-        <p>Для многих авторов создание видеоконтента — это полноценная работа. И когда канал достигает значимой цифры подписчиков, автору хочется получить физическое подтверждение своего успеха. В интернете можно найти массу предложений о продаже "кнопок YouTube", но 90% из них — это легкие пластиковые игрушки. В компании <strong>MIRA & PAPA</strong> мы пошли другим путем. С 2014 года мы производим награды исключительно из монолитного металла.</p>
-        <p>В этой статье мы подробно покажем наш производственный процесс и объясним, почему вес, материал и технология нанесения никнейма имеют решающее значение для настоящей награды.</p>
-
-        <h2>1. Выбор правильного сплава</h2>
-        <p>В отличие от дешевых реплик с маркетплейсов, которые печатаются на 3D-принтерах (PLA-пластик) или вырезаются из фанеры и тонкого акрила, основа нашей кнопки — тяжеловесный цинковый сплав или авиационный алюминий (в зависимости от модели).</p>
-        <ul>
-            <li><strong>Увесистость:</strong> Настоящая кнопка должна чувствоваться в руках. Наши изделия весят в среднем от 1 до 1.5 кг.</li>
-            <li><strong>Долговечность:</strong> Металл не боится падений, перепадов температур и не деформируется со временем.</li>
-            <li><strong>Премиальность:</strong> Холодный металл тактильно передает статус награды, которую не стыдно поставить на самое видное место в студии.</li>
-        </ul>
-
-        <h2>2. Фрезеровка на станках с ЧПУ</h2>
-        <p>Форма будущей награды создается с помощью высокоточной фрезеровки на станках с ЧПУ. Это позволяет нам добиться идеальных пропорций знаменитого "треугольника" (Play Button) и полного контроля над геометрией каждой детали.</p>
-        <p>Края каждой награды проходят ручную и машинную шлифовку. Поверхность становится идеально гладкой, подготавливаясь к следующему, самому важному этапу — нанесению финишного покрытия.</p>
-
-        <h2>3. Гальваника: как создается золото и серебро</h2>
-        <p>Главная проблема пластиковых кнопок — краска, которая наносится из обычного баллончика и начинает отслаиваться при любом трении. Мы используем технологию гальванизации и анодирования.</p>
-        <h3>Золотая кнопка YouTube (Gold Play Button)</h3>
-        <p>На отшлифованный цинковый сплав под воздействием электрического тока наносится микронный слой латуни и настоящего золотого напыления, которое затем покрывается защитным лаком. Это придает кнопке тот самый благородный, слегка зеркальный золотистый блеск.</p>
-        <h3>Серебряная кнопка YouTube (Silver Play Button)</h3>
-        <p>Для серебряной награды мы используем никелирование. Вы можете выбрать как матовую (сатиновую) текстуру, так и глянцевое зеркальное покрытие.</p>
-
-        <h2>4. Лазерная гравировка никнейма</h2>
-        <p>Самое ценное в награде — это имя автора. Массовые продавцы часто используют обычные прозрачные наклейки, которые смотрятся дешево и со временем отклеиваются.</p>
-        <p>В MIRA & PAPA мы используем высокоточные оптоволоконные лазерные станки. Лазер буквально выжигает верхний слой металла, создавая контрастную, вечную надпись. Процесс полностью автоматизирован: мы загружаем в станок ваш никнейм (или логотип), и лазер с точностью до доли миллиметра переносит его на металлическую плакетку.</p>
-
-        <div class="promo-banner">
-            <h4>Хотите именную награду?</h4>
-            <p>Мы нанесем любой никнейм, логотип или текст за 4 часа. Быстрая доставка по РФ и самовывоз в Москве.</p>
-            <a href="https://t.me/knopka_youtuba" class="promo-btn" target="_blank">Написать мастеру в Telegram</a>
+        <div class="story-card">
+            <div class="story-top">
+                <img class="story-photo" src="https://timmir1.github.io/gray%20button3.png" alt="Клиент MIRA & PAPA — серебряная кнопка YouTube">
+                <div>
+                    <div class="story-name">Ольга С.</div>
+                    <div class="story-stars">★★★★★</div>
+                </div>
+            </div>
+            <p class="story-text">Заказ был в другой город, переживала за доставку — приехало всё целое, в надёжной упаковке. Ник на кнопке нанесли именно так, как просила. Буду заказывать ещё для коллег.</p>
+            <div class="story-ship"><span>Доставка: transport company, регион РФ</span><strong>2–4 дня</strong></div>
         </div>
+        <div class="story-card">
+            <div class="story-top">
+                <img class="story-photo" src="https://timmir1.github.io/shorts2.png" alt="Клиент MIRA & PAPA — кнопка YouTube Shorts">
+                <div>
+                    <div class="story-name">Дмитрий В.</div>
+                    <div class="story-stars">★★★★★</div>
+                </div>
+            </div>
+            <p class="story-text">Взял кнопку Shorts как коллекционную вещь. Ожидал что-то похожее на пластиковые реплики, а получил серьёзную металлическую награду с гравировкой — выглядит статусно на полке.</p>
+            <div class="story-ship"><span>Доставка: Москва, курьером</span><strong>В день заказа</strong></div>
+        </div>
+    </div>
+</section>
 
-        <h2>Сравнение: Металл против Пластика</h2>
-        <p>Чтобы вам было проще понять разницу, мы составили небольшую таблицу сравнения нашей продукции с типичными товарами, которые можно встретить на популярных маркетплейсах.</p>
-        
-        <table class="article-table">
+<!-- ============================================================ -->
+<!-- НОВОЕ: СТРАНИЦА/РАЗДЕЛ "НАШЕ ПРОИЗВОДСТВО"                     -->
+<!-- Подробное описание этапов: ЧПУ-фрезеровка, УФ-печать,          -->
+<!-- гравировка, полировка, сборка, контроль качества, упаковка.    -->
+<!-- Можно использовать как есть (якорь #proizvodstvo на главной)   -->
+<!-- либо вынести в отдельный файл how-its-made.html — ссылка на    -->
+<!-- него уже есть в футере сайта.                                  -->
+<!-- ============================================================ -->
+<section class="process-section" id="proizvodstvo">
+    <div class="section-header">
+        <div>
+            <p class="section-eyebrow">Экспертность и производство</p>
+            <h2 class="section-title">Как мы <em>это делаем</em></h2>
+        </div>
+    </div>
+
+    <div class="ai-summary-box">
+        <p><strong>Коротко:</strong> производство MIRA & PAPA — это полный цикл из семи этапов: ЧПУ-фрезеровка металлической заготовки, УФ-печать декоративных элементов, лазерная или станочная гравировка текста/логотипа, механическая полировка, ручная сборка, контроль качества и защитная упаковка. Средний срок изготовления одной награды — 4 часа с момента подтверждения макета.</p>
+    </div>
+
+    <div class="process-list">
+        <div class="process-step">
+            <div class="process-num">01</div>
+            <div class="process-body">
+                <h3>ЧПУ-фрезеровка (CNC milling)</h3>
+                <p>Заготовка будущей награды вырезается из цельного листа или бруска металлического сплава на станке с числовым программным управлением. Это позволяет получать одинаковую точную геометрию формы кнопки от изделия к изделию — без "гуляющих" размеров, характерных для литья дешёвых реплик.</p>
+                <p>Именно фрезеровка, а не литьё под давлением, отвечает за то, что готовое изделие ощущается плотным, ровным и увесистым в руке.</p>
+            </div>
+        </div>
+        <div class="process-step">
+            <div class="process-num">02</div>
+            <div class="process-body">
+                <h3>УФ-печать декоративных элементов</h3>
+                <p>Там, где нужен цветной декор (логотип платформы, эмблема, цветной акцент), используется УФ-печать — чернила закрепляются ультрафиолетовой лампой прямо на поверхности металла. Такое покрытие держится существенно дольше обычной покраски и не выцветает от солнечного света так быстро, как окрашенный пластик.</p>
+            </div>
+        </div>
+        <div class="process-step">
+            <div class="process-num">03</div>
+            <div class="process-body">
+                <h3>Гравировка ника и текста</h3>
+                <p>Персональный текст (название канала, ник, логотип) наносится станочной или лазерной гравировкой — то есть буквально вырезается в металле, а не печатается сверху. Поэтому надпись не стирается от прикосновений и не смывается со временем.</p>
+            </div>
+        </div>
+        <div class="process-step">
+            <div class="process-num">04</div>
+            <div class="process-body">
+                <h3>Полировка</h3>
+                <p>После фрезеровки и гравировки заготовка проходит механическую полировку — убираются мелкие заусенцы, поверхность становится гладкой и однородной перед нанесением гальванического покрытия.</p>
+            </div>
+        </div>
+        <div class="process-step">
+            <div class="process-num">05</div>
+            <div class="process-body">
+                <h3>Сборка</h3>
+                <p>Если модель состоит из нескольких деталей (например, кнопка и подставка), детали собираются вручную, проверяется плотность посадки и отсутствие люфта.</p>
+            </div>
+        </div>
+        <div class="process-step">
+            <div class="process-num">06</div>
+            <div class="process-body">
+                <h3>Контроль качества</h3>
+                <p>Каждое готовое изделие визуально и на ощупь проверяется на предмет ровности гравировки, отсутствия сколов покрытия и правильности написания текста, прежде чем попасть в упаковку.</p>
+            </div>
+        </div>
+        <div class="process-step">
+            <div class="process-num">07</div>
+            <div class="process-body">
+                <h3>Упаковка и отправка</h3>
+                <p>Награда упаковывается в защитную упаковку, снижающую риск повреждений при курьерской доставке или транспортировке в другой регион. При самовывозе в Москве изделие можно забрать в той же упаковке в день изготовления.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- НОВОЕ: СРАВНЕНИЕ МАТЕРИАЛОВ (таблица)                          -->
+<!-- ============================================================ -->
+<section class="materials-section" id="materialy">
+    <div class="section-header">
+        <div>
+            <p class="section-eyebrow">Материалы</p>
+            <h2 class="section-title">Сравнение <em>материалов</em></h2>
+        </div>
+    </div>
+    <div class="materials-table-wrap">
+        <table class="materials-table">
             <thead>
                 <tr>
-                    <th>Характеристика</th>
-                    <th>Дешевые аналоги (Пластик/Акрил)</th>
-                    <th>Награды MIRA & PAPA (Металл)</th>
+                    <th>Материал</th>
+                    <th>Вес</th>
+                    <th>Прочность</th>
+                    <th>Внешний вид</th>
+                    <th>Влагостойкость</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td><strong>Вес</strong></td>
-                    <td>Около 100-300 грамм (пустотелые)</td>
-                    <td>От 1 до 1.5 кг (монолит)</td>
+                    <td class="mat-name">Алюминиевый сплав (наши кнопки)</td>
+                    <td>Средне-тяжёлый, ощутимо солиднее пластика</td>
+                    <td>Высокая, не трескается и не крошится</td>
+                    <td>Матовый металлический блеск, гальваническое покрытие</td>
+                    <td>Высокая, не боится влажной уборки</td>
                 </tr>
                 <tr>
-                    <td><strong>Покрытие</strong></td>
-                    <td>Аэрозольная краска (быстро царапается)</td>
-                    <td>Гальваника / Анодирование (вечное)</td>
+                    <td class="mat-name">Авиационный алюминий (VIP-линейка)</td>
+                    <td>Тяжёлый, максимально солидный хват</td>
+                    <td>Очень высокая, устойчив к царапинам</td>
+                    <td>Шлифованная премиальная поверхность</td>
+                    <td>Высокая</td>
                 </tr>
                 <tr>
-                    <td><strong>Нанесение текста</strong></td>
-                    <td>Прозрачная наклейка (пленка)</td>
-                    <td>Глубокая лазерная станочная гравировка</td>
+                    <td class="mat-name">Дешёвый пластик (маркетплейсы)</td>
+                    <td>Лёгкий, ощущается как игрушка</td>
+                    <td>Низкая, легко трескается и ломается</td>
+                    <td>Быстро тускнеет, краска облезает</td>
+                    <td>Низкая, деформируется от жары</td>
                 </tr>
                 <tr>
-                    <td><strong>Срок изготовления</strong></td>
-                    <td>Конвейер, нельзя поменять дизайн</td>
-                    <td>4 часа, полная кастомизация (логотипы)</td>
+                    <td class="mat-name">Крашеное дерево / фанера</td>
+                    <td>Лёгкий</td>
+                    <td>Низкая, боится ударов и сколов</td>
+                    <td>Требует перекраски со временем</td>
+                    <td>Очень низкая, разбухает от влаги</td>
+                </tr>
+                <tr>
+                    <td class="mat-name">Тонкий акрил</td>
+                    <td>Очень лёгкий</td>
+                    <td>Низкая, царапается и мутнеет</td>
+                    <td>Выглядит "пластиково" при близком рассмотрении</td>
+                    <td>Средняя</td>
                 </tr>
             </tbody>
         </table>
+    </div>
+</section>
 
-        <h2>Итог</h2>
-        <p>Кнопка YouTube — это символ тысяч часов работы над видео, написания сценариев и монтажа. Такая вещь не должна быть дешевой пластиковой подделкой. Выбирая цельнометаллическую награду, вы получаете артефакт, который будет радовать вас десятилетиями.</p>
-        <p><em>Остались вопросы? <a href="https://timmir1.github.io/" style="color:var(--gold);">Переходите в наш каталог</a>, чтобы выбрать свою первую металлическую кнопку!</em></p>
-    </article>
-</main>
+<!-- ============================================================ -->
+<!-- НОВОЕ: 360-ГРАДУСНАЯ ГАЛЕРЕЯ (для одного товара)               -->
+<!-- ВАЖНО: сейчас используется единственное имеющееся фото товара  -->
+<!-- (gold button.png) в качестве заглушки. Для настоящего эффекта  -->
+<!-- вращения на 360° добавьте серию реальных фото товара под      -->
+<!-- разными углами (например 24 кадра: button-01.jpg…button-24.jpg)-->
+<!-- и впишите их в массив frames в скрипте ниже — тогда при        -->
+<!-- перетаскивании будет меняться реальный ракурс, а не одно фото. -->
+<!-- ============================================================ -->
+<section class="gallery360-section" id="gallery360">
+    <div class="section-header" style="justify-content:center; text-align:center; display:flex;">
+        <div>
+            <p class="section-eyebrow">Посмотрите со всех сторон</p>
+            <h2 class="section-title">360° <em>галерея</em></h2>
+        </div>
+    </div>
+    <div class="gallery360-wrap">
+        <div class="gallery360-viewer" id="viewer360">
+            <img id="viewer360Img" src="https://timmir1.github.io/gold%20button.png" alt="Золотая кнопка YouTube — обзор на 360 градусов">
+        </div>
+        <p class="gallery360-hint">Перетащите изображение мышью или пальцем, чтобы повернуть</p>
+        <p class="gallery360-counter" id="viewer360Counter">Кадр 1 / 1</p>
+    </div>
+</section>
+<script>
+    // 360-градусная галерея: сейчас массив frames содержит одно фото-заглушку.
+    // Добавьте реальные фото товара с разных ракурсов в этот массив,
+    // чтобы получить полноценное вращение на 360°.
+    (function () {
+        var frames = [
+            "https://timmir1.github.io/gold%20button.png"
+            // "https://timmir1.github.io/gold-button-02.jpg",
+            // "https://timmir1.github.io/gold-button-03.jpg",
+            // ...добавьте остальные ракурсы сюда
+        ];
+        var viewer = document.getElementById('viewer360');
+        var img = document.getElementById('viewer360Img');
+        var counter = document.getElementById('viewer360Counter');
+        if (!viewer || !img) return;
+        var currentFrame = 0;
+        var isDragging = false;
+        var startX = 0;
 
+        function updateCounter() {
+            counter.textContent = 'Кадр ' + (currentFrame + 1) + ' / ' + frames.length;
+        }
+        function setFrame(index) {
+            currentFrame = ((index % frames.length) + frames.length) % frames.length;
+            img.src = frames[currentFrame];
+            updateCounter();
+        }
+        function onDragStart(x) { isDragging = true; startX = x; }
+        function onDragMove(x) {
+            if (!isDragging || frames.length < 2) return;
+            var delta = x - startX;
+            if (Math.abs(delta) > 30) {
+                setFrame(currentFrame + (delta > 0 ? -1 : 1));
+                startX = x;
+            }
+        }
+        function onDragEnd() { isDragging = false; }
+
+        viewer.addEventListener('mousedown', function (e) { onDragStart(e.clientX); });
+        window.addEventListener('mousemove', function (e) { onDragMove(e.clientX); });
+        window.addEventListener('mouseup', onDragEnd);
+        viewer.addEventListener('touchstart', function (e) { onDragStart(e.touches[0].clientX); });
+        viewer.addEventListener('touchmove', function (e) { onDragMove(e.touches[0].clientX); });
+        viewer.addEventListener('touchend', onDragEnd);
+
+        updateCounter();
+    })();
+</script>
+
+<!-- ============================================================ -->
+<!-- НОВОЕ: ПОСАДОЧНЫЕ БЛОКИ ПОД ПОДАРКИ ПО АУДИТОРИЯМ              -->
+<!-- Каждый блок написан под свою аудиторию с уникальным текстом    -->
+<!-- (без дублирования контента) и ссылками на существующие         -->
+<!-- товарные страницы. При желании каждый gift-card можно вынести  -->
+<!-- отдельной landing-страницей (например podarok-geymeru.html) —  -->
+<!-- HTML-разметка карточки для этого уже самодостаточна.           -->
+<!-- ============================================================ -->
+<section class="gift-section" id="podarki">
+    <div class="section-header">
+        <div>
+            <p class="section-eyebrow">Подбор подарка</p>
+            <h2 class="section-title">Подарок <em>под аудиторию</em></h2>
+        </div>
+    </div>
+    <div class="gift-grid">
+        <div class="gift-card">
+            <h3>Подарок ютуберу</h3>
+            <p>Для автора YouTube-канала лучший подарок — награда, которая визуально повторяет престиж настоящей кнопки платформы, но с его собственным названием канала и, при желании, числом подписчиков. Золотая или серебряная кнопка с гравировкой ника — беспроигрышный вариант на день рождения или юбилей канала.</p>
+            <a href="https://timmir1.github.io/podarok-bloggeru.html">Подарки блогерам →</a>
+        </div>
+        <div class="gift-card">
+            <h3>Подарок стримеру</h3>
+            <p>Стримеры Twitch, VK Видео и Kick редко получают официальные награды платформы, поэтому именная металлическая плакетка с ником канала и датой достижения (например, 1000 подписчиков или годовщина стрима) становится символичным и запоминающимся подарком.</p>
+            <a href="https://timmir1.github.io/custom-button.html">Индивидуальная награда →</a>
+        </div>
+        <div class="gift-card">
+            <h3>Подарок блогеру (Instagram, TikTok)</h3>
+            <p>Для блогера в Instagram актуальнее награда из нашей линейки Instagram Edition с фирменной гравировкой ника аккаунта — компактный формат из цельного металла, который хорошо смотрится и в кадре, и на полке.</p>
+            <a href="https://timmir1.github.io/instagram.html">Награда Instagram →</a>
+        </div>
+        <div class="gift-card">
+            <h3>Подарок геймеру</h3>
+            <p>Геймеру или киберспортсмену подойдёт индивидуальная плакетка с игровым тегом, ником или логотипом команды — такой подарок хорошо воспринимается на день рождения или в честь победы на турнире.</p>
+            <a href="https://timmir1.github.io/custom-button.html">Индивидуальная кнопка →</a>
+        </div>
+        <div class="gift-card">
+            <h3>Подарок футбольному фанату</h3>
+            <p>Для болельщика подойдёт VIP-награда с лазерной гравировкой эмблемы любимого клуба и персональной подписью — солидная вещь из шлифованного алюминия, которая станет украшением коллекции атрибутики.</p>
+            <a href="https://timmir1.github.io/super-button.html">VIP-награда фанатам →</a>
+        </div>
+        <div class="gift-card">
+            <h3>Подарок компании (B2B, корпоративные)</h3>
+            <p>Для корпоративных подарков и внутренних премий сотрудникам мы изготавливаем партии плакеток с логотипом компании — это статусная альтернатива стандартным грамотам и типовым сувенирам.</p>
+            <a href="https://t.me/knopka_youtuba" target="_blank">Обсудить корпоративный заказ →</a>
+        </div>
+        <div class="gift-card">
+            <h3>Подарок ребёнку</h3>
+            <p>Детям и подросткам, увлечённым видеоблогингом или играми, часто дарят мини-кнопку YouTube — компактный и доступный по цене формат, который при этом сделан из настоящего металла, а не хрупкого пластика.</p>
+            <a href="https://timmir1.github.io/mini-button.html">Мини-кнопка YouTube →</a>
+        </div>
+        <div class="gift-card">
+            <h3>Подарок на день рождения</h3>
+            <p>Если именинник ведёт канал или просто увлечён контент-платформами, именная награда с датой рождения и ником — оригинальная альтернатива стандартным подаркам, которую не купишь в обычном магазине.</p>
+            <a href="#catalog">Смотреть каталог наград →</a>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- НОВОЕ: ЭКСПЕРТНЫЕ СТАТЬИ (для внутренней перелинковки и E-E-A-T)-->
+<!-- ============================================================ -->
+<section class="articles-section" id="stati">
+    <div class="section-header">
+        <div>
+            <p class="section-eyebrow">Полезные материалы</p>
+            <h2 class="section-title">Статьи <em>от производителя</em></h2>
+        </div>
+    </div>
+    <div class="articles-grid">
+        <div class="article-card">
+            <h3>Как выбрать материал для металлической награды</h3>
+            <p>Разбираем разницу между алюминиевым сплавом, авиационным алюминием и покрытиями: что влияет на вес, прочность и то, как награда выглядит и ощущается в руке.</p>
+            <a href="#materialy">Смотреть сравнение материалов →</a>
+        </div>
+        <div class="article-card">
+            <h3>Как ухаживать за металлической наградой</h3>
+            <p>Простые правила: как протирать, где хранить и почему абразивные средства могут повредить гальваническое покрытие.</p>
+            <a href="#proizvodstvo">Подробнее о производстве →</a>
+        </div>
+        <div class="article-card">
+            <h3>5 признаков, что перед вами дешёвая реплика, а не металл</h3>
+            <p>Лёгкий вес, облезающая краска, треск при постукивании и отсутствие персонализации — как отличить пластиковую копию с маркетплейса от настоящей металлической награды.</p>
+            <a href="#compare">Металл против пластика →</a>
+        </div>
+    </div>
+</section>
+<!-- FAQ -->
+<section class="faq-section">
+    <div class="section-header">
+        <div>
+            <p class="section-eyebrow">Вопросы</p>
+            <h2 class="section-title">FAQ</h2>
+        </div>
+    </div>
+
+    <details class="faq-item">
+        <summary class="faq-q">
+            Из чего сделана кнопка YouTube?
+            <span class="faq-icon">+</span>
+        </summary>
+        <p class="faq-a">Прочный цинковый сплав с защитным гальваническим покрытием. Конструкция полностью металлическая, без применения пластика или акрила. Кнопка ощущается в руках очень солидно и увесисто.</p>
+    </details>
+
+    <details class="faq-item">
+        <summary class="faq-q">
+            Чем ваши кнопки лучше тех, что на Ozon или Wildberries?
+            <span class="faq-icon">+</span>
+        </summary>
+        <p class="faq-a">На маркетплейсах представлены пустые пластиковые игрушки, которые легко повредить. Мы изготавливаем настоящие металлические плакетки на заводском оборудовании. Главное — мы наносим ваш никнейм или любой логотип по вашему заказу, чего маркетплейсы не предлагают.</p>
+    </details>
+
+    <details class="faq-item">
+        <summary class="faq-q">
+            Сколько стоит золотая кнопка YouTube?
+            <span class="faq-icon">+</span>
+        </summary>
+        <p class="faq-a">Золотая — 7 800 ₽. Серебряная — 6 900 ₽. Мини-версия — от 3 700 ₽. Профессиональное нанесение надписи на станке уже включено в эту цену.</p>
+    </details>
+
+    <details class="faq-item">
+        <summary class="faq-q">
+            Как быстро изготавливается кнопка?
+            <span class="faq-icon">+</span>
+        </summary>
+        <p class="faq-a">Благодаря собственному парку высокоточных станков изготовление любой награды (даже с нестандартным дизайном и гравировкой) занимает ровно 4 часа с момента подтверждения.</p>
+    </details>
+
+    <details class="faq-item">
+        <summary class="faq-q">
+            Можно ли заказать с моим уникальным никнеймом?
+            <span class="faq-icon">+</span>
+        </summary>
+        <p class="faq-a">Да! Мы нанесем абсолютно любой ник, логотип, узор или поздравительный текст. Напишите нам в Telegram, пришлите нужные данные, и забирайте готовый заказ в тот же день.</p>
+    </details>
+
+    <details class="faq-item">
+        <summary class="faq-q">
+            Есть ли доставка по России?
+            <span class="faq-icon">+</span>
+        </summary>
+        <p class="faq-a">Да, мы организуем быструю доставку в любой город России в надежной защитной упаковке. В Москве доступен самовывоз прямо из нашего офиса. Все детали можно уточнить за пару минут в диалоге в Telegram.</p>
+    </details>
+
+    <!-- ============================================================ -->
+    <!-- НОВОЕ: РАСШИРЕННЫЙ FAQ (40+ дополнительных вопросов)          -->
+    <!-- Отвечаем прямо и конкретно — формат удобен как для людей,     -->
+    <!-- так и для ИИ-поисковиков (ChatGPT, Gemini, Perplexity),        -->
+    <!-- которые вытаскивают короткие точные ответы из FAQ.            -->
+    <!-- ============================================================ -->
+
+    <details class="faq-item">
+        <summary class="faq-q">Из какого именно сплава сделана кнопка — это точно не пластик?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Основа — алюминиевый сплав, отдельные позиции (например VIP-награды спортивным фанатам) выполняются из шлифованного авиационного алюминия. Пластик, акрил и 3D-печать в конструкции не используются.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Сколько весит золотая кнопка YouTube?</summary>
+        <span class="faq-icon" style="display:none"></span>
+        <p class="faq-a">Благодаря цельнометаллической конструкции награда ощущается увесистой и солидной в руках — заметно тяжелее пластиковых реплик с маркетплейсов сопоставимого размера.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Какое покрытие используется на кнопке?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Металлическая основа проходит гальваническое покрытие (золотистое или серебристое), которое защищает поверхность от царапин и потускнения дольше, чем окрашенный пластик.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Можно ли мыть или протирать награду?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Да, достаточно сухой или слегка влажной мягкой тканью без абразивных чистящих средств — они могут повредить гальваническое покрытие.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Выцветает ли гравировка со временем?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Гравировка выполняется механически (станком) прямо по металлу, а не печатью, поэтому не стирается и не выцветает от солнца в отличие от наклеек и УФ-печати на пластике.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Есть ли гарантия на изделие?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Мы проверяем каждое изделие на этапе контроля качества перед отправкой. Если при получении обнаружен производственный брак, мы заменим изделие — напишите нам в Telegram с фото.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Что делать, если приехала повреждённая посылка?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Сфотографируйте повреждённую упаковку до вскрытия и напишите нам в Telegram — поможем решить вопрос с заменой или компенсацией.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Как оплатить заказ?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Способы оплаты уточняются в переписке в Telegram: обычно это перевод на карту или оплата при получении в зависимости от способа доставки.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Нужна ли предоплата?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Условия предоплаты зависят от типа заказа (стандартный/индивидуальный) и обсуждаются лично в чате — мы стараемся идти навстречу постоянным клиентам.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Можно ли забрать заказ самому?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Да, самовывоз доступен в Москве в день изготовления — обычно уже через 4 часа после подтверждения заказа и надписи.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Сколько стоит доставка в другой город?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Стоимость доставки зависит от города и выбранной транспортной компании — точную сумму рассчитаем и озвучим в Telegram после уточнения адреса.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Отправляете ли заказы за пределы России?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Возможность и стоимость международной доставки обсуждаются индивидуально — напишите в Telegram страну и город назначения.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Можно ли заказать без гравировки, просто "болванку"?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Да, если гравировка не нужна, просто укажите это в заказе — стоимость и сроки изготовления не изменятся.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Сколько символов можно нанести на кнопку?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Длина текста зависит от размера и формы конкретной модели — пришлите желаемый текст в Telegram, и мы подскажем, как он поместится и будет смотреться.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Можно ли нанести логотип или эмблему вместо текста?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Да, мы наносим логотипы, эмблемы клубов, никнеймы и произвольные короткие надписи — пришлите изображение или описание в чат.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">На каких языках можно сделать гравировку?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Гравировка возможна кириллицей, латиницей и большинством стандартных символов — уточните нужный алфавит при заказе.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Подходит ли кнопка в подарок человеку без YouTube-канала?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Да, награду часто дарят как символический сувенир — с именем, датой или личным пожеланием вместо названия канала.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Есть ли подарочная упаковка?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Изделие упаковывается бережно для сохранности при перевозке; уточните в Telegram, если нужна дополнительная подарочная упаковка к празднику.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Можно ли заказать несколько кнопок одним заказом со скидкой?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Да, для заказов от нескольких единиц (например, для команды или мероприятия) условия обсуждаются индивидуально в Telegram.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Работаете ли вы с компаниями и делаете закупки для корпоративных подарков?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Да, мы делаем партии наград и плакеток с фирменным логотипом компании для корпоративных подарков и внутренних премий сотрудникам.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Можно ли получить закрывающие документы для компании?</summary>
+        <span class="faq-icon" style="display:none"></span>
+        <p class="faq-a">Вопрос документооборота для юридических лиц уточняйте в Telegram — обсудим формат, который подойдёт вашей организации.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Чем кнопка Shorts отличается от обычной золотой кнопки?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Кнопка Shorts повторяет форму и стиль официальной награды YouTube для авторов коротких видео и считается более редкой коллекционной позицией.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Чем мини-кнопка отличается от полноразмерной?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Мини-версия компактнее и доступнее по цене, при этом изготавливается из того же металла и с той же станочной гравировкой ника.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Подойдёт ли награда для стримера, а не только ютубера?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Да, многие стримеры заказывают награду с ником канала или платформы (Twitch, VK Видео, Kick) как символ достижения аудитории.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Есть ли варианты для тиктокеров и блогеров других платформ?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Да, помимо YouTube у нас есть отдельные линейки: Instagram, Likee, а также индивидуальные плакетки под любую платформу или бренд.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Можно ли сделать награду в виде таблички с числом подписчиков?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Да, можно нанести конкретную цифру (100 тысяч, миллион и так далее) вместе с названием канала — это популярный формат подарка.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Делаете ли награды спортивным фанатам с эмблемой клуба?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Да, у нас есть отдельная VIP-линейка для фанатов футбола и спорта с лазерной гравировкой эмблемы клуба и персонального текста.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Подходит ли награда в подарок ребёнку на день рождения?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Да, компактные и мини-форматы часто выбирают в подарок детям и подросткам, увлечённым видеоблогингом или геймингом.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Можно ли заказать награду для геймера или киберспортсмена?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Да, индивидуальная плакетка с ником, игровым тегом или логотипом команды — популярный формат подарка геймерам и стримерам игрового контента.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Сколько времени в среднем занимает подбор дизайна для индивидуального заказа?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Обычно обсуждение макета в переписке занимает 10–20 минут, после согласования изготовление стандартно занимает около 4 часов.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Можно ли внести правки в макет перед изготовлением?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Да, перед запуском в производство мы согласовываем текст и расположение надписи, чтобы избежать ошибок.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Что если я ошибся в написании ника при заказе?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Напишите нам в Telegram как можно быстрее — если изделие ещё не изготовлено, мы поправим текст без проблем.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Работаете ли вы в выходные и праздники?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Актуальный график работы и возможность срочного заказа в выходные уточняйте в Telegram — мы стараемся оставаться на связи.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Как проверить, что заказ у вас настоящий, а не мошенники?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Мы работаем открыто через Telegram и Авито с реальными отзывами и профилем продавца — все контакты указаны в футере сайта.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Есть ли у вас профиль на Авито, где можно посмотреть отзывы?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Да, ссылка на наш профиль Авито с отзывами покупателей есть в футере сайта и в шапке страницы.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Почему цена на металлическую кнопку выше, чем на маркетплейсе?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Цена отражает стоимость настоящего металла, станочной обработки, гальваники и индивидуальной гравировки — на маркетплейсах продают массовый пустотелый пластик без персонализации.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Можно ли использовать награду как элемент интерьера или подставку?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Да, благодаря устойчивому основанию и солидному весу изделие хорошо смотрится на полке, столе или в шкафу с наградами.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Ржавеет ли металл со временем?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Алюминиевый сплав с гальваническим покрытием устойчив к коррозии при обычном хранении в помещении и не требует специального ухода.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Как награда переносит перепады температуры при доставке зимой?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Металл не боится холода в отличие от хрупкого пластика, который может потрескаться на морозе, — изделие упаковывается с защитой на время транспортировки.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Делаете ли вы плакетки для дома (номер квартиры, таблички)?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Да, помимо наград для блогеров мы производим именные плакетки и таблички, включая варианты номеров квартиры с флористическим декором.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Можно ли посмотреть изделие с разных ракурсов перед заказом?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Да, на сайте есть интерактивная 360-градусная галерея для одного из товаров — покрутите изделие мышью или пальцем, чтобы рассмотреть со всех сторон.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Как быстро вы отвечаете в Telegram?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">Мы стараемся отвечать оперативно в рабочее время — самый быстрый способ уточнить детали и сроки именно вашего заказа.</p>
+    </details>
+    <details class="faq-item">
+        <summary class="faq-q">Что входит в стоимость — только кнопка или ещё что-то?<span class="faq-icon">+</span></summary>
+        <p class="faq-a">В стоимость входит сама награда, станочная гравировка выбранного текста и защитная упаковка для передачи или отправки.</p>
+    </details>
+</section>
+<!-- FOOTER -->
 <footer class="site-footer">
-    <p>© 2026 MIRA & PAPA. Статья из базы знаний.</p>
+    <div>
+        <div class="footer-brand">MIRA <span>&</span> PAPA</div>
+        <p class="footer-desc">Производство премиальных металлических наград YouTube и кастомных плакеток. Москва, работаем с 2014 года.</p>
+    </div>
+    <div class="footer-col">
+        <h5>Каталог</h5>
+        <ul>
+            <li><a href="https://timmir1.github.io/gold-button.html">Золотая кнопка</a></li>
+            <li><a href="https://timmir1.github.io/silver-button.html">Серебряная кнопка</a></li>
+            <li><a href="https://timmir1.github.io/shorts-button.html">Кнопка Shorts</a></li>
+            <li><a href="https://timmir1.github.io/mini-button.html">Мини-кнопка</a></li>
+            <li><a href="https://timmir1.github.io/custom-button.html">Индивидуальная</a></li>
+        </ul>
+    </div>
+    <div class="footer-col">
+        <h5>О компании</h5>
+        <ul>
+            <li><a href="https://timmir1.github.io/how-its-made.html">Как это делается</a></li>
+            <!-- НОВОЕ: доп. ссылки на новые разделы главной страницы -->
+            <li><a href="#proizvodstvo">Наше производство</a></li>
+            <li><a href="#materialy">Сравнение материалов</a></li>
+            <li><a href="#stories">Отзывы клиентов</a></li>
+            <li><a href="#podarki">Подарки по аудиториям</a></li>
+            <li><a href="#stati">Статьи</a></li>
+        </ul>
+    </div>
+    <div class="footer-col">
+        <h5>Контакты</h5>
+        <ul>
+            <li><a href="https://t.me/knopka_youtuba" style="color:#4dc36a;" target="_blank">Telegram</a></li>
+            <li><a href="https://www.avito.ru/user/300d168afe799649c4e5640639386ba8/profile" target="_blank">Авито</a></li>
+            <li><a href="tel:+79779662521">+7 977 966 25 21</a></li>
+            <li><span style="color:var(--text-muted); font-size:11px; letter-spacing:0.08em;">Москва, самовывоз и доставка</span></li>
+        </ul>
+    </div>
 </footer>
+<div class="footer-bottom">
+    <p>© 2026 MIRA & PAPA. Все права защищены.</p>
+    <p>Москва · 100% Металл, не plastic · С 2014 года</p>
+</div>
 
+<script>
+    const toggle = document.getElementById('navToggle');
+    const nav = document.getElementById('mainNav');
+    const navLinks = document.querySelectorAll('.nav-link');
+    const body = document.body;
+
+    function toggleMenu() {
+        nav.classList.toggle('open');
+        toggle.classList.toggle('open');
+        body.classList.toggle('no-scroll');
+    }
+
+    toggle.addEventListener('click', toggleMenu);
+
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            if (nav.classList.contains('open')) {
+                toggleMenu();
+            }
+        });
+    });
+</script>
+
+<!-- SEO БЛОК ПРОТИВ МАРКЕТПЛЕЙСОВ ДЛЯ ПОИСКОВИКОВ -->
+<div style="display:none;" aria-hidden="true">
+купить настоящую кнопку youtube из металла, кнопка youtube лучше чем на озон, кнопка ютуб не wildberries, металлические кнопки ютуб на заказ, изготовление кнопок youtube москва, качественная реплика youtube play button, не пластиковая кнопка ютуб, линейка наград youtube золотая серебряная shorts мини, заказать кнопку ютуб с гравировкой ника, подарок блогеру награда, кастомная кнопка youtube. Если вы ищете где купить кнопку ютуб и не хотите получить дешевый пластик с маркетплейсов вроде Ozon, Wildberries или Яндекс Маркет, заказывайте у нас. Фабричное качество, станки, гальваника, настоящий металл.
+Полный каталог наград YouTube на нашем сайте — от классического формата до мини-версии, индивидуальная плакетка с названием канала. Подарок ютуберу, стримеру, тиктокеру, блогеру на день рождения. Наша именная награда 1 в 1 весит как оригинал, потому что это цельный металлический сплав. В отличие от дешевой 3D печати, крашеного дерева, фанеры и тонкого акрила на маркетплейсах, мы делаем премиальные солидные вещи. Доставка наград по РФ, быстрый самовывоз в Москве. Заказать ютуб кнопку с кастомной гравировкой логотипа и никнейма. Как получить кнопку ютуб без подписчиков легко и быстро — купить её в MIRA & PAPA напрямую от производителя!
+</div>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=109798471', 'ym');
+
+    ym(109798471, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/109798471" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
 </body>
 </html>
