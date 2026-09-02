@@ -43,6 +43,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
     <!-- html2canvas — для функции "Поделиться картинкой" -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -137,9 +138,10 @@
                         <span>Клиенты</span>
                     </button>
 
-                    <button @click="showHistoryModal = true" class="hidden md:flex items-center space-x-2 px-3 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors shadow-sm text-sm font-medium">
+                    <button @click="historyFilterMode = 'all'; showHistoryModal = true" class="hidden md:flex items-center space-x-2 px-3 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors shadow-sm text-sm font-medium relative">
                         <i class="fa-solid fa-clock-rotate-left text-indigo-500"></i>
                         <span>История</span>
+                        <span v-if="archivedCount > 0" class="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 px-1 rounded-full bg-indigo-500 text-white text-[9px] font-bold flex items-center justify-center">{{ archivedCount }}</span>
                     </button>
 
                     <button @click="showAnalyticsModal = true" class="hidden md:flex items-center space-x-2 px-3 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors shadow-sm text-sm font-medium">
@@ -242,9 +244,11 @@
 
                 <div class="flex items-center space-x-2 w-full md:w-auto overflow-x-auto pb-1 -mx-4 px-4 md:mx-0 md:px-0 custom-scrollbar">
                     <button @click="filterType = 'all'" :class="filterType === 'all' ? 'bg-slate-800 text-white dark:bg-slate-200 dark:text-slate-900' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700'" class="px-4 py-2 rounded-xl transition-all shadow-sm text-xs font-medium whitespace-nowrap">Все ({{ orders.length }})</button>
-                    <button @click="filterType = 'silver'" :class="filterType === 'silver' ? 'bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700'" class="px-4 py-2 rounded-xl transition-all shadow-sm text-xs font-medium flex items-center whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-slate-400 mr-2"></span> Серебро</button>
-                    <button @click="filterType = 'gold'" :class="filterType === 'gold' ? 'bg-amber-100 dark:bg-amber-500/20 text-amber-800 dark:text-amber-400' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700'" class="px-4 py-2 rounded-xl transition-all shadow-sm text-xs font-medium flex items-center whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-amber-400 mr-2"></span> Золото</button>
-                    <button @click="filterType = 'custom'" :class="filterType === 'custom' ? 'bg-purple-100 dark:bg-purple-500/20 text-purple-800 dark:text-purple-400' : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700'" class="px-4 py-2 rounded-xl transition-all shadow-sm text-xs font-medium flex items-center whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-purple-400 mr-2"></span> Индивидуально</button>
+                    <button v-for="(meta, key) in orderTypes" :key="key" @click="filterType = key"
+                        :class="filterType === key ? meta.chipActive : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700'"
+                        class="px-4 py-2 rounded-xl transition-all shadow-sm text-xs font-medium flex items-center whitespace-nowrap">
+                        <span :class="meta.dot" class="w-2 h-2 rounded-full mr-2"></span> {{ meta.label }}
+                    </button>
                 </div>
             </div>
 
@@ -258,14 +262,21 @@
                      :class="{'drag-over': dragTargetStatus === status.id}"
                      class="flex-none w-[85vw] sm:w-[45vw] lg:w-auto h-full flex flex-col rounded-2xl border bg-slate-100/50 dark:bg-slate-900/40 border-slate-200 dark:border-slate-800 snap-center transition-colors">
                     
-                    <div class="flex-none p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between rounded-t-2xl bg-white/50 dark:bg-slate-900/60 backdrop-blur-sm">
-                        <div class="flex items-center space-x-2.5">
-                            <span :class="status.badgeColor" class="w-2.5 h-2.5 rounded-full shadow-sm"></span>
-                            <h3 class="font-bold text-xs uppercase tracking-wider text-slate-700 dark:text-slate-300">{{ status.title }}</h3>
+                    <div class="flex-none p-4 border-b border-slate-200 dark:border-slate-800 rounded-t-2xl bg-white/50 dark:bg-slate-900/60 backdrop-blur-sm">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2.5">
+                                <span :class="status.badgeColor" class="w-2.5 h-2.5 rounded-full shadow-sm"></span>
+                                <h3 class="font-bold text-xs uppercase tracking-wider text-slate-700 dark:text-slate-300">{{ status.title }}</h3>
+                            </div>
+                            <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 shadow-sm">
+                                {{ getFilteredOrdersByStatus(status.id).length }}
+                            </span>
                         </div>
-                        <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 shadow-sm">
-                            {{ getFilteredOrdersByStatus(status.id).length }}
-                        </span>
+                        <button v-if="status.id === 'shipped' && archivedCount > 0" @click="openArchive"
+                                class="mt-2 w-full flex items-center justify-center gap-1.5 text-[10px] font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10 hover:bg-indigo-100 dark:hover:bg-indigo-500/20 rounded-lg py-1.5 transition-colors">
+                            <i class="fa-solid fa-box-archive"></i>
+                            Оплачено и отправлено: {{ archivedCount }} — в Истории
+                        </button>
                     </div>
 
                     <div class="flex-1 p-3 space-y-3 overflow-y-auto custom-scrollbar">
@@ -276,10 +287,10 @@
                             class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80 rounded-2xl p-4 shadow-sm hover:shadow-md cursor-grab active:cursor-grabbing transition-all transform hover:-translate-y-0.5 group">
                             
                             <div class="flex items-center justify-between mb-3">
-                                <span :class="order.type === 'silver' ? 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300' : order.type === 'gold' ? 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400' : 'bg-purple-50 text-purple-700 dark:bg-purple-500/10 dark:text-purple-400'" 
+                                <span :class="typeInfo(order.type).badge" 
                                       class="text-[10px] font-bold px-2 py-1 rounded-lg flex items-center uppercase">
-                                    <i class="fa-solid fa-play mr-1.5 opacity-70 text-[9px]"></i>
-                                    {{ order.type === 'silver' ? 'Серебро' : order.type === 'gold' ? 'Золото' : 'Индивидуально' }}
+                                    <i :class="typeInfo(order.type).icon" class="mr-1.5 opacity-70 text-[9px]"></i>
+                                    {{ typeInfo(order.type).label }}
                                 </span>
 
                                 <span :class="order.source === 'avito' ? 'text-blue-500 bg-blue-50 dark:bg-blue-500/10' : 'text-sky-500 bg-sky-50 dark:bg-sky-500/10'" 
@@ -342,13 +353,14 @@
                     
                     <div class="flex-none p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-white dark:bg-slate-900 z-10">
                         <div class="flex items-center space-x-4">
-                            <div :class="selectedOrder.type === 'silver' ? 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300' : 'bg-amber-100 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400'" 
+                            <div :class="typeInfo(selectedOrder.type).iconBg" 
                                  class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-inner">
-                                <i class="fa-solid fa-award"></i>
+                                <i :class="typeInfo(selectedOrder.type).icon"></i>
                             </div>
                             <div>
                                 <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight">
-                                    {{ selectedOrder.type === 'silver' ? 'Серебряная кнопка YouTube' : selectedOrder.type === 'gold' ? 'Золотая кнопка YouTube' : 'Индивидуальная награда' }}
+                                    {{ typeInfo(selectedOrder.type).full }}
+                                    <span v-if="isArchived(selectedOrder)" class="ml-1 align-middle text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400 uppercase"><i class="fa-solid fa-box-archive mr-1"></i>Архив</span>
                                 </h2>
                                 <div class="flex items-center text-[11px] text-slate-500 mt-1 space-x-2">
                                     <span class="font-mono bg-slate-100 dark:bg-slate-800 px-1.5 rounded">ID: {{ selectedOrder.id }}</span>
@@ -404,9 +416,9 @@
                             </div>
 
                             <div class="flex flex-col lg:flex-row gap-6 items-center lg:items-start">
-                                <div v-if="selectedOrder.type !== 'custom'" class="relative w-[280px] sm:w-[320px] rounded-2xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-700/50 flex-none select-none bg-slate-900" style="aspect-ratio: 925 / 1101;">
+                                <div v-if="templateUrl(selectedOrder.type)" class="relative w-[280px] sm:w-[320px] rounded-2xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-700/50 flex-none select-none bg-slate-900" style="aspect-ratio: 925 / 1101;">
                                     
-                                    <img :src="selectedOrder.type === 'silver' ? 'https://raw.githubusercontent.com/TimMir1/timmir1.github.io/main/youtube%20shab%20s.png' : 'https://raw.githubusercontent.com/TimMir1/timmir1.github.io/main/youtube%20shab.png'" 
+                                    <img :src="templateUrl(selectedOrder.type)" 
                                          class="absolute inset-0 w-full h-full object-contain pointer-events-none" alt="Шаблон">
 
                                     <div class="absolute inset-x-0 z-10 text-center px-8" style="top: 59.5%;">
@@ -592,28 +604,70 @@
         <!-- МОДАЛЬНОЕ ОКНО: Аналитика -->
         <Transition name="modal">
             <div v-if="showAnalyticsModal" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-900/20 dark:bg-slate-950/80 backdrop-blur-sm p-0 sm:p-4">
-                <div class="bg-white dark:bg-slate-900 w-full sm:max-w-lg max-h-[90vh] rounded-t-3xl sm:rounded-2xl shadow-2xl flex flex-col overflow-hidden relative">
-                    <div class="p-5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                <div class="bg-white dark:bg-slate-900 w-full sm:max-w-2xl max-h-[90vh] rounded-t-3xl sm:rounded-2xl shadow-2xl flex flex-col overflow-hidden relative">
+                    <div class="flex-none p-5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
                         <h3 class="font-bold text-lg text-slate-900 dark:text-white flex items-center"><i class="fa-solid fa-chart-pie text-emerald-500 mr-2"></i> Производственная аналитика</h3>
                         <button @click="showAnalyticsModal = false" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
                     </div>
 
-                    <div class="p-6 space-y-5 overflow-y-auto">
-                        <div class="grid grid-cols-3 gap-3 text-center">
-                            <div class="p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800">
-                                <div class="text-[10px] text-slate-400 uppercase font-bold">Серебряные кнопки</div>
-                                <div class="text-2xl font-bold text-slate-700 dark:text-slate-200 mt-1">{{ orders.filter(o=>o.type==='silver').length }} шт.</div>
+                    <div class="p-5 sm:p-6 space-y-6 overflow-y-auto">
+
+                        <!-- KPI карточки -->
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            <div class="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800">
+                                <div class="text-[9px] text-slate-400 uppercase font-bold">Оборот</div>
+                                <div class="text-lg font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">{{ (totalRevenue/1000).toFixed(1) }}к ₽</div>
                             </div>
-                            <div class="p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800">
-                                <div class="text-[10px] text-slate-400 uppercase font-bold">Золотые кнопки</div>
-                                <div class="text-2xl font-bold text-amber-500 mt-1">{{ orders.filter(o=>o.type==='gold').length }} шт.</div>
+                            <div class="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800">
+                                <div class="text-[9px] text-slate-400 uppercase font-bold">Маржа</div>
+                                <div class="text-lg font-bold text-sky-600 dark:text-sky-400 mt-0.5">{{ (totalProfit/1000).toFixed(1) }}к ₽</div>
                             </div>
-                            <div class="p-4 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800">
-                                <div class="text-[10px] text-slate-400 uppercase font-bold">Индивидуально</div>
-                                <div class="text-2xl font-bold text-purple-500 mt-1">{{ orders.filter(o=>o.type==='custom').length }} шт.</div>
+                            <div class="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800">
+                                <div class="text-[9px] text-slate-400 uppercase font-bold">Средний чек</div>
+                                <div class="text-lg font-bold text-slate-800 dark:text-white mt-0.5">{{ avgCheck.toLocaleString() }} ₽</div>
+                            </div>
+                            <div class="p-3 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800">
+                                <div class="text-[9px] text-slate-400 uppercase font-bold">Рост к пред. мес.</div>
+                                <div class="text-lg font-bold mt-0.5" :class="monthGrowthPercent === null ? 'text-slate-400' : monthGrowthPercent >= 0 ? 'text-emerald-500' : 'text-red-500'">
+                                    <i v-if="monthGrowthPercent !== null" :class="monthGrowthPercent >= 0 ? 'fa-solid fa-arrow-trend-up' : 'fa-solid fa-arrow-trend-down'" class="text-xs mr-1"></i>{{ monthGrowthPercent === null ? '—' : (monthGrowthPercent > 0 ? '+' : '') + monthGrowthPercent + '%' }}
+                                </div>
                             </div>
                         </div>
 
+                        <!-- Продажи по типам кнопок: пончик + разбивка -->
+                        <div>
+                            <h4 class="text-xs font-bold uppercase text-slate-400 mb-3">Продажи по типам наград</h4>
+                            <div class="flex flex-col sm:flex-row items-center gap-5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 p-4">
+                                <div class="relative flex-none w-28 h-28">
+                                    <div class="w-28 h-28 rounded-full" :style="{ background: 'conic-gradient(' + donutGradient + ')' }"></div>
+                                    <div class="absolute inset-2.5 rounded-full bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center">
+                                        <span class="text-[9px] text-slate-400 uppercase font-bold">Всего</span>
+                                        <span class="text-sm font-bold text-slate-800 dark:text-white">{{ orders.length }} шт.</span>
+                                    </div>
+                                </div>
+                                <div class="w-full flex-1 space-y-2.5">
+                                    <div v-for="t in typeBreakdown" :key="t.type" class="text-xs">
+                                        <div class="flex items-center justify-between mb-1">
+                                            <span class="flex items-center font-bold text-slate-700 dark:text-slate-200">
+                                                <span class="w-2 h-2 rounded-full mr-2 flex-none" :style="{ background: t.meta.hex }"></span>
+                                                {{ t.meta.label }}
+                                                <span class="text-slate-400 font-normal ml-1">· {{ t.count }} шт.</span>
+                                            </span>
+                                            <span class="font-bold text-slate-800 dark:text-white">{{ t.revenue.toLocaleString() }} ₽</span>
+                                        </div>
+                                        <div class="h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                                            <div class="h-full rounded-full transition-all" :style="{ width: t.percent + '%', background: t.meta.hex }"></div>
+                                        </div>
+                                        <div class="flex justify-between text-[10px] text-slate-400 mt-0.5">
+                                            <span>{{ t.percent }}% от оборота</span>
+                                            <span>ср. чек {{ t.avgPrice.toLocaleString() }} ₽</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Источники -->
                         <div>
                             <h4 class="text-xs font-bold uppercase text-slate-400 mb-2">Источники (Avito vs Telegram)</h4>
                             <div class="h-4 bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden flex border border-slate-200 dark:border-slate-800">
@@ -626,17 +680,16 @@
                             </div>
                         </div>
 
-                        <div class="p-4 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 rounded-2xl text-center">
-                            <div class="text-xs text-emerald-600 dark:text-emerald-400 uppercase font-bold">Средняя чистая маржа с 1 кнопки</div>
-                            <div class="text-3xl font-bold text-emerald-700 dark:text-emerald-300 mt-1">{{ orders.length ? Math.round(totalProfit / orders.length) : 0 }} ₽</div>
-                        </div>
-
+                        <!-- Оборот и маржа по месяцам -->
                         <div v-if="monthlyStats.length">
-                            <h4 class="text-xs font-bold uppercase text-slate-400 mb-2">Оборот и маржа по месяцам</h4>
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="text-xs font-bold uppercase text-slate-400">Оборот и маржа по месяцам</h4>
+                                <span v-if="bestMonth" class="text-[10px] text-amber-600 dark:text-amber-400 font-bold"><i class="fa-solid fa-trophy mr-1"></i>Лучший: {{ bestMonth.key.slice(5) }}.{{ bestMonth.key.slice(2,4) }}</span>
+                            </div>
                             <div class="flex items-end space-x-2 h-32 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 p-3">
                                 <div v-for="m in monthlyStats" :key="m.key" class="flex-1 flex flex-col items-center justify-end h-full group relative">
                                     <div class="w-full flex flex-col justify-end h-full">
-                                        <div class="w-full rounded-t bg-emerald-400 dark:bg-emerald-500" :style="{ height: (m.revenue / maxMonthlyRevenue * 100) + '%' }"></div>
+                                        <div class="w-full rounded-t bg-gradient-to-t from-emerald-500 to-emerald-400 dark:from-emerald-600 dark:to-emerald-500" :style="{ height: (m.revenue / maxMonthlyRevenue * 100) + '%' }"></div>
                                         <div class="w-full rounded-t bg-sky-500 -mt-1" :style="{ height: (Math.max(m.profit,0) / maxMonthlyRevenue * 100) + '%' }"></div>
                                     </div>
                                     <span class="text-[9px] text-slate-400 mt-1 whitespace-nowrap">{{ m.key.slice(5) }}.{{ m.key.slice(2,4) }}</span>
@@ -648,6 +701,21 @@
                             <div class="flex items-center space-x-4 mt-2 text-[10px] text-slate-500">
                                 <span class="flex items-center"><span class="w-2 h-2 rounded-full bg-emerald-400 mr-1.5"></span>Оборот</span>
                                 <span class="flex items-center"><span class="w-2 h-2 rounded-full bg-sky-500 mr-1.5"></span>Маржа</span>
+                            </div>
+                        </div>
+
+                        <!-- Топ клиентов -->
+                        <div v-if="topClients.length">
+                            <h4 class="text-xs font-bold uppercase text-slate-400 mb-2">Топ клиентов по сумме заказов</h4>
+                            <div class="space-y-1.5">
+                                <div v-for="(c, idx) in topClients" :key="c.key" class="flex items-center justify-between text-xs bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-100 dark:border-slate-800 px-3 py-2">
+                                    <span class="flex items-center min-w-0">
+                                        <span class="w-5 h-5 flex-none flex items-center justify-center rounded-full bg-slate-200 dark:bg-slate-800 text-[10px] font-bold text-slate-600 dark:text-slate-300 mr-2">{{ idx + 1 }}</span>
+                                        <span class="font-bold text-slate-700 dark:text-slate-200 truncate">{{ c.clientName }}</span>
+                                        <span class="text-slate-400 ml-1.5 flex-none">· {{ c.ordersCount }} зак.</span>
+                                    </span>
+                                    <span class="font-bold text-slate-800 dark:text-white flex-none ml-2">{{ c.totalSpent.toLocaleString() }} ₽</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -672,6 +740,7 @@
                                 <select v-model="newOrder.type" @change="onTypeChange" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3 text-sm font-bold text-slate-900 dark:text-white outline-none">
                                     <option value="silver">Серебряная 25х30 см ({{ settings.silverPrice.toLocaleString() }} ₽)</option>
                                     <option value="gold">Золотая 35х43 см ({{ settings.goldPrice.toLocaleString() }} ₽)</option>
+                                    <option value="instagram">Instagram ({{ settings.instagramPrice.toLocaleString() }} ₽)</option>
                                     <option value="custom">Индивидуально ({{ settings.customPrice.toLocaleString() }} ₽)</option>
                                 </select>
                             </div>
@@ -683,7 +752,7 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase">YouTube Канал</label>
+                                <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase">Название канала</label>
                                 <input v-model="newOrder.channelName" placeholder="Wylsacom" required class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3 text-sm font-bold text-slate-900 dark:text-white outline-none">
                             </div>
                             <div class="grid grid-cols-2 gap-3">
@@ -726,9 +795,10 @@
                             <div><label class="text-slate-500">Золото (₽)</label><input v-model.number="settings.goldPrice" @input="updateAllOrdersCost" type="number" class="w-full bg-slate-50 dark:bg-slate-950 border rounded-xl p-2.5 font-bold"></div>
                         </div>
                         <div class="grid grid-cols-2 gap-3">
+                            <div><label class="text-slate-500">Instagram (₽)</label><input v-model.number="settings.instagramPrice" @input="updateAllOrdersCost" type="number" class="w-full bg-slate-50 dark:bg-slate-950 border rounded-xl p-2.5 font-bold"></div>
                             <div><label class="text-slate-500">Индивидуально (₽)</label><input v-model.number="settings.customPrice" @input="updateAllOrdersCost" type="number" class="w-full bg-slate-50 dark:bg-slate-950 border rounded-xl p-2.5 font-bold"></div>
-                            <div><label class="text-slate-500">Индивид. площадь (см²)</label><input v-model.number="settings.customAreaCm2" @input="updateAllOrdersCost" type="number" class="w-full bg-slate-50 dark:bg-slate-950 border rounded-xl p-2.5 font-bold"></div>
                         </div>
+                        <div><label class="text-slate-500">Индивид. площадь (см²)</label><input v-model.number="settings.customAreaCm2" @input="updateAllOrdersCost" type="number" class="w-full bg-slate-50 dark:bg-slate-950 border rounded-xl p-2.5 font-bold"></div>
                         <div><label class="text-slate-500">Лист АКП (1220х4000мм)</label><input v-model.number="settings.acpSheetPrice" @input="updateAllOrdersCost" type="number" class="w-full bg-slate-50 dark:bg-slate-950 border rounded-xl p-2.5 font-bold"></div>
                         <div class="border-t border-slate-200 dark:border-slate-800 pt-3">
                             <label class="text-slate-500 block mb-2">Раскрой — серебро</label>
@@ -744,6 +814,14 @@
                                 <div><label class="text-slate-400 text-[10px]">Ширина см</label><input v-model.number="settings.goldBlankW" type="number" class="w-full bg-slate-50 dark:bg-slate-950 border rounded-xl p-2 font-bold"></div>
                                 <div><label class="text-slate-400 text-[10px]">Высота см</label><input v-model.number="settings.goldBlankH" type="number" class="w-full bg-slate-50 dark:bg-slate-950 border rounded-xl p-2 font-bold"></div>
                                 <div><label class="text-slate-400 text-[10px]">Шт/лист</label><input v-model.number="settings.goldPerSheet" @input="updateAllOrdersCost" type="number" min="1" class="w-full bg-slate-50 dark:bg-slate-950 border rounded-xl p-2 font-bold"></div>
+                            </div>
+                        </div>
+                        <div class="border-t border-slate-200 dark:border-slate-800 pt-3">
+                            <label class="text-slate-500 block mb-2">Раскрой — Instagram</label>
+                            <div class="grid grid-cols-3 gap-2">
+                                <div><label class="text-slate-400 text-[10px]">Ширина см</label><input v-model.number="settings.instagramBlankW" type="number" class="w-full bg-slate-50 dark:bg-slate-950 border rounded-xl p-2 font-bold"></div>
+                                <div><label class="text-slate-400 text-[10px]">Высота см</label><input v-model.number="settings.instagramBlankH" type="number" class="w-full bg-slate-50 dark:bg-slate-950 border rounded-xl p-2 font-bold"></div>
+                                <div><label class="text-slate-400 text-[10px]">Шт/лист</label><input v-model.number="settings.instagramPerSheet" @input="updateAllOrdersCost" type="number" min="1" class="w-full bg-slate-50 dark:bg-slate-950 border rounded-xl p-2 font-bold"></div>
                             </div>
                         </div>
                         <div class="grid grid-cols-3 gap-2">
@@ -776,7 +854,11 @@
                                 <span class="text-slate-500">Золото {{ settings.goldBlankW }}×{{ settings.goldBlankH }}см — {{ settings.goldPerSheet }} шт/лист</span>
                                 <span class="font-bold text-amber-600 dark:text-amber-400">хватит на {{ possibleGoldFromStock }} шт</span>
                             </div>
-                            <p class="text-[10px] text-slate-400 pt-1 border-t border-slate-200 dark:border-slate-800">При создании заказа лист списывается автоматически (1/{{ settings.silverPerSheet }} за серебро, 1/{{ settings.goldPerSheet }} за золото). Размеры и штук/лист можно поменять в «Тарифах».</p>
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-slate-500">Instagram {{ settings.instagramBlankW }}×{{ settings.instagramBlankH }}см — {{ settings.instagramPerSheet }} шт/лист</span>
+                                <span class="font-bold text-pink-600 dark:text-pink-400">хватит на {{ possibleInstagramFromStock }} шт</span>
+                            </div>
+                            <p class="text-[10px] text-slate-400 pt-1 border-t border-slate-200 dark:border-slate-800">При создании заказа лист списывается автоматически (1/{{ settings.silverPerSheet }} за серебро, 1/{{ settings.goldPerSheet }} за золото, 1/{{ settings.instagramPerSheet }} за Instagram). Размеры и штук/лист можно поменять в «Тарифах».</p>
                         </div>
                     </div>
                 </div>
@@ -816,10 +898,15 @@
                         <h3 class="font-bold text-lg text-slate-900 dark:text-white flex items-center"><i class="fa-solid fa-clock-rotate-left text-indigo-500 mr-2"></i> История заказов ({{ orders.length }})</h3>
                         <button @click="showHistoryModal = false" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
                     </div>
-                    <div class="flex-none p-4 border-b border-slate-100 dark:border-slate-800">
+                    <div class="flex-none p-4 border-b border-slate-100 dark:border-slate-800 space-y-3">
                         <div class="relative">
                             <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-sm"></i>
                             <input v-model="historySearch" placeholder="Поиск по каналу, клиенту, ID..." class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button @click="historyFilterMode = 'all'" :class="historyFilterMode === 'all' ? 'bg-slate-800 text-white dark:bg-slate-200 dark:text-slate-900' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">Все ({{ orders.length }})</button>
+                            <button @click="historyFilterMode = 'active'" :class="historyFilterMode === 'active' ? 'bg-slate-800 text-white dark:bg-slate-200 dark:text-slate-900' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">Активные ({{ orders.length - archivedCount }})</button>
+                            <button @click="historyFilterMode = 'archived'" :class="historyFilterMode === 'archived' ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center"><i class="fa-solid fa-box-archive mr-1.5"></i>Архив ({{ archivedCount }})</button>
                         </div>
                     </div>
                     <div class="flex-1 overflow-y-auto p-3 space-y-2">
@@ -829,13 +916,13 @@
                             <div class="min-w-0 flex items-center gap-3">
                                 <span :class="statuses.find(s=>s.id===order.status)?.badgeColor" class="w-2.5 h-2.5 rounded-full flex-none"></span>
                                 <div class="min-w-0">
-                                    <div class="font-bold text-sm text-slate-800 dark:text-slate-200 truncate">{{ order.channelName || 'Без названия' }} <span class="text-slate-400 font-normal">#{{ order.id }}</span></div>
+                                    <div class="font-bold text-sm text-slate-800 dark:text-slate-200 truncate">{{ order.channelName || 'Без названия' }} <span class="text-slate-400 font-normal">#{{ order.id }}</span> <i v-if="isArchived(order)" class="fa-solid fa-box-archive text-indigo-500 text-[10px] ml-1" title="В архиве"></i></div>
                                     <div class="text-[11px] text-slate-500 truncate">{{ order.clientName }} • {{ formatDate(order.createdAt) }} • {{ statuses.find(s=>s.id===order.status)?.title }}</div>
                                 </div>
                             </div>
                             <div class="flex-none text-right">
                                 <div class="font-bold text-sm text-slate-900 dark:text-white">{{ order.price.toLocaleString() }} ₽</div>
-                                <div class="text-[10px] text-slate-400 uppercase">{{ order.type === 'silver' ? 'Серебро' : order.type === 'gold' ? 'Золото' : 'Инд.' }}</div>
+                                <div class="text-[10px] text-slate-400 uppercase">{{ typeInfo(order.type).label }}</div>
                             </div>
                         </button>
                     </div>
@@ -863,7 +950,7 @@
                 </p>
                 <hr style="border: 0; border-top: 1px dashed black; margin: 8px 0;">
                 <p style="font-size: 12px; margin: 0 0 8px 0;">
-                    <strong>Товар:</strong> {{ receiptOrder.type === 'silver' ? 'Серебряная кнопка 25х30см' : receiptOrder.type === 'gold' ? 'Золотая кнопка 35х43см' : 'Индивидуальная награда' }}<br>
+                    <strong>Товар:</strong> {{ typeInfo(receiptOrder.type).receiptName }}<br>
                     <strong>Канал:</strong> {{ receiptOrder.channelName }}<br>
                     <strong>Шильдик:</strong> «{{ receiptOrder.plaqueText }}»
                 </p>
@@ -880,8 +967,8 @@
 
         <!-- Скрытая карточка для функции "Поделиться картинкой" -->
         <div v-if="shareOrder" id="share-card" style="position: fixed; left: -9999px; top: 0; width: 400px; background: #0f172a; border-radius: 24px; overflow: hidden; font-family: 'Roboto', sans-serif;">
-            <div v-if="shareOrder.type !== 'custom'" class="relative" style="width: 400px; aspect-ratio: 925 / 1101;">
-                <img :src="shareOrder.type === 'silver' ? 'https://raw.githubusercontent.com/TimMir1/timmir1.github.io/main/youtube%20shab%20s.png' : 'https://raw.githubusercontent.com/TimMir1/timmir1.github.io/main/youtube%20shab.png'"
+            <div v-if="templateUrl(shareOrder.type)" class="relative" style="width: 400px; aspect-ratio: 925 / 1101;">
+                <img :src="templateUrl(shareOrder.type)"
                      crossorigin="anonymous" style="position:absolute; inset:0; width:100%; height:100%; object-fit: contain;" alt="Шаблон">
                 <div style="position:absolute; inset-inline:0; text-align:center; padding: 0 32px; top: 59.5%;">
                     <div class="preview-presented-to" style="color: rgba(255,255,255,0.9); font-size: 15px; text-shadow: 0 1px 3px rgba(0,0,0,0.9);">Presented to</div>
@@ -964,6 +1051,7 @@
                     settings: {
                         silverPrice: 6700,
                         goldPrice: 7600,
+                        instagramPrice: 6700,
                         customPrice: 8500,
                         customAreaCm2: 4000,
                         acpSheetPrice: 11000,
@@ -975,7 +1063,47 @@
                         silverPerSheet: 4,
                         goldBlankW: 39,
                         goldBlankH: 49,
-                        goldPerSheet: 4
+                        goldPerSheet: 4,
+                        instagramBlankW: 29,
+                        instagramBlankH: 35,
+                        instagramPerSheet: 4
+                    },
+
+                    // Единый справочник типов наград — все цвета/шаблоны/подписи берутся отсюда,
+                    // чтобы при добавлении нового типа не искать по всему файлу
+                    orderTypes: {
+                        silver: {
+                            label: 'Серебро', full: 'Серебряная кнопка YouTube', receiptName: 'Серебряная кнопка 25×30 см',
+                            icon: 'fa-solid fa-play', hex: '#94a3b8', dot: 'bg-slate-400',
+                            badge: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+                            iconBg: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300',
+                            chipActive: 'bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white',
+                            template: 'youtube%20shab%20s.png'
+                        },
+                        gold: {
+                            label: 'Золото', full: 'Золотая кнопка YouTube', receiptName: 'Золотая кнопка 35×43 см',
+                            icon: 'fa-solid fa-play', hex: '#f59e0b', dot: 'bg-amber-400',
+                            badge: 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400',
+                            iconBg: 'bg-amber-100 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400',
+                            chipActive: 'bg-amber-100 dark:bg-amber-500/20 text-amber-800 dark:text-amber-400',
+                            template: 'youtube%20shab.png'
+                        },
+                        instagram: {
+                            label: 'Instagram', full: 'Кнопка Instagram', receiptName: 'Кнопка Instagram',
+                            icon: 'fa-brands fa-instagram', hex: '#ec4899', dot: 'bg-pink-400',
+                            badge: 'bg-pink-50 text-pink-700 dark:bg-pink-500/10 dark:text-pink-400',
+                            iconBg: 'bg-pink-100 text-pink-600 dark:bg-pink-500/20 dark:text-pink-400',
+                            chipActive: 'bg-pink-100 dark:bg-pink-500/20 text-pink-800 dark:text-pink-400',
+                            template: 'instag.jpg'
+                        },
+                        custom: {
+                            label: 'Индивидуально', full: 'Индивидуальная награда', receiptName: 'Индивидуальная награда',
+                            icon: 'fa-solid fa-award', hex: '#a855f7', dot: 'bg-purple-400',
+                            badge: 'bg-purple-50 text-purple-700 dark:bg-purple-500/10 dark:text-purple-400',
+                            iconBg: 'bg-purple-100 text-purple-600 dark:bg-purple-500/20 dark:text-purple-400',
+                            chipActive: 'bg-purple-100 dark:bg-purple-500/20 text-purple-800 dark:text-purple-400',
+                            template: null
+                        }
                     },
 
                     statuses: [
@@ -984,6 +1112,8 @@
                         { id: 'ready', title: 'Готов к выдаче', badgeColor: 'bg-purple-500', icon: 'fa-solid fa-box-open' },
                         { id: 'shipped', title: 'Отправлен', badgeColor: 'bg-emerald-500', icon: 'fa-solid fa-truck-fast' }
                     ],
+
+                    historyFilterMode: 'all',
 
                     paymentStatuses: [
                         { id: 'waiting', title: 'Ждём оплату', badgeColor: 'bg-amber-500', icon: 'fa-solid fa-hourglass-half' },
@@ -1056,6 +1186,59 @@
                 maxMonthlyRevenue() {
                     return Math.max(1, ...this.monthlyStats.map(m => m.revenue));
                 },
+                // Продажи по типам наград — сколько штук, оборот, средний чек и доля от общего оборота.
+                // Это то, что раньше было тремя сухими цифрами, а теперь — полноценная разбивка продаж.
+                typeBreakdown() {
+                    const total = this.totalRevenue || 0;
+                    return Object.keys(this.orderTypes).map(type => {
+                        const list = this.orders.filter(o => o.type === type);
+                        const revenue = list.reduce((s, o) => s + (o.price || 0), 0);
+                        const profit = list.reduce((s, o) => s + ((o.price || 0) - (o.costPrice || 0)), 0);
+                        return {
+                            type,
+                            meta: this.orderTypes[type],
+                            count: list.length,
+                            revenue,
+                            profit,
+                            avgPrice: list.length ? Math.round(revenue / list.length) : 0,
+                            percent: total ? Math.round((revenue / total) * 100) : 0
+                        };
+                    }).sort((a, b) => b.revenue - a.revenue);
+                },
+                // conic-gradient для CSS-«пончика» долей выручки по типам, без сторонних библиотек графиков
+                donutGradient() {
+                    const total = this.totalRevenue || 0;
+                    if (!total) return '#e2e8f0 0deg 360deg';
+                    let cursor = 0;
+                    const segments = this.typeBreakdown.filter(t => t.revenue > 0).map(t => {
+                        const start = cursor;
+                        const sweep = (t.revenue / total) * 360;
+                        cursor += sweep;
+                        return `${t.meta.hex} ${start}deg ${cursor}deg`;
+                    });
+                    return segments.join(', ');
+                },
+                bestMonth() {
+                    if (!this.monthlyStats.length) return null;
+                    return [...this.monthlyStats].sort((a, b) => b.revenue - a.revenue)[0];
+                },
+                monthGrowthPercent() {
+                    const m = this.monthlyStats;
+                    if (m.length < 2) return null;
+                    const prev = m[m.length - 2].revenue;
+                    const curr = m[m.length - 1].revenue;
+                    if (!prev) return null;
+                    return Math.round(((curr - prev) / prev) * 100);
+                },
+                avgCheck() {
+                    return this.orders.length ? Math.round(this.totalRevenue / this.orders.length) : 0;
+                },
+                topClients() {
+                    return [...this.clientsList].sort((a, b) => b.totalSpent - a.totalSpent).slice(0, 5);
+                },
+                archivedCount() {
+                    return this.orders.filter(o => this.isArchived(o)).length;
+                },
                 clientsList() {
                     const map = {};
                     this.orders.forEach(o => {
@@ -1077,6 +1260,9 @@
                 possibleGoldFromStock() {
                     return Math.floor(this.stockSheets * (this.settings.goldPerSheet || 1));
                 },
+                possibleInstagramFromStock() {
+                    return Math.floor(this.stockSheets * (this.settings.instagramPerSheet || 1));
+                },
                 cloudStatusTitle() {
                     if (this.cloudStatus === 'synced') return 'Синхронизировано со всеми устройствами';
                     if (this.cloudStatus === 'connecting') return 'Подключение к облаку...';
@@ -1087,6 +1273,8 @@
                     const q = (this.historySearch || '').toLowerCase().trim();
                     return [...this.orders]
                         .filter(o => {
+                            if (this.historyFilterMode === 'archived' && !this.isArchived(o)) return false;
+                            if (this.historyFilterMode === 'active' && this.isArchived(o)) return false;
                             if (!q) return true;
                             return (o.channelName || '').toLowerCase().includes(q) ||
                                    (o.clientName || '').toLowerCase().includes(q) ||
@@ -1165,37 +1353,48 @@
                         this.db = firebase.firestore();
                         this.docRef = this.db.collection('mira_papa_crm').doc('shared');
 
-                        this.docRef.onSnapshot((snap) => {
-                            if (!snap.exists) {
-                                if (!this._cloudSeeded) {
-                                    this._cloudSeeded = true;
-                                    this._cloudReady = true;
-                                    this.pushCloud(true);
-                                }
-                                return;
-                            }
-                            const data = snap.data();
-                            if (data.updatedAt && data.updatedAt === this._lastPushedAt) {
-                                this.cloudStatus = 'synced';
-                                this._cloudReady = true;
-                                return;
-                            }
-                            this._applyingRemote = true;
-                            if (Array.isArray(data.orders)) this.orders = data.orders;
-                            if (data.settings) this.settings = { ...this.settings, ...data.settings };
-                            if (typeof data.stockSheets === 'number') this.stockSheets = data.stockSheets;
-                            this.cloudStatus = 'synced';
-                            this._cloudReady = true;
-                            this.$nextTick(() => { this._applyingRemote = false; });
-                        }, (err) => {
-                            console.error('Firestore sync error:', err);
+                        // Тихий анонимный вход: без экрана логина, без пароля — просто получаем
+                        // request.auth != null для правил Firestore, чтобы закрыть доступ от чужих ботов
+                        firebase.auth().signInAnonymously().then(() => {
+                            this.startFirestoreListener();
+                        }).catch((err) => {
+                            console.error('Firebase anonymous auth error:', err);
                             this.cloudStatus = 'error';
+                            this._cloudReady = true;
                         });
                     } catch (e) {
                         console.error('Firebase init error:', e);
                         this.cloudStatus = 'error';
                         this._cloudReady = true;
                     }
+                },
+                startFirestoreListener() {
+                    this.docRef.onSnapshot((snap) => {
+                        if (!snap.exists) {
+                            if (!this._cloudSeeded) {
+                                this._cloudSeeded = true;
+                                this._cloudReady = true;
+                                this.pushCloud(true);
+                            }
+                            return;
+                        }
+                        const data = snap.data();
+                        if (data.updatedAt && data.updatedAt === this._lastPushedAt) {
+                            this.cloudStatus = 'synced';
+                            this._cloudReady = true;
+                            return;
+                        }
+                        this._applyingRemote = true;
+                        if (Array.isArray(data.orders)) this.orders = data.orders;
+                        if (data.settings) this.settings = { ...this.settings, ...data.settings };
+                        if (typeof data.stockSheets === 'number') this.stockSheets = data.stockSheets;
+                        this.cloudStatus = 'synced';
+                        this._cloudReady = true;
+                        this.$nextTick(() => { this._applyingRemote = false; });
+                    }, (err) => {
+                        console.error('Firestore sync error:', err);
+                        this.cloudStatus = 'error';
+                    });
                 },
                 pushCloud(immediate) {
                     if (!this.docRef || this._applyingRemote || !this._cloudReady) return;
@@ -1312,7 +1511,16 @@
                     else document.documentElement.classList.remove('dark');
                 },
                 toggleTheme() { this.isDark = !this.isDark; },
-                getFilteredOrdersByStatus(statusId) { return this.filteredOrders.filter(o => o.status === statusId); },
+                typeInfo(type) { return this.orderTypes[type] || this.orderTypes.custom; },
+                templateUrl(type) {
+                    const t = this.typeInfo(type);
+                    return t.template ? `https://raw.githubusercontent.com/TimMir1/timmir1.github.io/main/${t.template}` : null;
+                },
+                // Заказ считается архивным, когда он и оплачен, и уже отправлен клиенту —
+                // такие заказы больше не нужны на рабочей доске, но всегда доступны в Истории
+                isArchived(order) { return order.status === 'shipped' && (order.paymentStatus || 'waiting') === 'paid'; },
+                openArchive() { this.historyFilterMode = 'archived'; this.showHistoryModal = true; },
+                getFilteredOrdersByStatus(statusId) { return this.filteredOrders.filter(o => o.status === statusId && !this.isArchived(o)); },
                 formatDate(isoString) { return new Date(isoString).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }); },
                 deadlineInfo(order) {
                     if (!order.deadline) return null;
@@ -1425,7 +1633,11 @@
                     order.status = newStatus;
                     if (!order.history) order.history = [];
                     order.history.unshift({ text: `Статус изменен с "${oldTitle}" на "${newTitle}"`, time: new Date().toISOString() });
-                    this.showToast(`Статус: ${newTitle}`);
+                    if (this.isArchived(order)) {
+                        this.showToast(`Статус: ${newTitle}. Заказ оплачен и отправлен → ушёл в Историю`);
+                    } else {
+                        this.showToast(`Статус: ${newTitle}`);
+                    }
                 },
                 updatePaymentStatus(order, newStatus) {
                     const oldTitle = this.paymentStatuses.find(s=>s.id===order.paymentStatus)?.title;
@@ -1433,17 +1645,23 @@
                     order.paymentStatus = newStatus;
                     if (!order.history) order.history = [];
                     order.history.unshift({ text: `Оплата: "${oldTitle || '—'}" → "${newTitle}"`, time: new Date().toISOString() });
-                    this.showToast(`Оплата: ${newTitle}`);
+                    if (this.isArchived(order)) {
+                        this.showToast(`Оплата: ${newTitle}. Заказ оплачен и отправлен → ушёл в Историю`);
+                    } else {
+                        this.showToast(`Оплата: ${newTitle}`);
+                    }
                 },
                 calcAcpCost(type) {
                     if (type === 'silver') return Math.round(this.settings.acpSheetPrice / (this.settings.silverPerSheet || 1));
                     if (type === 'gold') return Math.round(this.settings.acpSheetPrice / (this.settings.goldPerSheet || 1));
+                    if (type === 'instagram') return Math.round(this.settings.acpSheetPrice / (this.settings.instagramPerSheet || 1));
                     const cm2 = this.settings.customAreaCm2 || 4000;
                     return Math.round(cm2 * (this.settings.acpSheetPrice / (122 * 400)));
                 },
                 sheetFractionForType(type) {
                     if (type === 'silver') return 1 / (this.settings.silverPerSheet || 1);
                     if (type === 'gold') return 1 / (this.settings.goldPerSheet || 1);
+                    if (type === 'instagram') return 1 / (this.settings.instagramPerSheet || 1);
                     return 0; 
                 },
                 recalcOrderCost(order) {
@@ -1451,7 +1669,7 @@
                 },
                 onTypeChange() {
                     const acp = this.calcAcpCost(this.newOrder.type);
-                    this.newOrder.price = this.newOrder.type === 'silver' ? this.settings.silverPrice : this.newOrder.type === 'gold' ? this.settings.goldPrice : this.settings.customPrice;
+                    this.newOrder.price = this.settings[this.newOrder.type + 'Price'] ?? this.settings.customPrice;
                     this.newOrder.costAcp = acp;
                     this.newOrder.costGlue = this.settings.gluePrice;
                     this.newOrder.costEngraving = this.settings.engravingPrice;
@@ -1509,10 +1727,21 @@
                     this.closeOrderModal();
                     this.showToast('Заказ удалён, лист АКП возвращён на склад');
                 },
+                // Пересчитывает себестоимость (АКП/клей/гравировка/резка) всех заказов под новые тарифы.
+                // Цену продажи уже выставленных заказов НЕ трогает — только их себестоимость и маржу.
+                updateAllOrdersCost() {
+                    this.orders.forEach(o => {
+                        o.costAcp = this.calcAcpCost(o.type);
+                        o.costGlue = this.settings.gluePrice;
+                        o.costEngraving = this.settings.engravingPrice;
+                        o.costCutting = this.settings.cuttingPrice;
+                        this.recalcOrderCost(o);
+                    });
+                },
                 saveSettings() { 
                     this.updateAllOrdersCost();
                     this.showSettingsModal = false; 
-                    this.showToast('Тарифы и себестоимость обновлены!'); 
+                    this.showToast('Тарифы обновлены, себестоимость всех заказов пересчитана!'); 
                 },
                 addStockSheets() {
                     if (this.addSheetsCount > 0) {
