@@ -13,32 +13,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Add Spartak product card
+      - name: Patch index
+        shell: bash
         run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          p = Path('index.html')
-          s = p.read_text(encoding='utf-8')
-          marker = '        <!-- CUSTOM CARD ADAPTED -->'
-          card = '''        <a href="https://timmir1.github.io/spartak.html" class="product-card">
-              <div class="card-img"><img src="https://timmir1.github.io/spartak.jpg" alt="Именная награда ФК Спартак Москва купить"></div>
-              <div class="card-info">
-                  <span class="card-badge">FC Spartak Moscow</span>
-                  <div class="card-name">Именная награда ФК «Спартак Москва»</div>
-                  <p class="card-desc">Премиальная металлическая награда с любым номером на форме и персональным текстом. Отличный подарок настоящему болельщику.</p>
-                  <div class="card-bottom"><span class="card-price">12 800 ₽</span><span class="card-arrow">→</span></div>
-              </div>
-          </a>
-
-'''
-          if 'spartak.html' not in s:
-              if marker not in s:
-                  raise SystemExit('Catalog marker not found')
-              s = s.replace(marker, card + marker, 1)
-              p.write_text(s, encoding='utf-8')
-          PY
+          python3 -c "from pathlib import Path; p=Path('index.html'); s=p.read_text(encoding='utf-8'); m='        <!-- CUSTOM CARD ADAPTED -->'; c='''        <a href=\"https://timmir1.github.io/spartak.html\" class=\"product-card\">\n            <div class=\"card-img\"><img src=\"https://timmir1.github.io/spartak.jpg\" alt=\"Именная награда ФК Спартак Москва купить\"></div>\n            <div class=\"card-info\">\n                <span class=\"card-badge\">FC Spartak Moscow</span>\n                <div class=\"card-name\">Именная награда ФК «Спартак Москва»</div>\n                <p class=\"card-desc\">Премиальная металлическая награда с любым номером на форме и персональным текстом. Отличный подарок настоящему болельщику.</p>\n                <div class=\"card-bottom\"><span class=\"card-price\">12 800 ₽</span><span class=\"card-arrow\">→</span></div>\n            </div>\n        </a>\n\n'''; p.write_text(s.replace(m,c+m,1),encoding='utf-8') if 'spartak.html' not in s else None"
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add index.html
-          git diff --cached --quiet || git commit -m 'feat: add Spartak product card'
+          git commit -m 'feat: add Spartak product card'
           git push
