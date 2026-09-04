@@ -1,0 +1,44 @@
+name: Add Spartak card
+
+on:
+  push:
+    paths:
+      - '.github/workflows/add-spartak-card.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add Spartak product card
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          marker = '        <!-- CUSTOM CARD ADAPTED -->'
+          card = '''        <a href="https://timmir1.github.io/spartak.html" class="product-card">
+              <div class="card-img"><img src="https://timmir1.github.io/spartak.jpg" alt="Именная награда ФК Спартак Москва купить"></div>
+              <div class="card-info">
+                  <span class="card-badge">FC Spartak Moscow</span>
+                  <div class="card-name">Именная награда ФК «Спартак Москва»</div>
+                  <p class="card-desc">Премиальная металлическая награда с любым номером на форме и персональным текстом. Отличный подарок настоящему болельщику.</p>
+                  <div class="card-bottom"><span class="card-price">12 800 ₽</span><span class="card-arrow">→</span></div>
+              </div>
+          </a>
+
+'''
+          if 'spartak.html' not in s:
+              if marker not in s:
+                  raise SystemExit('Catalog marker not found')
+              s = s.replace(marker, card + marker, 1)
+              p.write_text(s, encoding='utf-8')
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git diff --cached --quiet || git commit -m 'feat: add Spartak product card'
+          git push
