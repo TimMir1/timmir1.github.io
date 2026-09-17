@@ -55,9 +55,9 @@ const DATA={
  ],
  salawat:[{
   id:'salawat',
-  ar:'اللَّهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ وَعَلَىٰ آلِ مُحَمَّدٍ،\nكَمَا صَلَّيْتَ عَلَىٰ آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَجِيدٌ،\nاللَّهُمَّ بَارِكْ عَلَىٰ مُحَمَّدٍ وَعَلَىٰ آلِ مُحَمَّدٍ،\nكَمَا بَارَكْتَ عَلَىٰ آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَجِيدٌ',
+  ar:'اللَّهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ وَعَلَىٰ آلِ مُحَمَّدٍ،\nكَمَا صَلَّيْتَ عَلَىٰ إِبْرَاهِيمَ وَعَلَىٰ آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَجِيدٌ،\nاللَّهُمَّ بَارِكْ عَلَىٰ مُحَمَّدٍ وَعَلَىٰ آلِ مُحَمَّدٍ،\nكَمَا بَارَكْتَ عَلَىٰ إِبْرَاهِيمَ وَعَلَىٰ آلِ إِبْرَاهِيمَ، إِنَّكَ حَمِيدٌ مَجِيدٌ',
   name:'Салават Ибрахимия',
-  tr:'О Аллах, благослови Мухаммада и род Мухаммада, как Ты благословил род Ибрахима. Воистину, Ты — Достохвальный, Славный. О Аллах, даруй благодать Мухаммаду и роду Мухаммада, как Ты даровал благодать роду Ибрахима. Воистину, Ты — Достохвальный, Славный.',
+  tr:'О Аллах, благослови Мухаммада и семейство Мухаммада, как благословил Ты Ибрахима и семейство Ибрахима, поистине, Ты — Достойный похвалы, Славный! О Аллах, ниспошли благодать на Мухаммада и семейство Мухаммада, как ниспослал Ты благодать на Ибрахима и семейство Ибрахима, поистине, Ты — Достойный похвалы, Славный!',
   target:33,long:true
  }],
  asma:[
@@ -83,12 +83,12 @@ function todayKey(){const d=new Date();return d.getFullYear()+'-'+String(d.getMo
 function round(){return Math.floor(count()/33)+1}
 function toast(s){const t=$('#toast');t.textContent=s;t.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove('show'),1900)}
 function $(s){return document.querySelector(s)}
-function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]||c))}
 function render(){
  document.documentElement.dataset.theme=state.theme;
  document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('active',b.dataset.cat===state.cat));
  const ls=list();
- $('#chips').innerHTML=ls.map(x=>`<button class="chip ${x.id===state.active?'active':''}" data-id="${esc(x.id)}">${x.ar?`<span class="ar">${esc(x.ar.split('\n')[0])}</span>`:''}<span class="name">${esc(x.name||x.title||x.id)}</span></button>`).join('')+(state.cat==='custom'?'<button class="chip" id="addChip"><span class="ar">＋</span><span class="name">Добавить</span></button>':'');
+ $('#chips').innerHTML=ls.map(x=>`<button class="chip ${x.id===state.active?'active':''}" data-id="${esc(x.id)}">${x.ar?`<span class="ar">${esc(x.ar.split('\\n')[0])}</span>`:''}<span class="name">${esc(x.name||x.title||x.id)}</span></button>`).join('')+(state.cat==='custom'?'<button class="chip" id="addChip"><span class="ar">＋</span><span class="name">Добавить</span></button>':'');
  document.querySelectorAll('.chip[data-id]').forEach(b=>b.onclick=()=>{state.active=b.dataset.id;state.wirdStep=0;save();render()});
  $('#addChip')?.addEventListener('click',()=>$('#modal').classList.add('show'));
  const x=item();if(!x)return;
@@ -106,30 +106,8 @@ function renderHistory(){const days=[];let d=new Date(),max=1;for(let i=0;i<7;i+
 function inc(){const k=key(),v=(state.counts[k]||0)+1;state.counts[k]=v;const day=todayKey();state.daily[day]=(state.daily[day]||0)+1;save();const c=$('#tap');c.classList.remove('pulse');void c.offsetWidth;c.classList.add('pulse');if(navigator.vibrate)try{navigator.vibrate(8)}catch(e){}if(state.sound)beep(v%33===0?'round':'tick');if(v>=target()){if(state.cat==='wird'){const w=DATA.wird.find(x=>x.id===state.active);if(w&&state.wirdStep<w.chain.length-1){state.wirdStep++;toast('Шаг завершён · продолжаем');state.counts[key()]=0}else{toast('Вирд завершён · الحمد لله');state.counts[k]=0}}else{toast('Цель выполнена · الحمد لله');state.counts[k]=0}save();render()}else render()}
 function reset(){const k=key();state.counts[k]=0;save();render();toast('Счётчик сброшен')}
 let ac;function beep(type){try{if(!ac)ac=new (window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume();const o=ac.createOscillator(),g=ac.createGain(),t=ac.currentTime;o.type=type==='round'?'triangle':'sine';o.frequency.value=type==='round'?520:220;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(type==='round'?.18:.08,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+.14);o.connect(g).connect(ac.destination);o.start(t);o.stop(t+.16)}catch(e){}}
-function voice(){
- const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
- if(!SR){toast('Голос не поддерживается этим браузером');return}
- if(listening){stopVoice();return}
- startVoice(SR);
-}
-function startVoice(SR){
- clearTimeout(restartTimer);
- try{recognition=new SR()}catch(e){toast('Не удалось включить микрофон');return}
- recognition.continuous=true;recognition.interimResults=false;recognition.lang='ru-RU';recognition.maxAlternatives=3;
- recognition.onstart=()=>{listening=true;$('#voice').textContent='🔴 Слушаю';toast('Голос включён · говорите зикр')};
- recognition.onresult=e=>{
-  for(let i=e.resultIndex;i<e.results.length;i++){
-   if(!e.results[i].isFinal)continue;
-   const texts=[];for(let a=0;a<e.results[i].length;a++)texts.push(e.results[i][a].transcript.toLowerCase());
-   const t=texts.join(' ');let id=null;
-   if(t.includes('субхан'))id='subhanallah';else if(t.includes('альхам')||t.includes('алхам'))id='alhamdulillah';else if(t.includes('акбар'))id='allahuakbar';else if(t.includes('астаг')||t.includes('астах'))id='astaghfirullah';else if(t.includes('салават')||t.includes('салят'))id='salawat';
-   if(id){if(id==='salawat'){state.cat='salawat';state.active='salawat';state.wirdStep=0}else{state.cat='zikr';state.active=id;state.wirdStep=0}save();render();inc();toast('Услышано · +1')}
-  }
- };
- recognition.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed'){listening=false;$('#voice').textContent='🎙 Голос';toast('Нет доступа к микрофону');return}if(e.error!=='aborted')scheduleVoiceRestart(SR)};
- recognition.onend=()=>{if(listening)scheduleVoiceRestart(SR)};
- try{recognition.start()}catch(e){listening=false;$('#voice').textContent='🎙 Голос';toast('Не удалось включить микрофон')}
-}
+function voice(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){toast('Голос не поддерживается этим браузером');return}if(listening){stopVoice();return}startVoice(SR)}
+function startVoice(SR){clearTimeout(restartTimer);try{recognition=new SR()}catch(e){toast('Не удалось включить микрофон');return}recognition.continuous=true;recognition.interimResults=false;recognition.lang='ru-RU';recognition.maxAlternatives=3;recognition.onstart=()=>{listening=true;$('#voice').textContent='🔴 Слушаю';toast('Голос включён · говорите зикр')};recognition.onresult=e=>{for(let i=e.resultIndex;i<e.results.length;i++){if(!e.results[i].isFinal)continue;const texts=[];for(let a=0;a<e.results[i].length;a++)texts.push(e.results[i][a].transcript.toLowerCase());const t=texts.join(' ');let id=null;if(t.includes('субхан'))id='subhanallah';else if(t.includes('альхам')||t.includes('алхам'))id='alhamdulillah';else if(t.includes('акбар'))id='allahuakbar';else if(t.includes('астаг')||t.includes('астах'))id='astaghfirullah';else if(t.includes('салават')||t.includes('салят'))id='salawat';if(id){if(id==='salawat'){state.cat='salawat';state.active='salawat';state.wirdStep=0}else{state.cat='zikr';state.active=id;state.wirdStep=0}save();render();inc();toast('Услышано · +1')}}};recognition.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed'){listening=false;$('#voice').textContent='🎙 Голос';toast('Нет доступа к микрофону');return}if(e.error!=='aborted')scheduleVoiceRestart(SR)};recognition.onend=()=>{if(listening)scheduleVoiceRestart(SR)};try{recognition.start()}catch(e){listening=false;$('#voice').textContent='🎙 Голос';toast('Не удалось включить микрофон')}}
 function scheduleVoiceRestart(SR){clearTimeout(restartTimer);if(!listening)return;restartTimer=setTimeout(()=>{if(!listening)return;try{recognition.start()}catch(e){try{startVoice(SR)}catch(err){}}},250)}
 function stopVoice(){listening=false;clearTimeout(restartTimer);try{recognition?.stop()}catch(e){}recognition=null;$('#voice').textContent='🎙 Голос';toast('Голос выключен')}
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{state.cat=b.dataset.cat;state.wirdStep=0;if(state.cat==='wird')state.active=DATA.wird[0].id;else if(!findItem(state.active)||!list().some(x=>x.id===state.active))state.active=list()[0]?.id;save();render()});
