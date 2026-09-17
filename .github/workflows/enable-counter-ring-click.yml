@@ -1,0 +1,37 @@
+name: Enable counter ring click
+on:
+  push:
+    paths:
+      - '.github/workflows/enable-counter-ring-click.yml'
+permissions:
+  contents: write
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch counter clickability
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('chetki2.html')
+          s = p.read_text(encoding='utf-8')
+          old_css = '.counter-wrap{margin:16px auto 8px;position:relative;width:min(390px,82vw);aspect-ratio:1}'
+          new_css = '.counter-wrap{margin:16px auto 8px;position:relative;width:min(390px,82vw);aspect-ratio:1;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}'
+          if old_css in s and new_css not in s:
+              s = s.replace(old_css, new_css, 1)
+          old_js = "$('#tap').onclick=inc;"
+          new_js = "$('#tap').onclick=inc;document.querySelector('.counter-wrap').onclick=e=>{if(!e.target.closest('#tap'))inc()};"
+          if old_js in s and "document.querySelector('.counter-wrap').onclick" not in s:
+              s = s.replace(old_js, new_js, 1)
+          p.write_text(s, encoding='utf-8')
+          PY
+      - name: Commit and remove helper workflow
+        run: |
+          rm -f .github/workflows/enable-counter-ring-click.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add chetki2.html .github/workflows/enable-counter-ring-click.yml
+          git diff --cached --quiet && exit 0
+          git commit -m 'Improve counter ring clickability'
+          git push
