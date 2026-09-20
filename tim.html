@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Круги — обратный отсчёт</title>
+<style>
+:root{--bg:#11151a;--empty:#3a4149;--green1:#58e68a;--green2:#19a95a;--text:#f5f7f8}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 50% 0,#26313a,#11151a 55%);color:var(--text);font-family:Arial,sans-serif}
+header{padding:22px;text-align:center}h1{margin:0 0 8px;font-size:28px}p{margin:0;color:#aeb7bf}
+#grid{width:min(1200px,94vw);margin:18px auto 100px;display:grid;grid-template-columns:repeat(auto-fill,minmax(125px,1fr));gap:24px}
+.timer{display:flex;flex-direction:column;align-items:center;gap:9px}
+.circle{position:relative;width:120px;height:120px;border-radius:50%;background:var(--empty);box-shadow:inset 0 5px 12px #0008,0 8px 18px #0007;overflow:hidden}
+.fill{position:absolute;inset:0;background:linear-gradient(145deg,var(--green1),var(--green2));transform-origin:center bottom;transition:clip-path .25s linear;clip-path:inset(0 0 0 0)}
+.gloss{position:absolute;inset:5px;border-radius:50%;background:linear-gradient(135deg,#fff5,transparent 35%);pointer-events:none}
+.value{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:25px;text-shadow:0 2px 4px #0009}
+input{width:90px;padding:7px 6px;border:1px solid #5a646d;border-radius:8px;background:#20272e;color:white;text-align:center}
+button{border:0;border-radius:8px;padding:7px 12px;background:#273039;color:white;cursor:pointer}
+button.start{background:#20a85c}button:hover{filter:brightness(1.15)}
+.controls{position:fixed;bottom:0;left:0;right:0;background:#151b20ee;backdrop-filter:blur(10px);padding:13px;text-align:center;border-top:1px solid #ffffff14}
+#add{background:#20a85c;font-size:16px}
+</style>
+</head>
+<body>
+<header><h1>Обратный отсчёт</h1><p>Задайте секунды в каждом кружке. Зелёная «жидкость» уменьшается до нуля.</p></header>
+<main id="grid"></main>
+<div class="controls"><button id="add">＋ Добавить кружок</button></div>
+<script>
+const grid=document.querySelector('#grid');let id=0;
+function addTimer(seconds=60){
+  const el=document.createElement('section');el.className='timer';
+  el.innerHTML=`
+    <div class="circle"><div class="fill"></div><div class="gloss"></div><div class="value">01:00</div></div>
+    <input type="number" min="1" value="${seconds}" aria-label="секунды">
+    <div><button class="start">Старт</button> <button class="reset">Сброс</button></div>`;
+  grid.appendChild(el);
+  const fill=el.querySelector('.fill'),value=el.querySelector('.value'),input=el.querySelector('input');
+  let total=seconds,remain=seconds,timer=null;
+  function render(){
+    const m=Math.floor(remain/60),s=remain%60;
+    value.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+    fill.style.clipPath=`inset(${100-(remain/Math.max(total,1))*100}% 0 0 0)`;
+  }
+  el.querySelector('.start').onclick=()=>{
+    if(timer) return;
+    total=Math.max(1,parseInt(input.value)||1);remain=total;input.disabled=true;render();
+    timer=setInterval(()=>{remain--;render();if(remain<=0){clearInterval(timer);timer=null;input.disabled=false;value.textContent='00:00'}},1000);
+  };
+  el.querySelector('.reset').onclick=()=>{if(timer){clearInterval(timer);timer=null}input.disabled=false;total=Math.max(1,parseInt(input.value)||1);remain=total;render()};
+  input.onchange=()=>{if(!timer){total=Math.max(1,parseInt(input.value)||1);remain=total;render()}};
+  render();
+}
+document.querySelector('#add').onclick=()=>addTimer(60);
+for(let i=0;i<18;i++) addTimer(60);
+</script>
+</body>
+</html>
