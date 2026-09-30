@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PlayButton CRM — Производство наград</title>
+    <title>PlayButton CRM 6 — Производство наград</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -253,6 +253,17 @@
             </div>
 
             <!-- DRAG & DROP KANBAN ДОСКА -->
+            <div class="mb-4">
+                <div class="flex items-center justify-between bg-white dark:bg-slate-900 border border-indigo-200 dark:border-indigo-900/60 rounded-2xl px-4 py-3 shadow-sm">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-indigo-100 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center"><i class="fa-solid fa-box-open"></i></div>
+                        <div><div class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200">Ожидают самовывоз</div><div class="text-[10px] text-slate-400">Готовые заказы, которые ждут клиента</div></div>
+                        <span class="px-2 py-1 rounded-full bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 text-xs font-bold">{{ pickupOrders.length }}</span>
+                    </div>
+                    <button @click="openPickupModal" class="px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold"><i class="fa-solid fa-box-open mr-1.5"></i>Открыть</button>
+                </div>
+            </div>
+
             <div class="flex-1 flex overflow-x-auto lg:grid lg:grid-cols-4 gap-4 pb-4 snap-x snap-mandatory lg:snap-none custom-scrollbar -mx-4 px-4 lg:mx-0 lg:px-0 h-0">
                 <div v-for="status in statuses" :key="status.id" 
                      @dragover.prevent
@@ -324,6 +335,9 @@
                                 <div class="text-xs font-mono text-slate-700 dark:text-amber-300/90 truncate">"{{ order.plaqueText }}"</div>
                             </div>
 
+                            <div v-if="order.pickupWaiting" class="mb-3 p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20">
+                                <div class="text-[10px] font-bold text-indigo-700 dark:text-indigo-300"><i class="fa-solid fa-box-open mr-1"></i>Самовывоз: {{ order.pickupStorage || 'место не указано' }}</div>
+                            </div>
                             <div class="flex items-end justify-between pt-3 border-t border-slate-100 dark:border-slate-800">
                                 <div class="flex flex-col">
                                     <span class="text-[10px] text-slate-400 uppercase font-bold mb-0.5">Заказчик</span>
@@ -345,6 +359,39 @@
                 </div>
             </div>
         </main>
+
+        <!-- ======================= МОДАЛЬНОЕ ОКНО: Ожидают самовывоз ======================= -->
+        <Transition name="modal">
+            <div v-if="showPickupModal" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-900/20 dark:bg-slate-950/80 backdrop-blur-sm p-0 sm:p-4">
+                <div class="bg-white dark:bg-slate-900 w-full sm:max-w-4xl max-h-[92vh] rounded-t-3xl sm:rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+                    <div class="flex-none p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                        <div><h2 class="text-lg font-bold">Ожидают самовывоз</h2><p class="text-xs text-slate-500 mt-1">Заказы ты переводишь сюда вручную.</p></div>
+                        <button @click="showPickupModal=false" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3">
+                        <div v-if="pickupOrders.length===0" class="py-12 text-center text-sm text-slate-400">Нет заказов в ожидании самовывоза.</div>
+                        <div v-for="order in pickupOrders" :key="order.id" class="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-4">
+                            <div class="flex flex-col lg:flex-row lg:items-center gap-4">
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2 mb-1"><span class="font-mono text-xs text-slate-400">#{{order.id}}</span><span class="text-[10px] font-bold px-2 py-1 rounded-lg bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">Готово</span></div>
+                                    <div class="font-bold text-sm">{{order.clientName || 'Без имени'}}</div>
+                                    <div class="text-xs text-slate-500 mt-1">{{typeInfo(order.type).label}} · {{order.channelName || 'Без названия'}}</div>
+                                    <div class="text-xs text-sky-600 dark:text-sky-400 mt-1">{{order.clientContact || 'Контакт не указан'}}</div>
+                                </div>
+                                <div class="w-full lg:w-80">
+                                    <label class="block text-[10px] text-slate-400 uppercase font-bold mb-1.5">Место хранения</label>
+                                    <input v-model="order.pickupStorage" placeholder="Шкаф / коробка № / полка" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-xs">
+                                </div>
+                                <div class="flex gap-2">
+                                    <button @click="selectOrder(order); showPickupModal=false" class="px-3 py-2 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold">Карточка</button>
+                                    <button @click="removeFromPickup(order)" class="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold">Выдать</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </Transition>
 
         <!-- ======================= МОДАЛЬНОЕ ОКНО: Карточка заказа ======================= -->
         <Transition name="modal">
@@ -380,6 +427,11 @@
                         <!-- Статусы -->
                         <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
                             <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-3">Этап производства</label>
+                            <div class="mb-3">
+                                <button @click="togglePickupWaiting(selectedOrder)" :class="selectedOrder.pickupWaiting ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300 border-indigo-200 dark:border-indigo-900/60'" class="w-full py-2.5 rounded-xl text-xs font-bold border">
+                                    <i class="fa-solid fa-box-open mr-1.5"></i>{{ selectedOrder.pickupWaiting ? 'Убрать из ожидания самовывоза' : 'Добавить в ожидание самовывоза' }}
+                                </button>
+                            </div>
                             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
                                 <button v-for="st in statuses" :key="st.id" 
                                     @click="updateOrderStatus(selectedOrder, st.id)"
@@ -496,13 +548,17 @@
                                     </div>
                                     <div class="grid grid-cols-2 gap-3">
                                         <div>
-                                            <label class="text-[10px] text-slate-400 block mb-1 uppercase font-bold">Контакты</label>
+                                            <label class="text-[10px] text-slate-400 block mb-1 uppercase font-bold">Контакты / телефон</label>
                                             <input v-model="selectedOrder.clientContact" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg p-2 text-xs font-mono text-sky-600 dark:text-sky-400">
                                         </div>
                                         <div>
                                             <label class="text-[10px] text-slate-400 block mb-1 uppercase font-bold">Трек-номер</label>
                                             <input v-model="selectedOrder.trackNumber" placeholder="СДЭК №" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg p-2 text-xs font-mono text-slate-800 dark:text-slate-200">
                                         </div>
+                                    </div>
+                                    <div v-if="selectedOrder.pickupWaiting">
+                                        <label class="text-[10px] text-slate-400 block mb-1 uppercase font-bold">Место хранения</label>
+                                        <input v-model="selectedOrder.pickupStorage" placeholder="Шкаф / коробка / полка" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg p-2 text-xs font-semibold"> 
                                     </div>
                                     <div>
                                         <label class="text-[10px] text-slate-400 block mb-1 uppercase font-bold">Срок сдачи</label>
@@ -1023,6 +1079,7 @@
                     showAnalyticsModal: false,
                     showClientsModal: false,
                     showHistoryModal: false,
+                    showPickupModal: false,
                     historySearch: '',
                     shareOrder: null,
                     toastMessage: '',
@@ -1052,6 +1109,7 @@
                         silverPrice: 6700,
                         goldPrice: 7600,
                         instagramPrice: 6700,
+                        footballPrice: 10000,
                         customPrice: 8500,
                         customAreaCm2: 4000,
                         acpSheetPrice: 11000,
@@ -1096,6 +1154,14 @@
                             chipActive: 'bg-pink-100 dark:bg-pink-500/20 text-pink-800 dark:text-pink-400',
                             template: 'instag.jpg'
                         },
+                        football: {
+                            label: 'Футбольные клубы', full: 'Награда «Футбольные клубы»', receiptName: 'Футбольные клубы',
+                            icon: 'fa-solid fa-futbol', hex: '#22c55e', dot: 'bg-emerald-400',
+                            badge: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400',
+                            iconBg: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400',
+                            chipActive: 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-800 dark:text-emerald-400',
+                            template: null
+                        },
                         custom: {
                             label: 'Индивидуально', full: 'Индивидуальная награда', receiptName: 'Индивидуальная награда',
                             icon: 'fa-solid fa-award', hex: '#a855f7', dot: 'bg-purple-400',
@@ -1135,7 +1201,9 @@
                         costCutting: 1500,
                         costPrice: 2774,
                         paymentStatus: 'waiting',
-                        deadline: ''
+                        deadline: '',
+                        pickupWaiting: false,
+                        pickupStorage: ''
                     },
 
                     orders: []
@@ -1263,6 +1331,7 @@
                 possibleInstagramFromStock() {
                     return Math.floor(this.stockSheets * (this.settings.instagramPerSheet || 1));
                 },
+                pickupOrders() { return this.orders.filter(o => o.pickupWaiting === true); },
                 cloudStatusTitle() {
                     if (this.cloudStatus === 'synced') return 'Синхронизировано со всеми устройствами';
                     if (this.cloudStatus === 'connecting') return 'Подключение к облаку...';
@@ -1308,6 +1377,8 @@
                                 if (o.deadline === undefined || o.deadline === null) o.deadline = '';
                                 if (o.consumedSheetFraction === undefined || o.consumedSheetFraction === null) o.consumedSheetFraction = 0;
                                 if (!o.trackNumber) o.trackNumber = '';
+                                if (o.pickupWaiting === undefined) o.pickupWaiting = false;
+                                if (o.pickupStorage === undefined) o.pickupStorage = '';
                                 if (!o.history) o.history = [{ text: 'Заказ создан', time: o.createdAt }];
                             });
                         }
@@ -1340,6 +1411,29 @@
                 settings: { handler(newVal) { localStorage.setItem('pb_crm_settings', JSON.stringify(newVal)); this.pushCloud(); }, deep: true }
             },
             methods: {
+                openPickupModal() { this.showPickupModal = true; },
+                togglePickupWaiting(order) {
+                    order.pickupWaiting = !order.pickupWaiting;
+                    if (order.pickupWaiting) {
+                        // Самовывоз — отдельная очередь после «Готов к выдаче».
+                        // Заказ больше не показывается в колонке «Готов к выдаче».
+                        order.status = 'pickup';
+                        order.pickupStorage = order.pickupStorage || '';
+                    } else {
+                        // Возвращаем из очереди самовывоза обратно в «Готов к выдаче».
+                        order.status = 'ready';
+                        order.pickupStorage = '';
+                    }
+                    if (!order.history) order.history = [];
+                    order.history.unshift({ text: order.pickupWaiting ? 'Перемещён в ожидание самовывоза' : 'Возвращён в «Готов к выдаче»', time: new Date().toISOString() });
+                    this.showToast(order.pickupWaiting ? 'Заказ перемещён в самовывоз' : 'Заказ возвращён в «Готов к выдаче»');
+                },
+                removeFromPickup(order) {
+                    order.pickupWaiting = false; order.pickupStorage = ''; order.status = 'ready';
+                    if (!order.history) order.history = [];
+                    order.history.unshift({ text: 'Заказ выдан клиенту', time: new Date().toISOString() });
+                    this.showToast('Заказ выдан');
+                },
                 onDragStart(order) { this.draggedOrder = order; },
                 initCloudSync() {
                     if (!FIREBASE_CONFIG.apiKey || FIREBASE_CONFIG.apiKey.indexOf('ВАШ') === 0) {
@@ -1560,7 +1654,9 @@
                         costCutting: sourceOrder.costCutting,
                         costPrice: sourceOrder.costPrice,
                         paymentStatus: 'waiting',
-                        deadline: ''
+                        deadline: '',
+                        pickupWaiting: false,
+                        pickupStorage: ''
                     };
                     this.onTypeChange();
                     this.showClientsModal = false;
@@ -1655,6 +1751,7 @@
                     if (type === 'silver') return Math.round(this.settings.acpSheetPrice / (this.settings.silverPerSheet || 1));
                     if (type === 'gold') return Math.round(this.settings.acpSheetPrice / (this.settings.goldPerSheet || 1));
                     if (type === 'instagram') return Math.round(this.settings.acpSheetPrice / (this.settings.instagramPerSheet || 1));
+                    if (type === 'football') return 0;
                     const cm2 = this.settings.customAreaCm2 || 4000;
                     return Math.round(cm2 * (this.settings.acpSheetPrice / (122 * 400)));
                 },
@@ -1662,6 +1759,7 @@
                     if (type === 'silver') return 1 / (this.settings.silverPerSheet || 1);
                     if (type === 'gold') return 1 / (this.settings.goldPerSheet || 1);
                     if (type === 'instagram') return 1 / (this.settings.instagramPerSheet || 1);
+                    if (type === 'football') return 0;
                     return 0; 
                 },
                 recalcOrderCost(order) {
@@ -1703,6 +1801,8 @@
                         id: Math.floor(1000 + Math.random() * 9000), ...this.newOrder,
                         status: 'accepted', trackNumber: '', createdAt: new Date().toISOString(),
                         consumedSheetFraction: fraction,
+                        pickupWaiting: false,
+                        pickupStorage: '',
                         history: [{ text: 'Заказ создан', time: new Date().toISOString() }]
                     };
                     this.orders.unshift(created);
