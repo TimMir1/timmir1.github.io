@@ -1414,11 +1414,7 @@
                     } catch (e) { console.error('Error parsing stock', e); }
                 }
 
-                // Автовосстановление удалённого заказа «iling show» по резервной копии.
-                const restoreIlingShow = {"costCutting":1500,"source":"telegram","plaqueText":"","costAcp":1250,"costEngraving":500,"consumedSheetFraction":0.25,"trackNumber":"","id":5785,"channelName":"iling show ","status":"ready","costGlue":30,"clientContact":"@alekdimas","costPrice":3280,"pickupStorage":"","clientName":"Дмитрий ","pickupWaiting":false,"type":"gold","createdAt":"2026-09-26T12:11:20.941Z","price":9800,"history":[{"time":"2026-09-26T12:11:20.941Z","text":"Заказ создан"},{"time":"2026-09-26T12:11:25.797Z","text":"Оплата: «Ждём оплату» → «Оплачен»"},{"time":"2026-09-26T12:11:31.384Z","text":"Изменена стоимость АКП"},{"time":"2026-09-26T12:11:32.162Z","text":"Изменена стоимость АКП"},{"time":"2026-09-26T12:11:37.566Z","text":"Изменена стоимость АКП"},{"time":"2026-09-26T12:11:38.806Z","text":"Изменена стоимость АКП"},{"time":"2026-09-26T12:12:00.137Z","text":"Статус изменен с «Макет / Очередь» на «ЧПУ & Сборка»"},{"time":"2026-09-30T06:01:54.780Z","text":"Статус изменен с «ЧПУ & Сборка» на «Готов к выдаче»"}],"deadline":"2026-09-29","paymentStatus":"paid"};
-                if (!this.orders.some(o => String(o.id) === '5785')) {
-                    this.orders.push(restoreIlingShow);
-                }
+                this.ensureIlingShowRestored();
 
                 this.initCloudSync();
             },
@@ -1453,6 +1449,31 @@
                     this.showToast('Заказ выдан');
                 },
                 onDragStart(order) { this.draggedOrder = order; },
+                ensureIlingShowRestored() {
+                    if (this.orders.some(o => String(o.id) === '5785')) return false;
+                    const order = {
+                        costCutting: 1500, source: 'telegram', plaqueText: '', costAcp: 1250, costEngraving: 500,
+                        consumedSheetFraction: 0.25, trackNumber: '', id: 5785, channelName: 'iling show ',
+                        status: 'ready', costGlue: 30, clientContact: '@alekdimas', costPrice: 3280,
+                        pickupStorage: '', clientName: 'Дмитрий ', pickupWaiting: false, type: 'gold',
+                        createdAt: '2026-09-26T12:11:20.941Z', price: 9800,
+                        history: [
+                            {time:'2026-09-26T12:11:20.941Z', text:'Заказ создан'},
+                            {time:'2026-09-26T12:11:25.797Z', text:'Оплата: «Ждём оплату» → «Оплачен»'},
+                            {time:'2026-09-26T12:11:31.384Z', text:'Изменена стоимость АКП'},
+                            {time:'2026-09-26T12:11:32.162Z', text:'Изменена стоимость АКП'},
+                            {time:'2026-09-26T12:11:37.566Z', text:'Изменена стоимость АКП'},
+                            {time:'2026-09-26T12:11:38.806Z', text:'Изменена стоимость АКП'},
+                            {time:'2026-09-26T12:12:00.137Z', text:'Статус изменен с «Макет / Очередь» на «ЧПУ & Сборка»'},
+                            {time:'2026-09-30T06:01:54.780Z', text:'Статус изменен с «ЧПУ & Сборка» на «Готов к выдаче»'}
+                        ],
+                        deadline: '2026-09-29', paymentStatus: 'paid'
+                    };
+                    this.orders.push(order);
+                    this.showToast('Заказ «iling show» восстановлен');
+                    this.pushCloud(true);
+                    return true;
+                },
                 initCloudSync() {
                     if (!FIREBASE_CONFIG.apiKey || FIREBASE_CONFIG.apiKey.indexOf('ВАШ') === 0) {
                         this.cloudStatus = 'local-only';
@@ -1498,6 +1519,8 @@
                         }
                         this._applyingRemote = true;
                         if (Array.isArray(data.orders)) this.orders = data.orders;
+                        // Восстанавливаем заказ #5785, если его нет в облачном наборе.
+                        this.ensureIlingShowRestored();
                         if (data.settings) this.settings = { ...this.settings, ...data.settings };
                         if (typeof data.stockSheets === 'number') this.stockSheets = data.stockSheets;
                         this.cloudStatus = 'synced';
