@@ -1450,7 +1450,15 @@
                 },
                 onDragStart(order) { this.draggedOrder = order; },
                 ensureIlingShowRestored() {
-                    if (this.orders.some(o => String(o.id) === '5785')) return false;
+                    const existing = this.orders.find(o => String(o.id) === '5785');
+                    if (existing) {
+                        // Заказ должен находиться на рабочей доске в «Готов к выдаче».
+                        existing.status = 'ready';
+                        existing.pickupWaiting = false;
+                        existing.pickupStorage = '';
+                        existing.paymentStatus = 'paid';
+                        return true;
+                    }
                     const order = {
                         costCutting: 1500, source: 'telegram', plaqueText: '', costAcp: 1250, costEngraving: 500,
                         consumedSheetFraction: 0.25, trackNumber: '', id: 5785, channelName: 'iling show ',
@@ -1471,7 +1479,8 @@
                     };
                     this.orders.push(order);
                     this.showToast('Заказ «iling show» восстановлен');
-                    this.pushCloud(true);
+                    // После Firebase-слушателя запись нужно отправить уже после снятия _applyingRemote.
+                    setTimeout(() => this.pushCloud(true), 0);
                     return true;
                 },
                 initCloudSync() {
@@ -1520,7 +1529,10 @@
                         this._applyingRemote = true;
                         if (Array.isArray(data.orders)) this.orders = data.orders;
                         // Восстанавливаем заказ #5785, если его нет в облачном наборе.
-                        this.ensureIlingShowRestored();
+                        const restoredIlingShow = this.ensureIlingShowRestored();
+                        if (restoredIlingShow) {
+                            setTimeout(() => this.pushCloud(true), 50);
+                        }
                         if (data.settings) this.settings = { ...this.settings, ...data.settings };
                         if (typeof data.stockSheets === 'number') this.stockSheets = data.stockSheets;
                         this.cloudStatus = 'synced';
