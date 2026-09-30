@@ -1414,13 +1414,22 @@
                 openPickupModal() { this.showPickupModal = true; },
                 togglePickupWaiting(order) {
                     order.pickupWaiting = !order.pickupWaiting;
-                    if (!order.pickupWaiting) order.pickupStorage = '';
+                    if (order.pickupWaiting) {
+                        // Самовывоз — отдельная очередь после «Готов к выдаче».
+                        // Заказ больше не показывается в колонке «Готов к выдаче».
+                        order.status = 'pickup';
+                        order.pickupStorage = order.pickupStorage || '';
+                    } else {
+                        // Возвращаем из очереди самовывоза обратно в «Готов к выдаче».
+                        order.status = 'ready';
+                        order.pickupStorage = '';
+                    }
                     if (!order.history) order.history = [];
-                    order.history.unshift({ text: order.pickupWaiting ? 'Добавлен в ожидание самовывоза' : 'Убран из ожидания самовывоза', time: new Date().toISOString() });
-                    this.showToast(order.pickupWaiting ? 'Добавлен в самовывоз' : 'Убран из самовывоза');
+                    order.history.unshift({ text: order.pickupWaiting ? 'Перемещён в ожидание самовывоза' : 'Возвращён в «Готов к выдаче»', time: new Date().toISOString() });
+                    this.showToast(order.pickupWaiting ? 'Заказ перемещён в самовывоз' : 'Заказ возвращён в «Готов к выдаче»');
                 },
                 removeFromPickup(order) {
-                    order.pickupWaiting = false; order.pickupStorage = '';
+                    order.pickupWaiting = false; order.pickupStorage = ''; order.status = 'ready';
                     if (!order.history) order.history = [];
                     order.history.unshift({ text: 'Заказ выдан клиенту', time: new Date().toISOString() });
                     this.showToast('Заказ выдан');
