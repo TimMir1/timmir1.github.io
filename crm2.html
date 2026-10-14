@@ -165,7 +165,7 @@
                     <button @click="showStockModal = true" class="flex items-center space-x-2 px-3 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors shadow-sm text-sm font-medium">
                         <i class="fa-solid fa-layer-group text-amber-500"></i>
                         <span class="hidden sm:inline">Склад: </span>
-                        <span class="font-bold text-amber-600 dark:text-amber-400">{{ stockSheets }}</span>
+                        <span class="font-bold text-amber-600 dark:text-amber-400">{{ materialSheetSummary }}</span>
                     </button>
 
                     <button @click="openCreateModal" class="flex items-center space-x-2 px-4 h-10 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 font-bold transition-all shadow-md active:scale-95 text-sm">
@@ -179,6 +179,7 @@
         <!-- Основной интерфейс -->
         <main class="flex-1 w-full px-4 sm:px-6 lg:px-8 py-6 flex flex-col overflow-hidden">
             
+            <div class="flex flex-wrap gap-2 mb-3"><button @click="openMaterials(filterType==='all'?'silver':filterType)" class="rounded-xl px-4 py-2 bg-amber-400 text-slate-950 text-sm font-bold">Материалы и себестоимость</button><span v-if="!inventoryVerified" class="rounded-xl px-3 py-2 bg-amber-50 text-amber-900 text-xs">Проверьте и внесите раздельные остатки материалов</span><span v-if="materialReservationError" class="rounded-xl px-3 py-2 bg-red-100 text-red-800 text-xs">Не хватает материала для резерва</span></div>
             <!-- Метрики -->
             <div class="flex-none overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 mb-4 sm:mb-6 custom-scrollbar">
                 <div class="flex sm:grid sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 min-w-[max-content] sm:min-w-full">
@@ -611,30 +612,20 @@
                                     </h4>
                                 </div>
                                 
-                                <div class="grid grid-cols-2 gap-3 flex-1">
-                                    <div class="bg-slate-50 dark:bg-slate-950/50 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800">
-                                        <label class="text-[10px] text-slate-500 block mb-1 uppercase">АКП (₽)</label>
-                                        <input v-model.number="selectedOrder.costAcp" @input="recalcOrderCost(selectedOrder); logHistory('Изменена стоимость АКП')" type="number" class="w-full bg-transparent text-sm font-bold text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500 rounded-lg px-1">
-                                    </div>
-                                    <div class="bg-slate-50 dark:bg-slate-950/50 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800">
-                                        <label class="text-[10px] text-slate-500 block mb-1 uppercase">ЧПУ Резка (₽)</label>
-                                        <input v-model.number="selectedOrder.costCutting" @input="recalcOrderCost(selectedOrder); logHistory('Изменена стоимость резки')" type="number" class="w-full bg-transparent text-sm font-bold text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500 rounded-lg px-1">
-                                    </div>
-                                    <div class="bg-slate-50 dark:bg-slate-950/50 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800">
-                                        <label class="text-[10px] text-slate-500 block mb-1 uppercase">Гравировка (₽)</label>
-                                        <input v-model.number="selectedOrder.costEngraving" @input="recalcOrderCost(selectedOrder); logHistory('Изменена стоимость гравировки')" type="number" class="w-full bg-transparent text-sm font-bold text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500 rounded-lg px-1">
-                                    </div>
-                                    <div class="bg-slate-50 dark:bg-slate-950/50 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800">
-                                        <label class="text-[10px] text-slate-500 block mb-1 uppercase">Клей (₽)</label>
-                                        <input v-model.number="selectedOrder.costGlue" @input="recalcOrderCost(selectedOrder); logHistory('Изменена стоимость клея')" type="number" class="w-full bg-transparent text-sm font-bold text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500 rounded-lg px-1">
-                                    </div>
+                                <div v-if="selectedOrder.materialCostSnapshot" class="space-y-2 text-xs">
+                                  <div v-for="row in selectedOrder.materialCostSnapshot.rows" :key="row.materialId" class="flex justify-between border-b pb-2"><span>{{ row.name }} · {{ row.quantity }} / {{ row.yieldCount }} шт. с листа</span><strong>{{ rub(row.cost) }}</strong></div>
+                                  <div v-for="fee in selectedOrder.materialCostSnapshot.fees" :key="fee.id" class="flex justify-between"><span>{{ fee.name }}</span><strong>{{ rub(fee.price) }}</strong></div>
+                                  <p class="text-[10px] text-slate-400">Состав и себестоимость зафиксированы при создании заказа. {{ selectedOrder.materialState==='reserved'?'Материалы зарезервированы':'Материалы списаны' }}.</p>
+                                  <button v-if="selectedOrder.materialState==='reserved'" @click="recalculateSnapshot(selectedOrder)" class="border rounded-lg px-2 py-1">Пересчитать резерв по текущим тарифам</button>
                                 </div>
-
+                                <div v-else class="rounded-xl bg-slate-50 p-3 text-xs text-slate-600">Старая себестоимость сохранена: {{ rub(selectedOrder.costPrice) }}. Подробный состав для этого заказа ранее не сохранялся.</div>
                                 <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
                                     <div class="flex justify-between items-end mb-2">
                                         <span class="text-xs font-bold text-slate-500 uppercase">Цена продажи</span>
                                         <input v-model.number="selectedOrder.price" type="number" class="w-24 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg p-1.5 text-right text-sm font-bold text-amber-600 dark:text-amber-400">
                                     </div>
+                                    <label class="flex justify-between items-center gap-3 text-xs mt-3">Получено от клиента<input v-model.number="selectedOrder.paidAmount" @change="setPaid(selectedOrder)" type="number" min="0" :max="selectedOrder.price" step="0.01" class="w-28 border rounded-lg p-2 dark:bg-slate-800"></label>
+                                    <div class="flex justify-between items-center text-xs text-red-500 mt-2"><span>Остаток к оплате:</span><strong>{{ rub(outstanding(selectedOrder)) }}</strong></div>
                                     <div class="flex justify-between items-center text-xs">
                                         <span class="text-slate-400">Себестоимость:</span>
                                         <span class="font-bold text-slate-600 dark:text-slate-300">{{ selectedOrder.costPrice.toLocaleString() }} ₽</span>
@@ -812,6 +803,8 @@
                                     <option value="custom">Индивидуально ({{ settings.customPrice.toLocaleString() }} ₽)</option>
                                 </select>
                             </div>
+                            <label v-if="hasMirrorFinish(newOrder.type)" class="block text-xs font-bold text-slate-500 mb-1.5 uppercase">Цвет зеркала<select v-model="newOrder.finish" class="w-full border rounded-xl p-3 dark:bg-slate-800"><option value="silver">Серебро</option><option value="gold">Золото</option></select></label>
+                            <div class="rounded-xl bg-amber-50 dark:bg-amber-500/10 p-3 text-sm"><div class="flex justify-between"><span>Себестоимость материала и работ</span><strong>{{ rub(newQuote.total) }}</strong></div><button type="button" @click="openMaterials(newOrder.type)" class="underline text-xs mt-2">Проверить состав и раскрой</button></div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase">Источник</label>
                                 <select v-model="newOrder.source" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-3 text-sm text-slate-900 dark:text-white outline-none">
@@ -894,8 +887,8 @@
                         </div>
                         <div class="grid grid-cols-3 gap-2">
                             <div><label class="text-slate-500">Клей</label><input v-model.number="settings.gluePrice" @input="updateAllOrdersCost" type="number" class="w-full bg-slate-50 dark:bg-slate-950 border rounded-xl p-2.5 font-bold"></div>
-                            <div><label class="text-slate-500">Гравир.</label><input v-model.number="settings.engravingPrice" @input="updateAllOrdersCost" type="number" class="w-full bg-slate-50 dark:bg-slate-950 border rounded-xl p-2.5 font-bold"></div>
-                            <div><label class="text-slate-500">ЧПУ Резка</label><input v-model.number="settings.cuttingPrice" @input="updateAllOrdersCost" type="number" class="w-full bg-slate-50 dark:bg-slate-950 border rounded-xl p-2.5 font-bold"></div>
+                            <div><label class="text-slate-500">УФ-печать</label><input v-model.number="settings.engravingPrice" @input="updateAllOrdersCost" type="number" class="w-full bg-slate-50 dark:bg-slate-950 border rounded-xl p-2.5 font-bold"></div>
+                            <div><label class="text-slate-500">Фрезеровка</label><input v-model.number="settings.cuttingPrice" @input="updateAllOrdersCost" type="number" class="w-full bg-slate-50 dark:bg-slate-950 border rounded-xl p-2.5 font-bold"></div>
                         </div>
                     </div>
                     <div class="p-4 border-t bg-slate-50 dark:bg-slate-900"><button @click="saveSettings" class="w-full py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-xl">Сохранить</button></div>
@@ -903,35 +896,51 @@
             </div>
         </Transition>
 
-        <!-- Склад АКП -->
-        <Transition name="modal">
-            <div v-if="showStockModal" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-900/20 dark:bg-slate-950/80 backdrop-blur-sm p-0 sm:p-4">
-                <div class="bg-white dark:bg-slate-900 w-full sm:max-w-sm max-h-[90vh] rounded-t-3xl sm:rounded-2xl shadow-2xl flex flex-col overflow-hidden relative">
-                    <div class="p-5 border-b flex justify-between items-center"><h3 class="font-bold text-lg">Склад АКП</h3><button @click="showStockModal = false"><i class="fa-solid fa-xmark"></i></button></div>
-                    <div class="p-6 text-center space-y-6 overflow-y-auto">
-                        <div class="text-4xl font-bold text-amber-500">{{ stockSheets }} листов</div>
-                        <div class="flex space-x-2"><input v-model.number="addSheetsCount" type="number" min="1" step="0.25" class="flex-1 border rounded-xl p-3 text-center font-bold"><button @click="addStockSheets" class="px-6 bg-amber-500 text-slate-950 font-bold rounded-xl">Плюс</button></div>
+        <Transition name="modal"><div v-if="showStockModal" class="fixed inset-0 z-50 bg-slate-950/60 flex items-center justify-center p-3"><section class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto p-5 space-y-5">
+          <header class="flex justify-between items-center"><h2 class="text-lg font-bold">Склад материалов</h2><button @click="showStockModal=false" class="border rounded-xl px-3 py-2">Закрыть</button></header>
+          <p class="text-xs text-slate-500">Старые заказы сохраняют прежнюю себестоимость. Новый заказ резервирует материал. При начале производства материал списывается. Удаление изготовленного заказа не возвращает материал на склад. Начальные остатки в копии — нулевые: внесите фактический приход.</p>
+          <div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead><tr class="border-b"><th class="p-2">Материал</th><th class="p-2">На складе</th><th class="p-2">Резерв</th><th class="p-2">Доступно</th></tr></thead><tbody><tr v-for="m in materialBalances" :key="m.id" class="border-b"><td class="p-2">{{ m.name }}</td><td class="p-2">{{ m.onHand.toFixed(4) }}</td><td class="p-2">{{ m.reserved.toFixed(4) }}</td><td class="p-2 font-bold" :class="m.available<0?'text-red-500':'text-emerald-600'">{{ m.available.toFixed(4) }}</td></tr></tbody></table></div>
+          <p v-if="!inventoryVerified" class="rounded-xl bg-amber-50 text-amber-900 p-3 text-xs">Старый общий остаток нельзя распределить по материалам автоматически. Внесите фактическое количество каждого материала, затем подтвердите инвентаризацию.</p><div class="flex gap-2"><button @click="confirmInventoryCount" class="border rounded-xl px-3 py-2 text-xs">Подтвердить фактические остатки</button><button @click="showMaterialsModal=true" class="border rounded-xl px-3 py-2 text-xs">Калькулятор</button></div><p class="text-xs text-slate-500">Единица: доля листа 1220 × 4000 мм. Остатки обрезков по форме здесь не отслеживаются.</p>
+          <form @submit.prevent="addStockSheets" class="flex flex-wrap gap-2"><select v-model="stockMaterial" aria-label="Материал для прихода" class="border rounded-xl p-3 dark:bg-slate-800"><option v-for="m in materials" :value="m.id">{{ m.name }}</option></select><input aria-label="Количество листов" v-model.number="addSheetsCount" type="number" min="0.001" step="any" required class="w-28 border rounded-xl p-3 dark:bg-slate-800"><button class="bg-amber-500 text-slate-900 rounded-xl px-4 py-3 font-bold">Приход листов</button></form>
+          <h3 class="font-bold">Движение материалов</h3><p v-if="!stockLog.length" class="text-sm text-slate-500">Операций пока нет</p><div v-for="entry in stockLog.slice(0,100)" :key="entry.id" class="border-b pb-2 text-xs"><span class="text-slate-500">{{ formatDate(entry.time) }}</span> · {{ materials.find(m=>m.id===entry.materialId)?.name }} · <strong>{{ entry.amount>0?'+':'' }}{{ entry.amount.toFixed(4) }} л.</strong> · {{ entry.text }}<span v-if="entry.orderId"> · #{{ entry.orderId.slice(0,8) }}</span></div>
+        </section></div></Transition>
 
-                        <div class="bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl p-4 text-left space-y-3">
-                            <h4 class="text-[11px] font-bold uppercase text-slate-400">Раскрой листа (1220×4000мм)</h4>
-                            <div class="flex justify-between items-center text-xs">
-                                <span class="text-slate-500">Серебро {{ settings.silverBlankW }}×{{ settings.silverBlankH }}см — {{ settings.silverPerSheet }} шт/лист</span>
-                                <span class="font-bold text-slate-700 dark:text-slate-200">хватит на {{ possibleSilverFromStock }} шт</span>
-                            </div>
-                            <div class="flex justify-between items-center text-xs">
-                                <span class="text-slate-500">Золото {{ settings.goldBlankW }}×{{ settings.goldBlankH }}см — {{ settings.goldPerSheet }} шт/лист</span>
-                                <span class="font-bold text-amber-600 dark:text-amber-400">хватит на {{ possibleGoldFromStock }} шт</span>
-                            </div>
-                            <div class="flex justify-between items-center text-xs">
-                                <span class="text-slate-500">Instagram {{ settings.instagramBlankW }}×{{ settings.instagramBlankH }}см — {{ settings.instagramPerSheet }} шт/лист</span>
-                                <span class="font-bold text-pink-600 dark:text-pink-400">хватит на {{ possibleInstagramFromStock }} шт</span>
-                            </div>
-                            <p class="text-[10px] text-slate-400 pt-1 border-t border-slate-200 dark:border-slate-800">При создании заказа лист списывается автоматически (1/{{ settings.silverPerSheet }} за серебро, 1/{{ settings.goldPerSheet }} за золото, 1/{{ settings.instagramPerSheet }} за Instagram). Размеры и штук/лист можно поменять в «Тарифах».</p>
-                        </div>
-                    </div>
+        <Transition name="modal">
+          <div v-if="showMaterialsModal" class="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/60 p-2 sm:p-5">
+            <section class="w-full max-w-5xl max-h-[94vh] overflow-y-auto rounded-2xl bg-white dark:bg-slate-900 shadow-2xl">
+              <header class="sticky top-0 z-10 bg-white dark:bg-slate-900 border-b p-4 flex items-center justify-between gap-3">
+                <div><h2 class="text-lg font-bold">Себестоимость одной кнопки</h2><p class="text-xs text-slate-500">Состав изделия → раскрой → материал → работы</p></div>
+                <button @click="showMaterialsModal=false" class="rounded-xl border px-4 py-2">Закрыть</button>
+              </header>
+              <div class="p-4 sm:p-6 space-y-6">
+                <div class="flex flex-wrap gap-3 items-center"><select aria-label="Модель для расчёта" v-model="calculatorType" class="border rounded-xl p-3 dark:bg-slate-800"><option v-for="(meta,type) in orderTypes" :value="type">{{ meta.full }}</option></select><label v-if="hasFinish(calculatorType)" class="text-sm">Цвет зеркала <select aria-label="Цвет зеркала для расчёта" :value="calculatorFinish()" @change="setCalculatorFinish($event.target.value)" class="border rounded-xl p-3 dark:bg-slate-800"><option value="silver">Серебро</option><option value="gold">Золото</option></select></label><span class="text-xs text-slate-500">Листы 1220 × 4000 мм · цены за целый лист</span></div>
+                <div class="rounded-2xl bg-slate-900 text-white p-5 space-y-3"><div class="flex justify-between gap-4 items-center"><span>{{ quote.valid?'Себестоимость 1 шт.':'Предварительный расчёт' }}</span><strong class="text-3xl">{{ rub(quote.total) }}</strong></div><div class="border-t border-slate-600 pt-3 text-sm space-y-2"><div v-for="row in quote.rows" :key="row.materialId" class="flex justify-between gap-4"><span>{{ row.name }} · {{ row.quantity }} / {{ row.yieldCount || '?' }} л.</span><span>{{ rub(row.cost) }}</span></div><div class="flex justify-between gap-4"><span>Работы и расходники</span><span>{{ rub(quote.servicesCost) }}</span></div></div><p v-if="!quote.valid" class="text-xs text-amber-300">{{ quote.errors.join('. ') }}</p></div>
+                <div class="grid md:grid-cols-3 gap-3"><div v-for="m in materials.filter(m=>recipes[calculatorType].parts.some(p=>p.materialId===m.id))" :key="m.id" class="border rounded-xl p-4"><label class="text-xs font-bold block mb-2">{{ m.name }} · ₽/лист</label><input v-model.number="m.price" type="number" min="0.01" step="0.01" class="w-full text-xl font-bold border-b p-2 dark:bg-slate-800"></div></div>
+                <div class="rounded-xl bg-slate-50 dark:bg-slate-800 p-4 space-y-3">
+                  <div class="flex flex-wrap items-end gap-4"><div><label class="text-xs block mb-1">Зазор между деталями, мм</label><input v-model.number="recipes[calculatorType].gap" type="number" min="0" step="0.1" class="border rounded-lg p-2 w-28 dark:bg-slate-900"></div><div><label class="text-xs block mb-1">Отступ от края, мм</label><input v-model.number="recipes[calculatorType].edge" type="number" min="0" step="0.1" class="border rounded-lg p-2 w-28 dark:bg-slate-900"></div></div>
+                  <p class="text-xs text-slate-500">Лист на схеме: 4000 мм слева направо, 1220 мм сверху вниз. Царапка стоит строго вертикально: текстура идёт слева направо, поворот запрещён. Чёрный композит и зеркало можно поворачивать. Это оценка, а не программа ЧПУ. Для проверенного раскроя укажите фактический выход. Вся цена листа распределяется на годные детали, включая отходы.</p>
                 </div>
-            </div>
+                <div class="space-y-3"><div v-for="(p,i) in recipes[calculatorType].parts" :key="p.materialId" class="border rounded-xl p-4">
+                  <h3 class="font-bold mb-3">{{ materials.find(m=>m.id===p.materialId).name }}</h3><p class="text-xs mb-3 font-semibold" :class="p.materialId==='scratch'?'text-amber-700':'text-slate-500'">{{ p.materialId==='scratch'?'Текстура → · строго стоя · поворот запрещён':'Поворот на 90° разрешён' }}</p>
+                  <div class="grid grid-cols-2 md:grid-cols-5 gap-3 text-xs">
+                    <label>Деталей на кнопку<input v-model.number="p.quantity" type="number" min="1" step="1" class="block w-full border rounded-lg p-2 mt-1 dark:bg-slate-800"></label>
+                    <label>Ширина заготовки, мм<input v-model.number="p.w" type="number" min="1" class="block w-full border rounded-lg p-2 mt-1 dark:bg-slate-800"></label>
+                    <label>Высота заготовки, мм<input v-model.number="p.h" type="number" min="1" class="block w-full border rounded-lg p-2 mt-1 dark:bg-slate-800"></label>
+                    <label>Способ расчёта<select v-model="p.yieldMode" class="block w-full border rounded-lg p-2 mt-1 dark:bg-slate-800"><option value="manual">Фактический выход</option><option value="dimensions">По размерам</option></select></label>
+                    <label>Деталей с целого листа<input v-if="p.yieldMode==='manual'" v-model.number="p.yield" type="number" min="1" step="1" class="block w-full border rounded-lg p-2 mt-1 dark:bg-slate-800"><span v-else class="block p-2 font-bold">{{ quote.rows[i].yieldCount }} шт.</span></label>
+                  </div>
+                  <svg v-if="p.yieldMode==='dimensions'" viewBox="0 0 4000 1220" role="img" :aria-label="'Раскладка: '+quote.rows[i].yieldCount+' деталей'+(p.materialId==='scratch'?', строго стоя, текстура слева направо':'')" class="w-full mt-4 max-h-40 bg-slate-200 rounded-lg"><rect width="4000" height="1220" fill="#e2e8f0"/><rect v-for="(r,index) in quote.rows[i].rects" :key="index" :x="r.y" :y="r.x" :width="r.h" :height="r.w" :fill="p.materialId==='black'?'#475569':'#d5ad50'" stroke="white" stroke-width="4"/></svg>
+                  <p class="mt-3 text-xs text-slate-500">{{ p.quantity }} / {{ quote.rows[i].yieldCount || '?' }} листа на кнопку · {{ quote.rows[i].yieldCount ? rub(quote.rows[i].cost) : 'Укажите выход' }}<span v-if="p.yieldMode==='dimensions'"> · {{ quote.rows[i].layout }}</span></p>
+                </div></div>
+                <div><h3 class="font-bold mb-3">Работы и расходники · на одну кнопку</h3><div class="grid grid-cols-2 md:grid-cols-5 gap-3"><label v-for="fee in fees" :key="fee.id" class="text-xs">{{ fee.name }}, ₽<input v-model.number="fee.price" type="number" min="0" step="0.01" class="block w-full border rounded-lg p-2 mt-1 dark:bg-slate-800"></label></div></div>
+                <label class="flex gap-2 items-start text-sm"><input v-model="recipes[calculatorType].confirmed" type="checkbox" class="mt-1">Я проверил состав, размеры и выход с листа для этой модели</label>
+                <div class="rounded-2xl bg-slate-900 text-white p-5"><div class="flex justify-between text-sm"><span>Материалы</span><span>{{ rub(quote.materialsCost) }}</span></div><div class="flex justify-between text-sm mt-2"><span>Работы и расходники</span><span>{{ rub(quote.servicesCost) }}</span></div><div class="flex justify-between items-center mt-4 pt-4 border-t border-slate-600"><span>{{ quote.valid ? 'Себестоимость 1 шт.' : 'Предварительный расчёт' }}</span><strong class="text-2xl">{{ rub(quote.total) }}</strong></div><p v-if="!quote.valid" class="text-amber-300 text-xs mt-3">{{ quote.errors.join('. ') }}. Создание заказа доступно после проверки расчёта.</p></div>
+                <p class="text-xs text-slate-500">Изменения сохраняются автоматически в этой копии. Калькуляции существующих заказов сохраняют прежние цены и нормы расхода.</p>
+              </div>
+            </section>
+          </div>
         </Transition>
+        <div v-if="pendingImport" class="fixed inset-0 z-[80] bg-slate-950/60 flex items-center justify-center p-4"><section class="bg-white dark:bg-slate-900 rounded-2xl p-6 max-w-lg space-y-4"><h2 class="text-lg font-bold">Восстановление тестовой копии</h2><p>Будет загружено {{ pendingImport.orders.length }} заказов и заменены текущие справочники и склад. Предыдущее состояние останется в страховочной копии этого браузера.</p><button @click="pendingImport=null" class="border rounded-xl p-3 mr-2">Отмена</button><button @click="confirmImport" class="bg-slate-900 text-white rounded-xl p-3">Восстановить</button></section></div>
 
         <!-- Клиенты -->
         <Transition name="modal">
@@ -1077,7 +1086,7 @@
 
         const { createApp } = Vue;
 
-        createApp({
+        const appOptions = {
             data() {
                 return {
                     isDark: false,
@@ -2006,7 +2015,230 @@
                     this.toastTimeout = setTimeout(() => { this.toastMessage = ''; }, 2500);
                 }
             }
-        }).mount('#app');
+        };
+/* Pure material accounting. Sheet prices include offcuts: cost = price / usable yield. */
+(function (root) {
+  const money = n => Math.round((n + Number.EPSILON) * 100) / 100;
+  const positive = n => Number.isFinite(n) && n > 0;
+  function layout(sheet, part, gap, edge, allowRotation = true) {
+    if (![sheet.w, sheet.h, part.w, part.h].every(n=>Number.isFinite(n)&&n>=1) || ![gap, edge].every(n => Number.isFinite(n) && n >= 0)) return { count: 0 };
+    function strips(W,H,w,h) {
+      const cols = (len,size) => Math.max(0,Math.floor((len+gap)/(size+gap)));
+      let best = {count:0, description:''};
+      for (let a=0;a<=cols(W,w);a++) {
+        const used=a ? a*(w+gap)-gap : 0;
+        const b=cols(W-used-(a?gap:0),h);
+        const count=a*cols(H,h)+b*cols(H,w);
+        if(count>best.count) {
+          const rects=[];
+          if(count<=2000)for(let col=0;col<a;col++)for(let row=0;row<cols(H,h);row++)rects.push({x:col*(w+gap),y:row*(h+gap),w,h});
+          if(count<=2000)for(let col=0;col<b;col++)for(let row=0;row<cols(H,w);row++)rects.push({x:a*(w+gap)+col*(h+gap),y:row*(w+gap),w:h,h:w});
+          best={count,rects,description:[a?`${a} полос × ${cols(H,h)}`:'',b?`${b} полос × ${cols(H,w)}`:''].filter(Boolean).join(' + ')};
+        }
+      }
+      return best;
+    }
+    const W=sheet.w-2*edge,H=sheet.h-2*edge;
+    if(W<=0||H<=0)return {count:0};
+    // Sheet is stored as 1220 × 4000; the preview displays its long edge horizontally.
+    // Upright brushed faces: part.w along the 4000 mm edge, part.h along 1220 mm.
+    if (!allowRotation) {
+      const columns=Math.max(0,Math.floor((H+gap)/(part.w+gap)));
+      const rows=Math.max(0,Math.floor((W+gap)/(part.h+gap)));
+      const count=columns*rows,rects=[];
+      if(count<=2000)for(let row=0;row<rows;row++)for(let col=0;col<columns;col++){
+        rects.push({x:edge+row*(part.h+gap),y:edge+col*(part.w+gap),w:part.h,h:part.w});
+      }
+      return {count,rects,description:`${columns} столбцов × ${rows} ряда · строго стоя, без поворота`};
+    }
+    const flip=result=>({...result,rects:(result.rects||[]).map(r=>({x:r.y,y:r.x,w:r.h,h:r.w}))});
+    const choices=[strips(W,H,part.w,part.h),strips(W,H,part.h,part.w),flip(strips(H,W,part.w,part.h)),flip(strips(H,W,part.h,part.w))];
+    for(const choice of choices)choice.rects=(choice.rects||[]).map(r=>({...r,x:r.x+edge,y:r.y+edge}));
+    return choices.sort((a,b)=>b.count-a.count)[0];
+  }
+  function quote(recipe, materials, fees) {
+    let errors=[];
+    const rows=recipe.parts.map(p=>{
+      const m=materials.find(m=>m.id===p.materialId);
+      const suggested=layout(m||{},p,recipe.gap,recipe.edge,p.materialId!=='scratch');
+      const yieldCount=p.yieldMode==='manual'?p.yield:suggested.count;
+      if(!positive(p.w)||!positive(p.h)||!Number.isFinite(recipe.gap)||recipe.gap<0||!Number.isFinite(recipe.edge)||recipe.edge<0)errors.push('Проверьте размеры, зазор и отступ');
+      if(!m || !positive(m.price)||!positive(p.quantity)||!Number.isInteger(p.quantity)||!positive(yieldCount)||!Number.isInteger(yieldCount)) errors.push('Проверьте цену, количество деталей и выход с листа');
+      if(p.materialId==='scratch'&&yieldCount>suggested.count)errors.push('Выход царапки превышает раскрой без поворота: '+suggested.count+' шт.');
+      const fraction=yieldCount>0?p.quantity/yieldCount:0;
+      return {...p,allowRotation:p.materialId!=='scratch',name:m?.name||p.materialId,sheetPrice:m?.price||0,yieldCount,suggested:suggested.count,layout:suggested.description,rects:suggested.rects||[],fraction,cost:(m?.price||0)*fraction};
+    });
+    if(!recipe.confirmed)errors.push('Подтвердите размеры и раскрой этой модели');
+    if(!rows.length) errors.push('Добавьте состав изделия');
+    if(!fees.every(f=>Number.isFinite(f.price)&&f.price>=0))errors.push('Расходы должны быть неотрицательными числами');
+    const materialsCost=money(rows.reduce((s,r)=>s+r.cost,0));
+    const servicesCost=money(fees.reduce((s,f)=>s+f.price,0));
+    return {rows,fees:fees.map(f=>({...f})),materialsCost,servicesCost,total:money(materialsCost+servicesCost),errors:[...new Set(errors)],valid:errors.length===0};
+  }
+  function balances(materials,orders) {
+    return materials.map(m=>{
+      const reserved=orders.filter(o=>!o.deletedAt&&o.materialState==='reserved').reduce((s,o)=>s+(o.materialCostSnapshot?.rows||o.costSnapshot?.rows||[]).filter(r=>r.materialId===m.id).reduce((s,r)=>s+r.fraction,0),0);
+      return {...m,reserved,available:m.onHand-reserved};
+    });
+  }
+  const api={money,layout,quote,balances};
+  if(typeof module!=='undefined')module.exports=api;
+  root.MaterialsCore=api;
+})(globalThis);
+
+const productionBaseData=appOptions.data;
+const productionClone=v=>JSON.parse(JSON.stringify(v));
+const productionCore=globalThis.MaterialsCore;
+const productionSimpleParts=(finish='silver',blackQuantity=1)=>[
+  {materialId:'scratch',quantity:1,w:270,h:330,yieldMode:'dimensions',yield:0},
+  {materialId:'black',quantity:blackQuantity,w:250,h:300,yieldMode:'dimensions',yield:0},
+  {materialId:finish==='gold'?'mirror':'mirror_silver',quantity:1,w:250,h:300,yieldMode:'dimensions',yield:0}
+];
+const productionGoldParts=[
+  {materialId:'scratch',quantity:1,w:390,h:470,yieldMode:'dimensions',yield:0},
+  {materialId:'black',quantity:2,w:380,h:450,yieldMode:'dimensions',yield:0},
+  {materialId:'mirror',quantity:1,w:380,h:380,yieldMode:'dimensions',yield:0}
+];
+const productionMaterials=()=>[
+  {id:'scratch',name:'Царапка',price:15000,w:1220,h:4000,onHand:0},
+  {id:'black',name:'Чёрный композит',price:9000,w:1220,h:4000,onHand:0},
+  {id:'mirror',name:'Зеркало · золото',price:15000,w:1220,h:4000,onHand:0},
+  {id:'mirror_silver',name:'Зеркало · серебро',price:15000,w:1220,h:4000,onHand:0}
+];
+const productionRecipes=()=>({
+  silver:{confirmed:true,gap:3,edge:5,parts:productionSimpleParts('silver',2)},
+  gold:{confirmed:true,gap:3,edge:5,parts:productionGoldParts.map(p=>({...p}))},
+  instagram:{confirmed:true,gap:3,edge:5,parts:productionSimpleParts('silver',1)},
+  football:{confirmed:true,gap:3,edge:5,parts:productionSimpleParts('silver',1)},
+  custom:{confirmed:true,gap:3,edge:5,parts:productionSimpleParts('silver',1)}
+});
+appOptions.data=function(){
+  const base=productionBaseData.call(this);
+  base.settings={...base.settings,gluePrice:50,engravingPrice:500,cuttingPrice:1500,materialCostVersion:1};
+  return {...base,materials:productionMaterials(),recipes:productionRecipes(),stockLog:[],stockMaterial:'scratch',inventoryVerified:false,showMaterialsModal:false,calculatorType:'silver',showTrash:false,attentionFilter:'all',previewFilter:'kanban'};
+};
+Object.assign(appOptions.computed,{
+  fees(){return this.materialFees();},
+  quote(){return this.quoteFor(this.calculatorType,this.calculatorFinish(this.calculatorType));},
+  newQuote(){return this.quoteFor(this.newOrder.type,this.newOrder.finish);},
+  materialBalances(){return productionCore.balances(this.materials,this.orders);},
+  materialSheetSummary(){return this.materials.map(m=>`${m.name}: ${m.onHand}`).join(' · ');},
+  materialReservationError(){return this.materialBalances.some(m=>m.available < -1e-8);},
+  totalOutstanding(){return this.orders.filter(o=>!o.deletedAt).reduce((s,o)=>s+this.outstanding(o),0);},
+  paidTotal(){return this.orders.filter(o=>!o.deletedAt).reduce((s,o)=>s+Number(o.paidAmount||((o.paymentStatus||'waiting')==='paid'?o.price:0)),0);},
+  filteredOrders(){const q=(this.searchQuery||'').trim().toLowerCase();return this.orders.filter(o=>!o.deletedAt&&(this.filterType==='all'||o.type===this.filterType)&&(!q||[o.id,o.channelName,o.clientName,o.clientContact,o.trackNumber].some(v=>String(v||'').toLowerCase().includes(q)))&&(this.attentionFilter==='all'||(this.attentionFilter==='debt'?this.outstanding(o)>0:this.isOverdue(o))));},
+  historyOrders(){const q=(this.historySearch||'').trim().toLowerCase();return [...this.orders].filter(o=>this.showTrash?!!o.deletedAt:!o.deletedAt).filter(o=>(this.historyFilterMode!=='archived'||this.isArchived(o))&&(this.historyFilterMode!=='active'||!this.isArchived(o))&&(!q||[o.id,o.channelName,o.clientName,o.trackNumber].some(v=>String(v||'').toLowerCase().includes(q)))).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));}
+});
+const legacyMounted=appOptions.mounted;
+appOptions.mounted=function(){
+  try{const raw=localStorage.getItem('pb_crm_materials_v1');if(raw){const state=JSON.parse(raw);this.materials=state.materials;this.stockLog=state.stockLog||[];this.inventoryVerified=!!state.inventoryVerified;}}catch(e){console.error('Материалы не загрузились',e);}
+  legacyMounted.call(this);
+  this.ensureCostSettingsMigrated();
+  this.normalizeOrders(this.orders);
+};
+appOptions.watch.materials={deep:true,handler(value){localStorage.setItem('pb_crm_materials_v1',JSON.stringify({materials:value,stockLog:this.stockLog,inventoryVerified:this.inventoryVerified}));this.pushCloud();}};
+appOptions.watch.stockLog={deep:true,handler(){localStorage.setItem('pb_crm_materials_v1',JSON.stringify({materials:this.materials,stockLog:this.stockLog,inventoryVerified:this.inventoryVerified}));this.pushCloud();}};
+appOptions.watch.inventoryVerified=function(){this.pushCloud();};
+const oldPushCloud=appOptions.methods.pushCloud;
+appOptions.methods.pushCloud=function(immediate){
+  if(!this.docRef||this._applyingRemote||!this._cloudReady)return oldPushCloud.call(this,immediate);
+  clearTimeout(this._pushTimer);
+  const send=()=>{
+    const payload={orders:this.orders,settings:this.settings,stockSheets:this.stockSheets,materials:this.materials,stockLog:this.stockLog,inventoryVerified:this.inventoryVerified,updatedAt:Date.now()};
+    this._lastPushedAt=payload.updatedAt;
+    this.docRef.set(JSON.parse(JSON.stringify(payload))).then(()=>{this.cloudStatus='synced';}).catch(e=>{console.error('Firestore push error:',e);this.cloudStatus='error';});
+  };
+  if(immediate)send();else this._pushTimer=setTimeout(send,800);
+};
+Object.assign(appOptions.methods,{
+  rub(value){return Number(value||0).toLocaleString('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2})+' ₽';},
+  isCompactType(type){return ['instagram','football','custom'].includes(type);},
+  hasMirrorFinish(type){return this.isCompactType(type);},
+  calculatorFinish(type=this.calculatorType){const row=this.recipes[type]?.parts.find(p=>p.materialId==='mirror'||p.materialId==='mirror_silver');return row?.materialId==='mirror'?'gold':'silver';},
+  hasFinish(type){return this.hasMirrorFinish(type);},
+  setMaterialFee(id,value){const targets={milling:'cuttingPrice',uv:'engravingPrice',glue:'gluePrice',travel:'travelPrice',marker:'markerPrice'};const k=targets[id],n=Number(value);if(k&&Number.isFinite(n)&&n>=0)this.settings[k]=n;},
+  setCalculatorFinish(finish){const row=this.recipes[this.calculatorType].parts.find(p=>p.materialId==='mirror'||p.materialId==='mirror_silver');if(row)row.materialId=finish==='gold'?'mirror':'mirror_silver';},
+  finishForType(type,finish){return this.isCompactType(type)?(finish||'silver'):(type==='gold'?'gold':'silver');},
+  recipeFor(type,finish){const recipe=productionClone(this.recipes[type]||this.recipes.silver);if(this.isCompactType(type)){const row=recipe.parts.find(p=>p.materialId==='mirror'||p.materialId==='mirror_silver');if(row)row.materialId=this.finishForType(type,finish)==='gold'?'mirror':'mirror_silver';}return recipe;},
+  quoteFor(type,finish){return productionCore.quote(this.recipeFor(type,finish),this.materials,this.materialFees());},
+  materialFees(){return [
+    {id:'milling',name:'Фрезеровка',price:Number(this.settings.cuttingPrice??1500)},
+    {id:'uv',name:'УФ-печать',price:Number(this.settings.engravingPrice??500)},
+    {id:'glue',name:'Клей',price:Number(this.settings.gluePrice??50)},
+    {id:'travel',name:'Проезд',price:Number(this.settings.travelPrice??200)},
+    {id:'marker',name:'Маркер / краска',price:Number(this.settings.markerPrice??10)}
+  ];},
+  snapshotOrder(order){const finish=this.finishForType(order.type,order.finish);const q=this.quoteFor(order.type,finish);if(!q.valid)return false;order.finish=finish;order.materialCostSnapshot=productionClone({...q,recipe:this.recipeFor(order.type,finish),capturedAt:new Date().toISOString()});order.materialState=order.materialState||'reserved';order.costAcp=q.materialsCost;order.costCutting=q.fees.find(f=>f.id==='milling')?.price||0;order.costEngraving=q.fees.find(f=>f.id==='uv')?.price||0;order.costGlue=q.fees.find(f=>f.id==='glue')?.price||0;order.costPrice=q.total;return true;},
+  migrateLegacyOrder(order){
+    if(!order.materialState){order.materialState='consumed';order.legacyMaterialAccounting=true;}
+    if(order.paidAmount===undefined)order.paidAmount=(order.paymentStatus||'waiting')==='paid'?Number(order.price||0):0;
+    if(order.finish===undefined)order.finish=this.finishForType(order.type,order.type==='gold'?'gold':'silver');
+    if(order.materialCostSnapshot===undefined)order.materialCostSnapshot=null;
+    if(!order.history)order.history=[{text:'Заказ создан',time:order.createdAt}];
+    return order;
+  },
+  normalizeOrders(orders){orders.forEach(order=>this.migrateLegacyOrder(order));},
+  ensureCostSettingsMigrated(){
+    if(Number(this.settings.materialCostVersion||0)>=1)return;
+    this.settings={...this.settings,gluePrice:50,engravingPrice:500,cuttingPrice:1500,travelPrice:200,markerPrice:10,materialCostVersion:1};
+  },
+  setOrderFinish(order,finish){if(order.materialState==='consumed'){this.showToast('Материалы уже списаны');return;}const previous=order.finish;order.finish=finish;if(!this.snapshotOrder(order)){order.finish=previous;this.showToast('Не удалось посчитать себестоимость');return;}this.logOrder(order,'Зеркало: '+(finish==='gold'?'золото':'серебро'));},
+  logOrder(order,message){if(!order.history)order.history=[];order.history.unshift({text:message,time:new Date().toISOString()});},
+  outstanding(order){return Math.max(0,productionCore.money(Number(order.price||0)-Number(order.paidAmount??((order.paymentStatus||'waiting')==='paid'?order.price:0))));},
+  setPaid(order){const n=Number(order.paidAmount);if(!Number.isFinite(n)||n<0||n>Number(order.price||0)){order.paidAmount=Math.max(0,Math.min(Number(order.price||0),n||0));this.showToast('Сумма оплаты должна быть от 0 до цены заказа');return;}order.paymentStatus=this.outstanding(order)===0?'paid':'waiting';this.logOrder(order,'Получена оплата: '+this.rub(n));},
+  isArchived(order){return ['shipped','delivered'].includes(order.status)&&this.outstanding(order)===0;},
+  isOverdue(order){return !!order.deadline&&!['shipped','delivered'].includes(order.status)&&order.deadline<new Date().toLocaleDateString('sv-SE');},
+  addMaterialStock(){const m=this.materials.find(x=>x.id===this.stockMaterial),amount=Number(this.addSheetsCount);if(!m||!Number.isFinite(amount)||amount<=0){this.showToast('Введите положительное число листов');return;}m.onHand=productionCore.money(m.onHand+amount);this.stockLog.unshift({id:crypto.randomUUID(),time:new Date().toISOString(),materialId:m.id,amount,text:'Приход материала'});this.showToast('Приход записан');},
+  confirmInventoryCount(){this.inventoryVerified=true;this.showToast('Раздельные остатки подтверждены');},
+  addStockSheets(){this.addMaterialStock();},
+  consumeMaterials(order){
+    if(order.materialState==='consumed')return true;
+    let q=order.materialCostSnapshot;
+    if(!q){if(!this.snapshotOrder(order))return false;q=order.materialCostSnapshot;}
+    const required=q.rows.map(r=>({id:r.materialId,fraction:r.fraction,name:r.name}));
+    const balances=this.materialBalances;
+    for(const row of required){const balance=balances.find(m=>m.id===row.id);if(!balance||balance.available+row.fraction+1e-8<row.fraction){this.showToast('Недостаточно материала «'+row.name+'». Добавьте приход на склад.');return false;}}
+    for(const row of required){const m=this.materials.find(item=>item.id===row.id);m.onHand=productionCore.money(m.onHand-row.fraction);this.stockLog.unshift({id:crypto.randomUUID(),time:new Date().toISOString(),materialId:m.id,amount:-row.fraction,orderId:order.id,text:'Списание в производство'});}
+    order.materialState='consumed';this.logOrder(order,'Материалы списаны в производство');return true;
+  },
+  togglePickupWaiting(order){this.updateOrderStatus(order,order.status==='pickup'?'ready':'pickup');},
+  removeFromPickup(order){if(order.status==='pickup'){this.updateOrderStatus(order,'delivered');order.pickupStorage='';this.showToast('Заказ выдан клиенту');}},
+  updateOrderStatus(order,newStatus){if(order.status===newStatus)return;if(order.materialState!=='consumed'&&newStatus!=='accepted'&&!this.consumeMaterials(order))return;const old=this.statuses.find(s=>s.id===order.status)?.title||order.status,newTitle=this.statuses.find(s=>s.id===newStatus)?.title||newStatus;order.status=newStatus;order.pickupWaiting=newStatus==='pickup';this.logOrder(order,'Статус изменён: '+old+' → '+newTitle);this.showToast(this.isArchived(order)?'Заказ оплачен, завершён и убран с доски':'Статус: '+newTitle);},
+  updatePaymentStatus(order,status){order.paymentStatus=status;if(status==='paid')order.paidAmount=Number(order.price)||0;else if(order.paidAmount===undefined)order.paidAmount=0;this.logOrder(order,'Оплата: '+(this.paymentStatuses.find(s=>s.id===status)?.title||status));},
+  onTypeChange(){this.newOrder.finish=this.finishForType(this.newOrder.type,this.newOrder.type==='gold'?'gold':'silver');this.newOrder.price=this.settings[this.newOrder.type+'Price']??this.settings.customPrice;const q=this.quoteFor(this.newOrder.type,this.newOrder.finish);this.newOrder.costPrice=q.total;},
+  openMaterials(type){this.calculatorType=type||'silver';this.showMaterialsModal=true;},
+  openCreateModal(){this.newOrder={type:'silver',finish:'silver',source:'avito',channelName:'',plaqueText:'',clientName:'',clientContact:'',price:this.settings.silverPrice,costPrice:0,paymentStatus:'waiting',deadline:'',pickupWaiting:false,pickupStorage:''};this.onTypeChange();this.showCreateModal=true;},
+  createOrder(){
+    const q=this.quoteFor(this.newOrder.type,this.newOrder.finish);if(!q.valid){this.showToast(q.errors.join('. '));this.openMaterials(this.newOrder.type);return;}
+    const order={...this.newOrder,id:crypto.randomUUID(),status:'accepted',trackNumber:'',createdAt:new Date().toISOString(),paymentStatus:this.newOrder.paymentStatus||'waiting',paidAmount:this.newOrder.paymentStatus==='paid'?Number(this.newOrder.price)||0:0,materialState:'reserved',history:[{text:'Заказ создан. Материалы зарезервированы.',time:new Date().toISOString()}]};
+    if(!this.snapshotOrder(order)){this.showToast('Проверьте калькуляцию');return;}
+    this.orders.unshift(order);this.showCreateModal=false;this.showToast('Заказ создан, материалы зарезервированы');
+  },
+  duplicateOrder(source){const copy=productionClone(source);copy.id=crypto.randomUUID();copy.status='accepted';copy.paymentStatus='waiting';copy.paidAmount=0;copy.trackNumber='';copy.deadline='';copy.createdAt=new Date().toISOString();copy.materialState='reserved';copy.history=[{text:`Копия заказа ${source.id}`,time:new Date().toISOString()}];delete copy.deletedAt;if(!this.snapshotOrder(copy))return;this.orders.unshift(copy);this.selectOrder(copy);this.showToast('Копия создана, материалы зарезервированы');},
+  deleteOrder(id){const o=this.orders.find(order=>String(order.id)===String(id));if(!o)return;if(o.materialState==='consumed'){o.deletedAt=new Date().toISOString();this.logOrder(o,'Заказ перемещён в корзину; материалы не возвращены');}else this.orders=this.orders.filter(order=>String(order.id)!==String(id));this.closeOrderModal();this.showToast(o.materialState==='consumed'?'Заказ помещён в корзину':'Заказ удалён, резерв освобождён');},
+  importBackup(event){const file=event.target.files?.[0];event.target.value='';if(!file)return;file.text().then(text=>{try{const data=JSON.parse(text);if(!Array.isArray(data.orders))throw Error('В файле нет списка заказов');const ids=new Set();const orders=data.orders.map(raw=>{const o={...raw,id:String(raw.id??crypto.randomUUID())};if(ids.has(o.id))throw Error('В резервной копии повторяются номера заказов');ids.add(o.id);return this.migrateLegacyOrder(o);});if(!data.settings||typeof data.settings!=='object')throw Error('Не найден раздел настроек');this.settings={...this.settings,...data.settings};this.ensureCostSettingsMigrated();this.orders=orders;if(Array.isArray(data.materials)&&data.materials.length===4){this.materials=data.materials;this.inventoryVerified=!!data.inventoryVerified;this.stockLog=Array.isArray(data.stockLog)?data.stockLog:[];}else{this.inventoryVerified=false;if(typeof data.stockSheets==='number')this.legacyImportedStockSheets=data.stockSheets;}this.showToast(`${orders.length} заказов восстановлено. Старую себестоимость сохранена; проверьте фактические остатки материалов.`);}catch(e){this.showToast('Не удалось восстановить копию: '+e.message);}});},
+  exportBackup(){const payload={schema:4,orders:this.orders,settings:this.settings,materials:this.materials,stockLog:this.stockLog,inventoryVerified:this.inventoryVerified,stockSheetsLegacy:this.stockSheets,exportedAt:new Date().toISOString()};const link=document.createElement('a');link.href=URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}));link.download=`mira-papa-backup-${new Date().toISOString().slice(0,10)}.json`;link.click();setTimeout(()=>URL.revokeObjectURL(link.href),1000);this.showToast('Резервная копия скачана');},
+  changeOrderType(order){if(order.materialState==='consumed'){this.showToast('Уже списанный материал не меняется: создайте отдельный заказ');order.type=order._previousType||order.type;return;}const old=order._previousType||order.type;order._previousType=order.type;order.finish=this.finishForType(order.type,order.finish);order.price=this.settings[order.type+'Price']??this.settings.customPrice;if(!this.snapshotOrder(order)){order.type=old;this.showToast('Проверьте калькуляцию новой модели');return;}this.logOrder(order,'Тип заказа изменён; резерв пересчитан');},
+  recalculateSnapshot(order){if(order.materialState==='consumed'){this.showToast('Расход готового производства сохранён');return;}this.snapshotOrder(order);this.logOrder(order,'Себестоимость пересчитана по текущим тарифам');},
+  updateAllOrdersCost(){},
+  saveSettings(){this.showSettingsModal=false;this.showToast('Тарифы сохранены. Себестоимость существующих заказов сохранена.');}
+});
+appOptions.methods.startFirestoreListener=function(){
+  this.docRef.onSnapshot(snap=>{
+    if(!snap.exists){if(!this._cloudSeeded){this._cloudSeeded=true;this._cloudReady=true;this.pushCloud(true);}return;}
+    const data=snap.data();if(data.updatedAt&&data.updatedAt===this._lastPushedAt){this.cloudStatus='synced';this._cloudReady=true;return;}
+    this._applyingRemote=true;
+    if(Array.isArray(data.orders))this.orders=data.orders;
+    this.ensureIlingShowRestored();
+    this.normalizeOrders(this.orders);
+    if(data.settings){this.settings={...this.settings,...data.settings};this.ensureCostSettingsMigrated();}
+    if(Array.isArray(data.materials)){this.materials=data.materials;this.inventoryVerified=!!data.inventoryVerified;if(Array.isArray(data.stockLog))this.stockLog=data.stockLog;}
+    else if(this.materials.every(m=>m.onHand===0))this.inventoryVerified=false;
+    this.cloudStatus='synced';this._cloudReady=true;this.$nextTick(()=>{this._applyingRemote=false;this.pushCloud();});
+  },err=>{console.error('Firestore sync error:',err);this.cloudStatus='error';});
+};
+
+        createApp(appOptions).mount('#app');
     </script>
 </body>
 </html>
