@@ -11,7 +11,7 @@ button,input,select,textarea{font:inherit}
 .tb button,.tabs button,.bt{border:1px solid var(--deep);background:#fff;color:var(--deep);border-radius:4px;padding:8px 12px;cursor:pointer;font:12.5px Arial,sans-serif}
 .tb button.pr{background:var(--deep);color:#fff}.tb button:hover,.bt:hover{background:#E8E4D8}.tb button.pr:hover{background:var(--blue)}
 .tb label{background:#fff;border:1px solid var(--line);border-radius:4px;padding:8px 10px;color:var(--soft)}
-#note{color:var(--soft);font-size:11px;margin-right:auto}
+tr.cs td{opacity:.6}.c-c{width:7%}.tb select{padding:8px;border:1px solid var(--deep);border-radius:4px;max-width:210px;background:#fff}#note{color:var(--soft);font-size:11px;margin-right:auto}
 .tabs{display:flex;gap:4px}.tabs button{flex:1;padding:12px;font-size:14px;font-weight:700;border-radius:4px 4px 0 0;background:#E3DED0;border-bottom:none}
 .tabs button.on{background:var(--card);border-top:3px solid var(--tape)}
 .sheet{background:var(--card);border:1px solid var(--line)}.inner{padding:34px 36px}
@@ -67,7 +67,7 @@ body.cm .edit{cursor:default}
 <span id="note"></span>
 <label><input type="checkbox" id="cmt"> Режим клиента</label>
 <button data-a="print" data-m="w">🖨 Смета</button><button data-a="print" data-m="m">🖨 Материалы</button><button data-a="print" data-m="all">🖨 Всё</button><button data-a="exp">💾 Экспорт</button><button data-a="imp">📂 Импорт</button>
-<button data-a="reset">🗑 Новая смета</button><button class="pr" data-a="xls" data-m="w">⬇ Excel: смета</button><button class="pr" data-a="xls" data-m="m">⬇ Excel: материалы</button><button class="pr" data-a="xls" data-m="all">⬇ Excel: всё</button>
+<select id="sel"></select><button data-a="reset">➕ Новая</button><button data-a="dup">⧉ Копия</button><button data-a="del">🗑</button><button data-a="price">💲 Мой прайс</button><button class="pr" data-a="xls" data-m="w">⬇ Excel: смета</button><button class="pr" data-a="xls" data-m="m">⬇ Excel: материалы</button><button class="pr" data-a="xls" data-m="all">⬇ Excel: всё</button>
 <input type="file" id="fi" accept="application/json" hidden></div>
 <div class="tabs"><button class="on" data-a="tab" data-t="w">Смета работ</button><button data-a="tab" data-t="m">Материалы</button></div>
 <div class="sheet"><div class="inner">
@@ -84,6 +84,7 @@ body.cm .edit{cursor:default}
 <div class="fin">
 <div class="fr"><label><input type="checkbox" data-p="d.on"> Скидка</label><input class="n" type="number" data-p="d.v"><select data-p="d.t"><option>%</option><option>₽</option></select><b id="dr"></b></div>
 <div class="fr"><label><input type="checkbox" data-p="p.on"> Предоплата</label><input class="n" type="number" data-p="p.v"><select data-p="p.t"><option>%</option><option>₽</option></select><b id="pr"></b></div></div>
+<div class="h">График оплаты и сроков</div><div id="sched"></div>
 <div style="margin-top:12px"><label class="ed"><input type="checkbox" data-p="rq.on"> Показать реквизиты для оплаты</label>
 <textarea class="edit" id="rqt" data-p="rq.t"></textarea></div>
 <div class="h">Условия оплаты</div><div id="pay"></div><button class="lnk ed" data-a="addl" data-k="pay">+ условие</button>
@@ -93,7 +94,7 @@ body.cm .edit{cursor:default}
 </div>
 <div id="pm" style="display:none">
 <div class="h" style="margin-top:0">Материалы</div>
-<p class="hint">Основные материалы уже внесены. Укажите количество и цену — суммы считаются сами. В Excel и печать попадают только материалы с указанным количеством. Кнопка «Прикинуть» заполнит пустые количества по площади квартиры (ориентировочные нормы, проверьте по проекту).</p>
+<p class="hint">Галка «Заказчик» — материал покупает клиент: он остаётся в списке закупок, но не входит в сумму. Цены запоминаются в «Мой прайс» по названию позиции и подставляются в новые сметы. Основные материалы уже внесены. Укажите количество и цену — суммы считаются сами. В Excel и печать попадают только материалы с указанным количеством. Кнопка «Прикинуть» заполнит пустые количества по площади квартиры (ориентировочные нормы, проверьте по проекту).</p>
 <div class="ctl"><input type="search" id="q" placeholder="Поиск материала…"><button class="bt" data-a="est">📐 Прикинуть по площади</button>
 <label><input type="checkbox" data-p="mi"> Включить материалы в итог и в печать</label></div>
 <div id="mats"></div>
@@ -207,21 +208,31 @@ st:[mkS(1,0),mkS(2,500000,'Демонтаж оконного блока на л�
 v:2,m:mkM(),mi:false,d:{on:false,v:'',t:'%'},p:{on:false,v:'',t:'%'},rq:{on:false,t:'Получатель: MIRA & PAPA\nКарта / счёт: —\nНазначение платежа: оплата по смете'},
 pay:['Оплата производится по завершении и приёмке каждого этапа — без предоплаты за будущие этапы','Стоимость демонтажа оконного блока на лоджии обсуждается индивидуально после осмотра объекта','Итоговая сумма проекта указана без учёта демонтажа лоджии'],
 exc:['Вынос мусора','Подъём материалов','Установка межкомнатных дверей','Натяжные потолки','Монтаж светильников','Сборка мебели']});
-let S;try{S=JSON.parse(localStorage.getItem(KEY))}catch(_){}S=S||init();
-if(S.v!==2){const ren={'Штукатурка гипсовая, мешок 30 кг':'Ротбанд (гипсовая штукатурка), мешок 30 кг','Маяки штукатурные':'Маяк штукатурный 10 мм, 3 м'};
+function newS(cl,a){const d=init(),A=a?' · '+a+' м²':'';Object.assign(d.meta,{cl,ph:'',obj:'',area:a,sub:'Комплексный ремонт «под ключ»'+A,
+intro:(cl?'Уважаемый(ая) '+cl+'!':'Здравствуйте!')+' Перед вами подробная смета на комплексный ремонт вашей квартиры'+(a?' площадью '+a+' м²':'')+'. Работы разбиты на логичные этапы — от инженерной подготовки до финишной отделки — с прозрачной стоимостью и оплатой строго по факту приёмки каждого этапа.'});
+d.st=[mkS(1,0),mkS(2,0),mkS(4,0),mkS(5,0)];d.pay=[d.pay[0]];return d}
+let DB;try{DB=JSON.parse(localStorage.getItem('smeta_db'))}catch(_){}
+if(!DB){let o;try{o=JSON.parse(localStorage.getItem(KEY))}catch(_){}DB={cur:1,e:{1:o||init()}}}
+DB.price=DB.price||{};let S=DB.e[DB.cur];
+const nm=x=>(x.meta.cl||'Без имени')+(x.meta.area?', '+x.meta.area+' м²':'');
+const nid=()=>Math.max(0,...Object.keys(DB.e))+1;
+function usePrice(X){const P=DB.price,fx=i=>{if(!num(i.p)&&P[i.n]!==undefined)i.p=P[i.n]};X.st.forEach(s=>s.items.forEach(fx));X.m.forEach(c=>c.items.forEach(fx))}
+function labels(){$('#sel').innerHTML=Object.keys(DB.e).map(id=>`<option value="${id}"${id==DB.cur?' selected':''}>${e(nm(DB.e[id]))}</option>`).join('')}
+function mig(){if(S.v!==2){const ren={'Штукатурка гипсовая, мешок 30 кг':'Ротбанд (гипсовая штукатурка), мешок 30 кг','Маяки штукатурные':'Маяк штукатурный 10 мм, 3 м'};
 S.m.forEach(c=>c.items=c.items.filter(i=>!(i.n=='Доставка и подъём материалов'&&!num(i.q))||0).map(i=>(ren[i.n]&&(i.n=ren[i.n]),i)));
-mkM().forEach((d,di)=>{let c=S.m.find(x=>x.c==d.c);if(!c){S.m.splice(di,0,d);return}d.items.forEach(i=>{if(!c.items.some(x=>x.n==i.n))c.items.push(i)})});S.v=2}
-const sum=a=>a.reduce((s,i)=>s+num(i.q)*num(i.p),0),stT=s=>sum(s.items)||num(s.man);
+mkM().forEach((d,di)=>{let c=S.m.find(x=>x.c==d.c);if(!c){S.m.splice(di,0,d);return}d.items.forEach(i=>{if(!c.items.some(x=>x.n==i.n))c.items.push(i)})});S.v=2}}mig();
+const sum=a=>a.reduce((s,i)=>s+(i.cs?0:num(i.q)*num(i.p)),0),stT=s=>sum(s.items)||num(s.man);
 function fin(im=S.mi){const st=S.st.reduce((s,x)=>s+stT(x),0),mt=S.m.reduce((s,c)=>s+sum(c.items),0),tot=st+(im?mt:0);
 const d=S.d.on?Math.min(tot,Math.round(S.d.t=='%'?tot*num(S.d.v)/100:num(S.d.v))):0,a=tot-d,p=S.p.on?Math.min(a,Math.round(S.p.t=='%'?a*num(S.p.v)/100:num(S.p.v))):0;return{st,mt,tot,d,a,p,r:a-p}}
-let tm;function save(){try{localStorage.setItem(KEY,JSON.stringify(S));$('#note').textContent='Сохранено ✓';clearTimeout(tm);tm=setTimeout(()=>$('#note').textContent='',1500)}catch(_){$('#note').textContent='Автосохранение недоступно — используйте «Экспорт»'}}
-const row=(it,i,k,pre)=>`<tr data-i="${i}"><td class="c-n"><input class="edit" data-p="${pre}.n" value="${e(it.n)}"></td><td class="c-u"><input class="edit" data-p="${pre}.u" placeholder="ед." value="${e(it.u)}"></td><td class="c-q"><input class="edit" type="number" step="any" data-p="${pre}.q" placeholder="0" value="${e(it.q)}"></td><td class="c-p"><input class="edit" type="number" step="any" data-p="${pre}.p" placeholder="0" value="${e(it.p)}"></td><td class="c-s isum"></td>${k?`<td class="c-t"><input class="edit" data-p="${pre}.t" value="${e(it.t)}"></td>`:''}<td class="c-x ed"><button class="x" data-a="${k?'delit':'delm'}" data-i="${i}">✕</button></td></tr>`;
-function render(){
+let tm;function save(){try{DB.e[DB.cur]=S;localStorage.setItem('smeta_db',JSON.stringify(DB));labels();$('#note').textContent='Сохранено ✓';clearTimeout(tm);tm=setTimeout(()=>$('#note').textContent='',1500)}catch(_){$('#note').textContent='Автосохранение недоступно — используйте «Экспорт»'}}
+const row=(it,i,k,pre)=>`<tr data-i="${i}"><td class="c-n"><input class="edit" data-p="${pre}.n" value="${e(it.n)}"></td><td class="c-u"><input class="edit" data-p="${pre}.u" placeholder="ед." value="${e(it.u)}"></td><td class="c-q"><input class="edit" type="number" step="any" data-p="${pre}.q" placeholder="0" value="${e(it.q)}"></td><td class="c-p"><input class="edit" type="number" step="any" data-p="${pre}.p" placeholder="0" value="${e(it.p)}"></td><td class="c-s isum"></td>${k?`<td class="c-t"><input class="edit" data-p="${pre}.t" value="${e(it.t)}"></td>`:`<td class="c-c" style="text-align:center;padding-top:9px"><input type="checkbox" data-p="${pre}.cs" title="Закупает заказчик"></td>`}<td class="c-x ed"><button class="x" data-a="${k?'delit':'delm'}" data-i="${i}">✕</button></td></tr>`;
+function render(){labels();
+$('#sched').innerHTML=`<div class="tw"><table style="min-width:420px"><thead><tr><th>Этап</th><th>Срок, дней</th><th style="text-align:right">Оплата после приёмки</th></tr></thead><tbody>${S.st.map((s,i)=>`<tr><td>${i+1}. ${e(s.t)}</td><td style="width:110px"><input class="edit" type="number" placeholder="0" data-p="st.${i}.dd" value="${e(s.dd||'')}"></td><td class="c-s pa" data-k="${i}"></td></tr>`).join('')}</tbody></table></div><div class="hint" id="sd" style="margin-top:8px"></div>`;
 $('#stages').innerHTML=S.st.map((s,i)=>`<div class="stage" data-s="${i}"><div class="sh"><div class="sn">${i+1}</div><div class="fx"><input class="edit st" data-p="st.${i}.t" value="${e(s.t)}"><textarea class="edit ss" rows="1" data-p="st.${i}.s">${e(s.s)}</textarea></div><span class="ed mv"><button data-a="up" data-i="${i}">↑</button><button data-a="dn" data-i="${i}">↓</button><button data-a="delst" data-i="${i}">✕</button></span></div>
 <div class="tw"><table><thead><tr><th>Наименование работ</th><th>Ед.</th><th>Кол-во</th><th>Цена, ₽</th><th style="text-align:right">Сумма</th><th>Примечание</th><th class="ed"></th></tr></thead><tbody>${s.items.map((it,j)=>row(it,j,1,`st.${i}.items.${j}`)).join('')}</tbody></table></div>
 <div class="sf"><button class="lnk ed" data-a="additem" data-i="${i}">+ работа</button><span>Итого за этап <input class="edit man" type="number" placeholder="0" data-p="st.${i}.man"> <span class="stot"></span></span></div></div>`).join('');
 $('#mats').innerHTML=S.m.map((c,i)=>`<div class="stage" data-c="${i}"><div class="sh"><div class="fx"><input class="edit st" data-p="m.${i}.c" value="${e(c.c)}"></div><span class="ed mv"><button data-a="delcat" data-i="${i}">✕</button></span></div>
-<div class="tw"><table><thead><tr><th>Материал</th><th>Ед.</th><th>Кол-во</th><th>Цена, ₽</th><th style="text-align:right">Сумма</th><th class="ed"></th></tr></thead><tbody>${c.items.map((it,j)=>row(it,j,0,`m.${i}.items.${j}`)).join('')}</tbody></table></div>
+<div class="tw"><table><thead><tr><th>Материал</th><th>Ед.</th><th>Кол-во</th><th>Цена, ₽</th><th style="text-align:right">Сумма</th><th title="Закупает заказчик">Заказчик</th><th class="ed"></th></tr></thead><tbody>${c.items.map((it,j)=>row(it,j,0,`m.${i}.items.${j}`)).join('')}</tbody></table></div>
 <div class="sf"><button class="lnk ed" data-a="addmat" data-i="${i}">+ материал</button><span>Итого <span class="ctot"></span></span></div></div>`).join('');
 ['pay','exc'].forEach(k=>$('#'+k).innerHTML=S[k].map((t,i)=>`<div class="ln"><span>◆</span><input class="edit" data-p="${k}.${i}" value="${e(t)}"><button class="x ed" data-a="dl" data-k="${k}" data-i="${i}">✕</button></div>`).join(''));
 fill();cm();recalc();filt()}
@@ -231,17 +242,26 @@ function cm(){const on=$('#cmt').checked;document.body.classList.toggle('cm',on)
 function recalc(){
 $$('.stage[data-s]').forEach(el=>{const s=S.st[+el.dataset.s];let u=0;el.querySelectorAll('tr[data-i]').forEach(r=>{const it=s.items[+r.dataset.i],v=num(it.q)*num(it.p);u+=v;r.querySelector('.isum').textContent=v?f(v):''});
 const t=u||num(s.man);el.querySelector('.stot').textContent=f(t)+' ₽';el.querySelector('.man').style.display=u?'none':'';el.classList.toggle('zero',!t)});
-$$('.stage[data-c]').forEach(el=>{const c=S.m[+el.dataset.c];let u=0;el.querySelectorAll('tr[data-i]').forEach(r=>{const it=c.items[+r.dataset.i],v=num(it.q)*num(it.p);u+=v;r.querySelector('.isum').textContent=v?f(v):''});el.querySelector('.ctot').textContent=f(u)+' ₽'});
+$$('.stage[data-c]').forEach(el=>{const c=S.m[+el.dataset.c];let u=0;el.querySelectorAll('tr[data-i]').forEach(r=>{const it=c.items[+r.dataset.i],v=it.cs?0:num(it.q)*num(it.p);u+=v;r.classList.toggle('cs',!!it.cs);r.querySelector('.isum').textContent=it.cs?(num(it.q)?'заказчик':''):(v?f(v):'')});el.querySelector('.ctot').textContent=f(u)+' ₽'});
 const F=fin(),ar=num(S.meta.area);
 $('#gt').textContent=f(F.a)+' ₽';$('#go').textContent=F.d?'Без скидки: '+f(F.tot)+' ₽':'';$('#mtot').textContent=f(F.mt)+' ₽';
 $('#pm2').textContent=ar>0?`Площадь ${ar} м² × ${f(F.tot/ar)} руб./м²`:'';
 $('#dr').textContent=F.d?'−'+f(F.d)+' ₽':'';$('#pr').textContent=F.p?`сейчас: ${f(F.p)} ₽ · остаток: ${f(F.r)} ₽`:'';
 $('#bw').textContent=f(F.st)+' ₽';$('#bm').textContent=f(F.mt)+' ₽'+(S.mi?'':' (не в итоге)');$('#bt').textContent=f(F.a)+' ₽';
+const rt=F.tot?F.r/F.tot:0,dd=S.st.reduce((a,x)=>a+num(x.dd),0);$$('.pa').forEach(c=>c.textContent=f(stT(S.st[+c.dataset.k])*rt)+' ₽');
+$('#sd').textContent=(F.p?'Предоплата при старте: '+f(F.p)+' ₽. ':'')+(dd?'Общий срок: '+dd+' дн. (≈ '+Math.ceil(dd/7)+' нед.)':'');
 $('#rqt').style.display=S.rq.on?'block':'none';document.body.classList.toggle('nomat',!S.mi)}
+function autoq(){const a=num(S.meta.area);if(a)S.m.forEach(c=>c.items.forEach(i=>{if(i.k&&i.auto)i.q=Math.ceil(a*num(i.k))}))}
 function pf(on){$$('#mats tr[data-i]').forEach(r=>{const it=S.m[+r.closest('.stage').dataset.c].items[+r.dataset.i];r.classList.toggle('pe',!!on&&!(num(it.q)>0))});$$('#mats .stage').forEach(el=>el.classList.toggle('pe',!!on&&!el.querySelector('tr[data-i]:not(.pe)')))}
 function filt(){const q=$('#q').value.toLowerCase();$$('#mats tr[data-i]').forEach(r=>{const n=r.querySelector('.c-n input').value.toLowerCase();r.style.display=n.includes(q)?'':'none'})}
 $('#q').addEventListener('input',filt);
-['input','change'].forEach(ev=>document.addEventListener(ev,x=>{const t=x.target;if(t.id=='cmt')return cm();if(!t.dataset.p)return;const k=t.dataset.p.split('.');let o=S;k.slice(0,-1).forEach(a=>o=o[a]);o[k.pop()]=t.type=='checkbox'?t.checked:t.value;recalc();save()}));
+['input','change'].forEach(ev=>document.addEventListener(ev,x=>{const t=x.target,P=t.dataset.p;if(t.id=='cmt')return cm();if(!P)return;const k=P.split('.'),old=get(P);let o=S;k.slice(0,-1).forEach(a=>o=o[a]);o[k.at(-1)]=t.type=='checkbox'?t.checked:t.value;
+const M=S.meta,R=/\d+([.,]\d+)? м²/;
+if(P=='meta.area'&&num(M.area)){const A=num(M.area)+' м²';M.sub=M.sub.replace(R,A);M.intro=M.intro.replace(R,A);autoq();render()}
+else if(P=='meta.cl'&&old&&M.intro.includes(old))M.intro=M.intro.split(old).join(t.value);
+else if(/^m\.\d+\.items\.\d+\.q$/.test(P))delete get(P.replace(/\.q$/,'')).auto;
+if(/items\.\d+\.p$/.test(P)){const it=get(P.replace(/\.p$/,''));t.value?DB.price[it.n]=t.value:delete DB.price[it.n]}
+if(P=='meta.cl'||P=='meta.area')fill();recalc();save()}));
 const mv=(a,i,j)=>{[a[i],a[j]]=[a[j],a[i]]};
 const act={
 print(i,b){const m=b.dataset.m,mi=S.mi;if(m=='w'){S.mi=false;recalc()}if(m!='all')document.body.classList.add('po-'+m);pf(1);window.print();pf(0);document.body.classList.remove('po-w','po-m');S.mi=mi;recalc();return 0},tab(b){$('#pw').style.display=b.dataset.t=='w'?'':'none';$('#pm').style.display=b.dataset.t=='m'?'':'none';$$('.tabs button').forEach(x=>x.classList.toggle('on',x==b))},
@@ -255,24 +275,28 @@ addmat:i=>(S.m[i].items.push({n:'Новый материал',u:'шт.',q:'',p:'
 delm(i,b){S.m[+b.closest('.stage').dataset.c].items.splice(i,1);return 1},
 addcat:()=>(S.m.push({c:'Новая категория',items:[{n:'Новый материал',u:'шт.',q:'',p:''}]}),1),
 delcat:i=>confirm('Удалить категорию «'+S.m[i].c+'» со всеми материалами?')&&(S.m.splice(i,1),1),
-est(){const a=num(S.meta.area);if(!a)return alert('Укажите площадь во вкладке «Смета работ».'),0;let n=0;S.m.forEach(c=>c.items.forEach(i=>{if(i.k&&!num(i.q)){i.q=Math.ceil(a*num(i.k));n++}}));$('#note').textContent='Заполнено позиций: '+n;return 1},
+est(){const a=num(S.meta.area);if(!a)return alert('Укажите площадь во вкладке «Смета работ».'),0;let n=0;S.m.forEach(c=>c.items.forEach(i=>{if(i.k&&(!num(i.q)||i.auto)){i.q=Math.ceil(a*num(i.k));i.auto=1;n++}}));$('#note').textContent='Заполнено позиций: '+n;return 1},
 addl(k){S[k].push('Новый пункт');return 1},dl:(i,b)=>(S[b.dataset.k].splice(i,1),1),
-reset:()=>confirm('Начать новую смету? Текущая будет удалена — сначала сделайте «Экспорт».')&&(S=init(),1),
+reset(){const cl=(prompt('Имя заказчика:','')||'').trim(),a=num(prompt('Площадь квартиры, м²:','')||'')||'';S=newS(cl,a);usePrice(S);DB.cur=nid();DB.e[DB.cur]=S;autoq();return 1},
+dup(){S=JSON.parse(JSON.stringify(S));S.meta.cl=(S.meta.cl||'')+' (копия)';DB.cur=nid();DB.e[DB.cur]=S;return 1},
+del(){if(Object.keys(DB.e).length<2){alert('Это единственная смета. Создайте новую (➕), потом удалите эту.');return 0}if(!confirm('Удалить смету «'+nm(S)+'»?'))return 0;delete DB.e[DB.cur];DB.cur=+Object.keys(DB.e)[0];S=DB.e[DB.cur];return 1},
+price(){usePrice(S);$('#note').textContent='Цены подставлены из прайса';return 1},
 exp(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,1)],{type:'application/json'}));a.download='Смета_'+(S.meta.cl||'черновик').replace(/[\\/:*?"<>|]/g,'')+'.json';a.click();return 0},
 imp:()=>($('#fi').click(),0),xls:(i,b)=>(xls(b.dataset.m),0)};
 document.addEventListener('click',ev=>{const b=ev.target.closest('[data-a]');if(!b)return;const fn=act[b.dataset.a];if(!fn)return;const i=b.dataset.i===undefined?undefined:+b.dataset.i;if(fn.call(act,b.dataset.a=='tab'?b:i,b)){render();save()}});
 $('#cmt').addEventListener('change',cm);
-$('#fi').addEventListener('change',ev=>{const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.st||!d.meta)throw 0;S=d;render();save()}catch(_){alert('Не удалось прочитать файл. Нужен .json, экспортированный из этого редактора.')}ev.target.value=''};r.readAsText(ev.target.files[0])});
+$('#sel').addEventListener('change',()=>{DB.cur=+$('#sel').value;S=DB.e[DB.cur];mig();render();save()});
+$('#fi').addEventListener('change',ev=>{const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.st||!d.meta)throw 0;S=d;DB.cur=nid();DB.e[DB.cur]=S;mig();render();save()}catch(_){alert('Не удалось прочитать файл. Нужен .json, экспортированный из этого редактора.')}ev.target.value=''};r.readAsText(ev.target.files[0])});
 TPL.forEach((t,i)=>{const[n,,it]=t.split('|'),b=document.createElement('button');b.className='t';b.innerHTML=`${e(n)}<br><small>${it.split(';').length} работ</small>`;b.onclick=()=>{const x=mkS(i,0);S.st.push(x);$('#md').classList.remove('open');render();save()};$('#tl').appendChild(b)});
 $('#md').addEventListener('click',x=>{if(x.target.id=='md')act.close()});
 $('#ds').textContent=new Date().toLocaleDateString('ru-RU');
 function xls(mode){const im=mode=='all'?S.mi:false,F=fin(im),M=S.meta,mq=S.m.map(c=>({c:c.c,items:c.items.filter(i=>num(i.q)>0)})).filter(c=>c.items.length),L=a=>a.map(t=>`<tr><td colspan="6" class="n">◆ ${e(t)}</td></tr>`).join('');
-const T=(h,items,tot,k)=>`<tr><td colspan="6" class="h">${e(h)}</td></tr><tr><th width="40%">Наименование</th><th width="7%">Ед.</th><th width="9%">Кол-во</th><th width="13%">Цена, ₽</th><th width="14%">Сумма, ₽</th><th width="17%">Примечание</th></tr>${items.map(i=>`<tr><td>${e(i.n)}</td><td>${e(i.u)}</td><td>${e(i.q)}</td><td>${i.p?f(i.p):''}</td><td>${num(i.q)*num(i.p)?f(num(i.q)*num(i.p)):''}</td><td>${e(i.t||'')}</td></tr>`).join('')}<tr><td colspan="4"><b>${k}</b></td><td colspan="2"><b>${f(tot)} ₽</b></td></tr><tr><td colspan="6" class="n">&nbsp;</td></tr>`;
+const T=(h,items,tot,k)=>`<tr><td colspan="6" class="h">${e(h)}</td></tr><tr><th width="40%">Наименование</th><th width="7%">Ед.</th><th width="9%">Кол-во</th><th width="13%">Цена, ₽</th><th width="14%">Сумма, ₽</th><th width="17%">Примечание</th></tr>${items.map(i=>`<tr><td>${e(i.n)}</td><td>${e(i.u)}</td><td>${e(i.q)}</td><td>${i.p?f(i.p):''}</td><td>${!i.cs&&num(i.q)*num(i.p)?f(num(i.q)*num(i.p)):''}</td><td>${i.cs?'Закупает заказчик':e(i.t||'')}</td></tr>`).join('')}<tr><td colspan="4"><b>${k}</b></td><td colspan="2"><b>${f(tot)} ₽</b></td></tr><tr><td colspan="6" class="n">&nbsp;</td></tr>`;
 const h=`<html xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8"><style>td,th{border:1px solid #999;padding:5px;font:12pt Arial;vertical-align:top;text-align:left}th{background:#EFEBE2}.h{background:#1B3444;color:#fff;font-weight:bold;font-size:14pt}.n{border:none}table{border-collapse:collapse;table-layout:fixed;width:100%}</style></head><body><table>
 <tr><td colspan="6" class="n"><b style="font-size:18pt">${mode=='m'?'СПИСОК МАТЕРИАЛОВ':e(M.title)}</b></td></tr>${mode=='m'?'':`<tr><td colspan="6" class="n"><i>${e(M.sub)}</i></td></tr>`}
 <tr><td colspan="6" class="n">Объект: ${e(M.obj)}<br>Заказчик: ${e(M.cl)}, ${e(M.ph)}</td></tr>${mode=='m'?'':`<tr><td colspan="6" class="n">${e(M.intro)}</td></tr>`}<tr><td colspan="6" class="n">&nbsp;</td></tr>
 ${mode=='m'?'':S.st.map((s,i)=>T(`ЭТАП ${i+1} · ${s.t} — ${s.s}`,s.items,stT(s),'ИТОГО ЗА ЭТАП '+(i+1))).join('')}
-${mode=='m'||(mode=='all'&&S.mi)?mq.map(c=>T('Материалы · '+c.c,c.items,sum(c.items),'ИТОГО')).join(''):''}
+${mode=='m'?'':`<tr><td colspan="6" class="h">График оплаты и сроков</td></tr>`+S.st.map((s,i)=>`<tr><td colspan="3">${i+1}. ${e(s.t)}</td><td>${s.dd?e(s.dd)+' дн.':''}</td><td colspan="2">${f(stT(s)*(F.tot?F.r/F.tot:0))} ₽</td></tr>`).join('')+'<tr><td colspan="6" class="n">&nbsp;</td></tr>'}${mode=='m'||(mode=='all'&&S.mi)?mq.map(c=>T('Материалы · '+c.c,c.items,sum(c.items),'ИТОГО')).join(''):''}
 ${mode=='m'?`<tr><td colspan="4" class="h">ИТОГО МАТЕРИАЛЫ</td><td colspan="2" class="h">${f(F.mt)} ₽</td></tr>`:`<tr><td colspan="4" class="h">${F.d?'ИТОГО СО СКИДКОЙ':'ВСЕГО ЗА ПРОЕКТ'}</td><td colspan="2" class="h">${f(F.a)} ₽</td></tr>
 ${F.d?`<tr><td colspan="6" class="n">Без скидки: ${f(F.tot)} ₽ · скидка: −${f(F.d)} ₽</td></tr>`:''}${F.p?`<tr><td colspan="6" class="n">Предоплата: ${f(F.p)} ₽ · остаток: ${f(F.r)} ₽</td></tr>`:''}
 <tr><td colspan="6" class="n"><b>Условия оплаты</b></td></tr>${L(S.pay)}<tr><td colspan="6" class="n"><b>Гарантия</b><br>${e(M.gar)}</td></tr>
