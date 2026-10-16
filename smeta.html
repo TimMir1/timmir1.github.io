@@ -60,7 +60,7 @@ td .edit,.sf .man{border:1px solid #CFC8B4;background:#FBFAF6;padding:6px 7px;bo
 .mb button.t:hover{border-color:var(--blue)}.mb small{color:var(--soft)}
 body.cm .ed,body.cm .add,body.cm .ctl,body.cm .lnk,body.cm .stage.zero .sf::before{display:none!important}
 body.cm .edit{cursor:default}
-@media print{.tb,.tabs,.bar,.ed,.add,.ctl,.lnk,.modal,.mv{display:none!important}body{background:#fff;padding:0}.sheet{border:none}
+@media print{.pe{display:none!important}.tb,.tabs,.bar,.ed,.add,.ctl,.lnk,.modal,.mv{display:none!important}body{background:#fff;padding:0}.sheet{border:none}
 #pw,#pm{display:block!important}body.nomat #pm{display:none!important}body.po-w #pm{display:none!important}body.po-m #pw{display:none!important}body.po-m #pm{display:block!important}.stage{break-inside:avoid;border-color:#999}.stage.zero .sf::before{display:none}.edit{border:none!important;background:none!important}}
 </style></head><body>
 <div class="tb">
@@ -93,7 +93,7 @@ body.cm .edit{cursor:default}
 </div>
 <div id="pm" style="display:none">
 <div class="h" style="margin-top:0">Материалы</div>
-<p class="hint">Основные материалы уже внесены. Укажите количество и цену — суммы считаются сами. Кнопка «Прикинуть» заполнит пустые количества по площади квартиры (ориентировочные нормы, проверьте по проекту).</p>
+<p class="hint">Основные материалы уже внесены. Укажите количество и цену — суммы считаются сами. В Excel и печать попадают только материалы с указанным количеством. Кнопка «Прикинуть» заполнит пустые количества по площади квартиры (ориентировочные нормы, проверьте по проекту).</p>
 <div class="ctl"><input type="search" id="q" placeholder="Поиск материала…"><button class="bt" data-a="est">📐 Прикинуть по площади</button>
 <label><input type="checkbox" data-p="mi"> Включить материалы в итог и в печать</label></div>
 <div id="mats"></div>
@@ -238,12 +238,13 @@ $('#pm2').textContent=ar>0?`Площадь ${ar} м² × ${f(F.tot/ar)} руб./
 $('#dr').textContent=F.d?'−'+f(F.d)+' ₽':'';$('#pr').textContent=F.p?`сейчас: ${f(F.p)} ₽ · остаток: ${f(F.r)} ₽`:'';
 $('#bw').textContent=f(F.st)+' ₽';$('#bm').textContent=f(F.mt)+' ₽'+(S.mi?'':' (не в итоге)');$('#bt').textContent=f(F.a)+' ₽';
 $('#rqt').style.display=S.rq.on?'block':'none';document.body.classList.toggle('nomat',!S.mi)}
+function pf(on){$$('#mats tr[data-i]').forEach(r=>{const it=S.m[+r.closest('.stage').dataset.c].items[+r.dataset.i];r.classList.toggle('pe',!!on&&!(num(it.q)>0))});$$('#mats .stage').forEach(el=>el.classList.toggle('pe',!!on&&!el.querySelector('tr[data-i]:not(.pe)')))}
 function filt(){const q=$('#q').value.toLowerCase();$$('#mats tr[data-i]').forEach(r=>{const n=r.querySelector('.c-n input').value.toLowerCase();r.style.display=n.includes(q)?'':'none'})}
 $('#q').addEventListener('input',filt);
 ['input','change'].forEach(ev=>document.addEventListener(ev,x=>{const t=x.target;if(t.id=='cmt')return cm();if(!t.dataset.p)return;const k=t.dataset.p.split('.');let o=S;k.slice(0,-1).forEach(a=>o=o[a]);o[k.pop()]=t.type=='checkbox'?t.checked:t.value;recalc();save()}));
 const mv=(a,i,j)=>{[a[i],a[j]]=[a[j],a[i]]};
 const act={
-print(i,b){const m=b.dataset.m,mi=S.mi;if(m=='w'){S.mi=false;recalc()}if(m!='all')document.body.classList.add('po-'+m);window.print();document.body.classList.remove('po-w','po-m');S.mi=mi;recalc();return 0},tab(b){$('#pw').style.display=b.dataset.t=='w'?'':'none';$('#pm').style.display=b.dataset.t=='m'?'':'none';$$('.tabs button').forEach(x=>x.classList.toggle('on',x==b))},
+print(i,b){const m=b.dataset.m,mi=S.mi;if(m=='w'){S.mi=false;recalc()}if(m!='all')document.body.classList.add('po-'+m);pf(1);window.print();pf(0);document.body.classList.remove('po-w','po-m');S.mi=mi;recalc();return 0},tab(b){$('#pw').style.display=b.dataset.t=='w'?'':'none';$('#pm').style.display=b.dataset.t=='m'?'':'none';$$('.tabs button').forEach(x=>x.classList.toggle('on',x==b))},
 up:i=>i>0&&(mv(S.st,i,i-1),1),dn:i=>i<S.st.length-1&&(mv(S.st,i,i+1),1),
 delst:i=>confirm('Удалить этап «'+S.st[i].t+'»?')&&(S.st.splice(i,1),1),
 additem:i=>(S.st[i].items.push({n:'Новая работа',u:'',q:'',p:'',t:''}),1),
@@ -265,13 +266,13 @@ $('#fi').addEventListener('change',ev=>{const r=new FileReader();r.onload=()=>{t
 TPL.forEach((t,i)=>{const[n,,it]=t.split('|'),b=document.createElement('button');b.className='t';b.innerHTML=`${e(n)}<br><small>${it.split(';').length} работ</small>`;b.onclick=()=>{const x=mkS(i,0);S.st.push(x);$('#md').classList.remove('open');render();save()};$('#tl').appendChild(b)});
 $('#md').addEventListener('click',x=>{if(x.target.id=='md')act.close()});
 $('#ds').textContent=new Date().toLocaleDateString('ru-RU');
-function xls(mode){const im=mode=='all'?S.mi:false,F=fin(im),M=S.meta,L=a=>a.map(t=>`<tr><td colspan="6" class="n">◆ ${e(t)}</td></tr>`).join('');
+function xls(mode){const im=mode=='all'?S.mi:false,F=fin(im),M=S.meta,mq=S.m.map(c=>({c:c.c,items:c.items.filter(i=>num(i.q)>0)})).filter(c=>c.items.length),L=a=>a.map(t=>`<tr><td colspan="6" class="n">◆ ${e(t)}</td></tr>`).join('');
 const T=(h,items,tot,k)=>`<tr><td colspan="6" class="h">${e(h)}</td></tr><tr><th width="40%">Наименование</th><th width="7%">Ед.</th><th width="9%">Кол-во</th><th width="13%">Цена, ₽</th><th width="14%">Сумма, ₽</th><th width="17%">Примечание</th></tr>${items.map(i=>`<tr><td>${e(i.n)}</td><td>${e(i.u)}</td><td>${e(i.q)}</td><td>${i.p?f(i.p):''}</td><td>${num(i.q)*num(i.p)?f(num(i.q)*num(i.p)):''}</td><td>${e(i.t||'')}</td></tr>`).join('')}<tr><td colspan="4"><b>${k}</b></td><td colspan="2"><b>${f(tot)} ₽</b></td></tr><tr><td colspan="6" class="n">&nbsp;</td></tr>`;
 const h=`<html xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8"><style>td,th{border:1px solid #999;padding:5px;font:12pt Arial;vertical-align:top;text-align:left}th{background:#EFEBE2}.h{background:#1B3444;color:#fff;font-weight:bold;font-size:14pt}.n{border:none}table{border-collapse:collapse;table-layout:fixed;width:100%}</style></head><body><table>
 <tr><td colspan="6" class="n"><b style="font-size:18pt">${mode=='m'?'СПИСОК МАТЕРИАЛОВ':e(M.title)}</b></td></tr>${mode=='m'?'':`<tr><td colspan="6" class="n"><i>${e(M.sub)}</i></td></tr>`}
 <tr><td colspan="6" class="n">Объект: ${e(M.obj)}<br>Заказчик: ${e(M.cl)}, ${e(M.ph)}</td></tr>${mode=='m'?'':`<tr><td colspan="6" class="n">${e(M.intro)}</td></tr>`}<tr><td colspan="6" class="n">&nbsp;</td></tr>
 ${mode=='m'?'':S.st.map((s,i)=>T(`ЭТАП ${i+1} · ${s.t} — ${s.s}`,s.items,stT(s),'ИТОГО ЗА ЭТАП '+(i+1))).join('')}
-${mode=='m'||(mode=='all'&&S.mi)?S.m.map(c=>T('Материалы · '+c.c,c.items,sum(c.items),'ИТОГО')).join(''):''}
+${mode=='m'||(mode=='all'&&S.mi)?mq.map(c=>T('Материалы · '+c.c,c.items,sum(c.items),'ИТОГО')).join(''):''}
 ${mode=='m'?`<tr><td colspan="4" class="h">ИТОГО МАТЕРИАЛЫ</td><td colspan="2" class="h">${f(F.mt)} ₽</td></tr>`:`<tr><td colspan="4" class="h">${F.d?'ИТОГО СО СКИДКОЙ':'ВСЕГО ЗА ПРОЕКТ'}</td><td colspan="2" class="h">${f(F.a)} ₽</td></tr>
 ${F.d?`<tr><td colspan="6" class="n">Без скидки: ${f(F.tot)} ₽ · скидка: −${f(F.d)} ₽</td></tr>`:''}${F.p?`<tr><td colspan="6" class="n">Предоплата: ${f(F.p)} ₽ · остаток: ${f(F.r)} ₽</td></tr>`:''}
 <tr><td colspan="6" class="n"><b>Условия оплаты</b></td></tr>${L(S.pay)}<tr><td colspan="6" class="n"><b>Гарантия</b><br>${e(M.gar)}</td></tr>
