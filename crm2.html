@@ -178,11 +178,11 @@
         <!-- Основной интерфейс -->
         <main class="flex-1 w-full px-4 sm:px-6 lg:px-8 py-6 flex flex-col overflow-hidden">
             
-            <div class="flex flex-wrap gap-2 mb-3"><button @click="openMaterials(filterType==='all'?'silver':filterType)" class="rounded-xl px-4 py-2 bg-amber-400 text-slate-950 text-sm font-bold">Материалы и себестоимость</button><span v-if="!inventoryVerified" class="rounded-xl px-3 py-2 bg-amber-50 text-amber-900 text-xs">Проверьте и внесите раздельные остатки материалов</span><span v-if="materialReservationError" class="rounded-xl px-3 py-2 bg-red-100 text-red-800 text-xs">Не хватает материала для резерва</span></div>
+            <div class="flex flex-wrap gap-2 mb-3"><button @click="openMaterials(filterType==='all'?'silver':filterType)" class="rounded-xl px-4 py-2 bg-amber-400 text-slate-950 text-sm font-bold">Материалы и себестоимость</button><span v-if="!inventoryVerified" class="rounded-xl px-3 py-2 bg-amber-50 text-amber-900 text-xs">Проверьте и внесите раздельные остатки материалов</span><span v-if="materialReservationError" class="rounded-xl px-3 py-2 bg-red-100 text-red-800 text-xs">Есть дефицит материалов — отгрузка доступна</span></div>
             <!-- Метрики -->
             <div class="flex-none overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 mb-4 sm:mb-6 custom-scrollbar">
                 <div class="flex sm:grid sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 min-w-[max-content] sm:min-w-full">
-                    <div class="w-48 sm:w-auto p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
+                    <div class="w-48 sm:w-auto p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between cursor-pointer hover:ring-2 hover:ring-sky-200 focus:outline-none" role="button" tabindex="0" @click="openMetricDetails('inProgress')" @keydown.enter="openMetricDetails('inProgress')">
                         <div>
                             <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">В работе</div>
                             <div class="text-2xl font-bold text-slate-900 dark:text-white mt-0.5">{{ activeOrdersCount }} <span class="text-xs font-normal text-slate-400">шт</span></div>
@@ -192,7 +192,7 @@
                         </div>
                     </div>
 
-                    <div class="w-48 sm:w-auto p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
+                    <div class="w-48 sm:w-auto p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between cursor-pointer hover:ring-2 hover:ring-sky-200 focus:outline-none" role="button" tabindex="0" @click="openMetricDetails('orders')" @keydown.enter="openMetricDetails('orders')">
                         <div>
                             <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Всего заказов</div>
                             <div class="text-2xl font-bold text-slate-900 dark:text-white mt-0.5">{{ orders.length }} <span class="text-xs font-normal text-slate-400">шт</span></div>
@@ -202,7 +202,7 @@
                         </div>
                     </div>
 
-                    <div class="w-48 sm:w-auto p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
+                    <div class="w-48 sm:w-auto p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between cursor-pointer hover:ring-2 hover:ring-sky-200 focus:outline-none" role="button" tabindex="0" @click="openMetricDetails('revenue')" @keydown.enter="openMetricDetails('revenue')">
                         <div>
                             <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Оборот</div>
                             <div class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">{{ (totalRevenue/1000).toFixed(1) }} <span class="text-xs font-normal text-slate-400">тыс. ₽</span></div>
@@ -212,7 +212,7 @@
                         </div>
                     </div>
 
-                    <div class="w-48 sm:w-auto p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
+                    <div class="w-48 sm:w-auto p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between cursor-pointer hover:ring-2 hover:ring-sky-200 focus:outline-none" role="button" tabindex="0" @click="openMetricDetails('margin')" @keydown.enter="openMetricDetails('margin')">
                         <div>
                             <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Чистая маржа</div>
                             <div class="text-2xl font-bold text-sky-600 dark:text-sky-400 mt-0.5">{{ (totalProfit/1000).toFixed(1) }} <span class="text-xs font-normal text-slate-400">тыс. ₽</span></div>
@@ -222,7 +222,7 @@
                         </div>
                     </div>
 
-                    <div class="w-48 sm:w-auto p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
+                    <div class="w-48 sm:w-auto p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between cursor-pointer hover:ring-2 hover:ring-sky-200 focus:outline-none" role="button" tabindex="0" @click="openMetricDetails('debt')" @keydown.enter="openMetricDetails('debt')">
                         <div>
                             <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Долг клиентов</div>
                             <div class="text-2xl font-bold text-red-500 mt-0.5">{{ (totalOutstanding/1000).toFixed(1) }} <span class="text-xs font-normal text-slate-400">тыс. ₽</span></div>
@@ -612,16 +612,16 @@
                                 </div>
                                 
                                 <div v-if="selectedOrder.materialCostSnapshot" class="space-y-2 text-xs">
-                                  <div v-for="row in selectedOrder.materialCostSnapshot.rows" :key="row.materialId" class="flex justify-between border-b pb-2"><span>{{ row.name }} · {{ row.quantity }} / {{ row.yieldCount }} шт. с листа</span><strong>{{ rub(row.cost) }}</strong></div>
-                                  <div v-for="fee in selectedOrder.materialCostSnapshot.fees" :key="fee.id" class="flex justify-between"><span>{{ fee.name }}</span><strong>{{ rub(fee.price) }}</strong></div>
-                                  <p class="text-[10px] text-slate-400">Состав и себестоимость зафиксированы при создании заказа. {{ selectedOrder.materialState==='reserved'?'Материалы зарезервированы':'Материалы списаны' }}.</p>
+                                  <label v-for="(row, idx) in selectedOrder.materialCostSnapshot.rows" :key="row.materialId" class="flex items-center justify-between gap-3 border-b pb-2"><span>{{ row.name }} · {{ row.quantity }} / {{ row.yieldCount }} шт. с листа</span><input :value="row.cost" @change="updateCostItem(selectedOrder, 'material', idx, $event.target.value)" type="number" min="0" step="0.01" class="w-28 rounded-lg border p-1.5 text-right font-bold dark:bg-slate-800" :aria-label="'Себестоимость: ' + row.name"></label>
+                                  <label v-for="(fee, idx) in selectedOrder.materialCostSnapshot.fees" :key="fee.id" class="flex items-center justify-between gap-3"><span>{{ fee.name }}</span><input :value="fee.price" @change="updateCostItem(selectedOrder, 'fee', idx, $event.target.value)" type="number" min="0" step="0.01" class="w-28 rounded-lg border p-1.5 text-right font-bold dark:bg-slate-800" :aria-label="'Себестоимость: ' + fee.name"></label>
+                                  <p class="text-[10px] text-slate-400">Состав и себестоимость зафиксированы при создании заказа. Ручная правка суммы не меняет складской расход. {{ selectedOrder.materialState==='reserved'?'Материалы зарезервированы':'Материалы списаны' }}.</p>
                                   <button v-if="selectedOrder.materialState==='reserved'" @click="recalculateSnapshot(selectedOrder)" class="border rounded-lg px-2 py-1">Пересчитать резерв по текущим тарифам</button>
                                 </div>
-                                <div v-else class="rounded-xl bg-slate-50 p-3 text-xs text-slate-600">Старая себестоимость сохранена: {{ rub(selectedOrder.costPrice) }}. Подробный состав для этого заказа ранее не сохранялся.</div>
+                                <div v-else class="rounded-xl bg-slate-50 p-3 text-xs text-slate-600">Для старого заказа состав не сохранён. Себестоимость можно исправить вручную: <input :value="selectedOrder.costPrice" @change="updateLegacyCost(selectedOrder, $event.target.value)" type="number" min="0" step="0.01" class="w-32 rounded-lg border p-1.5 text-right font-bold dark:bg-slate-800"></div>
                                 <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
                                     <div class="flex justify-between items-end mb-2">
                                         <span class="text-xs font-bold text-slate-500 uppercase">Цена продажи</span>
-                                        <input v-model.number="selectedOrder.price" type="number" class="w-24 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg p-1.5 text-right text-sm font-bold text-amber-600 dark:text-amber-400">
+                                        <input :value="priceEditContext && priceEditContext.id === selectedOrder.id ? priceDraft : selectedOrder.price" @focus="startOrderPriceEdit(selectedOrder)" @input="priceDraft = $event.target.value" @blur="commitOrderPriceEdit(selectedOrder)" type="number" min="0" step="0.01" aria-label="Цена продажи" class="w-28 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg p-1.5 text-right text-sm font-bold text-amber-600 dark:text-amber-400">
                                     </div>
                                     <label class="flex justify-between items-center gap-3 text-xs mt-3">Получено от клиента<input v-model.number="selectedOrder.paidAmount" @change="setPaid(selectedOrder)" type="number" min="0" :max="selectedOrder.price" step="0.01" class="w-28 border rounded-lg p-2 dark:bg-slate-800"></label>
                                     <div class="flex justify-between items-center text-xs text-red-500 mt-2"><span>Остаток к оплате:</span><strong>{{ rub(outstanding(selectedOrder)) }}</strong></div>
@@ -703,7 +703,7 @@
                                     </div>
                                 </div>
                                 <div class="w-full flex-1 space-y-2.5">
-                                    <div v-for="t in typeBreakdown" :key="t.type" class="text-xs">
+                                    <button v-for="t in typeBreakdown" :key="t.type" @click="openMetricDetails('type', t.type)" class="block w-full text-left text-xs rounded-lg hover:bg-white/70 dark:hover:bg-slate-900/70 p-1 cursor-pointer">
                                         <div class="flex items-center justify-between mb-1">
                                             <span class="flex items-center font-bold text-slate-700 dark:text-slate-200">
                                                 <span class="w-2 h-2 rounded-full mr-2 flex-none" :style="{ background: t.meta.hex }"></span>
@@ -719,7 +719,7 @@
                                             <span>{{ t.percent }}% от оборота</span>
                                             <span>ср. чек {{ t.avgPrice.toLocaleString() }} ₽</span>
                                         </div>
-                                    </div>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -728,8 +728,8 @@
                         <div>
                             <h4 class="text-xs font-bold uppercase text-slate-400 mb-2">Источники (Avito vs Telegram)</h4>
                             <div class="h-4 bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden flex border border-slate-200 dark:border-slate-800">
-                                <div :style="{width: avitoPercentage + '%'}" class="bg-blue-500 h-full" title="Avito"></div>
-                                <div :style="{width: (100 - avitoPercentage) + '%'}" class="bg-sky-400 h-full" title="Telegram"></div>
+                                <button @click="openMetricDetails('source', 'avito')" :style="{width: avitoPercentage + '%'}" class="bg-blue-500 h-full" title="Avito — нажмите для заказов"></button>
+                                <button @click="openMetricDetails('source', 'telegram')" :style="{width: (100 - avitoPercentage) + '%'}" class="bg-sky-400 h-full" title="Telegram — нажмите для заказов"></button>
                             </div>
                             <div class="flex justify-between text-xs mt-1 text-slate-500">
                                 <span>Avito: {{ avitoPercentage }}%</span>
@@ -744,7 +744,7 @@
                                 <span v-if="bestMonth" class="text-[10px] text-amber-600 dark:text-amber-400 font-bold"><i class="fa-solid fa-trophy mr-1"></i>Лучший: {{ bestMonth.key.slice(5) }}.{{ bestMonth.key.slice(2,4) }}</span>
                             </div>
                             <div class="flex items-end space-x-2 h-32 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-800 p-3">
-                                <div v-for="m in monthlyStats" :key="m.key" class="flex-1 flex flex-col items-center justify-end h-full group relative">
+                                <button v-for="m in monthlyStats" :key="m.key" @click="openMetricDetails('month', m.key)" class="flex-1 flex flex-col items-center justify-end h-full group relative cursor-pointer">
                                     <div class="w-full flex flex-col justify-end h-full">
                                         <div class="w-full rounded-t bg-gradient-to-t from-emerald-500 to-emerald-400 dark:from-emerald-600 dark:to-emerald-500" :style="{ height: (m.revenue / maxMonthlyRevenue * 100) + '%' }"></div>
                                         <div class="w-full rounded-t bg-sky-500 -mt-1" :style="{ height: (Math.max(m.profit,0) / maxMonthlyRevenue * 100) + '%' }"></div>
@@ -753,7 +753,7 @@
                                     <div class="absolute -top-8 hidden group-hover:block bg-slate-900 text-white text-[10px] rounded-lg px-2 py-1 whitespace-nowrap z-10">
                                         {{ m.revenue.toLocaleString() }} ₽ / +{{ m.profit.toLocaleString() }} ₽
                                     </div>
-                                </div>
+                                </button>
                             </div>
                             <div class="flex items-center space-x-4 mt-2 text-[10px] text-slate-500">
                                 <span class="flex items-center"><span class="w-2 h-2 rounded-full bg-emerald-400 mr-1.5"></span>Оборот</span>
@@ -765,14 +765,14 @@
                         <div v-if="topClients.length">
                             <h4 class="text-xs font-bold uppercase text-slate-400 mb-2">Топ клиентов по сумме заказов</h4>
                             <div class="space-y-1.5">
-                                <div v-for="(c, idx) in topClients" :key="c.key" class="flex items-center justify-between text-xs bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-100 dark:border-slate-800 px-3 py-2">
+                                <button v-for="(c, idx) in topClients" :key="c.key" @click="openMetricDetails('client', c.key)" class="flex w-full items-center justify-between text-left text-xs bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-100 dark:border-slate-800 px-3 py-2 hover:ring-2 hover:ring-sky-200">
                                     <span class="flex items-center min-w-0">
                                         <span class="w-5 h-5 flex-none flex items-center justify-center rounded-full bg-slate-200 dark:bg-slate-800 text-[10px] font-bold text-slate-600 dark:text-slate-300 mr-2">{{ idx + 1 }}</span>
                                         <span class="font-bold text-slate-700 dark:text-slate-200 truncate">{{ c.clientName }}</span>
                                         <span class="text-slate-400 ml-1.5 flex-none">· {{ c.ordersCount }} зак.</span>
                                     </span>
                                     <span class="font-bold text-slate-800 dark:text-white flex-none ml-2">{{ c.totalSpent.toLocaleString() }} ₽</span>
-                                </div>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -897,11 +897,11 @@
 
         <Transition name="modal"><div v-if="showStockModal" class="fixed inset-0 z-50 bg-slate-950/60 flex items-center justify-center p-3"><section class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto p-5 space-y-5">
           <header class="flex justify-between items-center"><h2 class="text-lg font-bold">Склад материалов</h2><button @click="showStockModal=false" class="border rounded-xl px-3 py-2">Закрыть</button></header>
-          <p class="text-xs text-slate-500">Старые заказы сохраняют прежнюю себестоимость. Новый заказ резервирует материал. При начале производства материал списывается. Удаление изготовленного заказа не возвращает материал на склад. Начальные остатки в копии — нулевые: внесите фактический приход.</p>
-          <div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead><tr class="border-b"><th class="p-2">Материал</th><th class="p-2">На складе</th><th class="p-2">Резерв</th><th class="p-2">Доступно</th></tr></thead><tbody><tr v-for="m in materialBalances" :key="m.id" class="border-b"><td class="p-2">{{ m.name }}</td><td class="p-2">{{ m.onHand.toFixed(4) }}</td><td class="p-2">{{ m.reserved.toFixed(4) }}</td><td class="p-2 font-bold" :class="m.available<0?'text-red-500':'text-emerald-600'">{{ m.available.toFixed(4) }}</td></tr></tbody></table></div>
+          <p class="text-xs text-slate-600">На складе — весь учётный остаток. <b>Резерв</b> — материал в принятых заказах. <b>Доступно</b> = на складе − резерв. Доступное может быть отрицательным: заказ всё равно можно отгрузить, недостача останется видна.</p><div v-if="materialShortages.length" class="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-800"><b>По учёту не хватает материала:</b><span v-for="m in materialShortages" :key="m.id" class="ml-2">{{ m.name }} — {{ (-m.available).toFixed(4) }} л. (ориентир закупки: {{ Math.ceil(-m.available) }} л.)</span></div>
+          <div class="space-y-3"><article v-for="m in materialBalances" :key="m.id" class="rounded-xl border p-3" :class="m.id==='mirror'?'border-amber-300':m.id==='mirror_silver'?'border-slate-400':'border-slate-200'"><div class="flex flex-wrap items-center justify-between gap-2"><b>{{ m.name }}</b><span class="text-xs">На складе <b>{{ m.onHand.toFixed(4) }} л.</b> · резерв <b class="text-amber-700">{{ m.reserved.toFixed(4) }} л.</b> · доступно <b :class="m.available<0?'text-red-600':'text-emerald-700'">{{ m.available.toFixed(4) }} л.</b></span></div><div class="mt-2 h-5 overflow-hidden rounded border border-slate-300 bg-slate-100 flex" :title="'Учётная схема доли листа: ' + m.name"><div class="h-full bg-emerald-500" :style="{width: Math.min(100, Math.max(0, m.available)/Math.max(1,m.onHand,m.reserved)*100) + '%'}"></div><div class="h-full bg-amber-300" :style="{width: Math.min(100-Math.min(100, Math.max(0, m.available)/Math.max(1,m.onHand,m.reserved)*100), Math.max(0, Math.min(m.reserved, Math.max(0,m.onHand)))/Math.max(1,m.onHand,m.reserved)*100) + '%'}"></div><div class="h-full bg-red-500" :style="{width: Math.min(100, Math.max(0, m.reserved-Math.max(0,m.onHand))/Math.max(1,m.onHand,m.reserved)*100) + '%'}"></div></div><div class="mt-1 flex flex-wrap gap-x-4 text-[10px] text-slate-500"><span>🟩 доступно</span><span>🟨 зарезервировано</span><span v-if="m.available<0" class="text-red-600">🟥 дефицит {{ (-m.available).toFixed(4) }} листа</span><span>Схема частей учётного остатка; количество листов указано выше</span></div></article></div>
           <p v-if="!inventoryVerified" class="rounded-xl bg-amber-50 text-amber-900 p-3 text-xs">Старый общий остаток нельзя распределить по материалам автоматически. Внесите фактическое количество каждого материала, затем подтвердите инвентаризацию.</p><div class="flex gap-2"><button @click="confirmInventoryCount" class="border rounded-xl px-3 py-2 text-xs">Подтвердить фактические остатки</button><button @click="showMaterialsModal=true" class="border rounded-xl px-3 py-2 text-xs">Калькулятор</button></div><p class="text-xs text-slate-500">Единица: доля листа 1220 × 4000 мм. Остатки обрезков по форме здесь не отслеживаются.</p>
           <form @submit.prevent="addStockSheets" class="flex flex-wrap gap-2"><select v-model="stockMaterial" aria-label="Материал для прихода" class="border rounded-xl p-3 dark:bg-slate-800"><option v-for="m in materials" :value="m.id">{{ m.name }}</option></select><input aria-label="Количество листов" v-model.number="addSheetsCount" type="number" min="0.001" step="any" required class="w-28 border rounded-xl p-3 dark:bg-slate-800"><button class="bg-amber-500 text-slate-900 rounded-xl px-4 py-3 font-bold">Приход листов</button></form>
-          <h3 class="font-bold">Движение материалов</h3><p v-if="!stockLog.length" class="text-sm text-slate-500">Операций пока нет</p><div v-for="entry in stockLog.slice(0,100)" :key="entry.id" class="border-b pb-2 text-xs"><span class="text-slate-500">{{ formatDate(entry.time) }}</span> · {{ materials.find(m=>m.id===entry.materialId)?.name }} · <strong>{{ entry.amount>0?'+':'' }}{{ entry.amount.toFixed(4) }} л.</strong> · {{ entry.text }}<span v-if="entry.orderId"> · #{{ entry.orderId.slice(0,8) }}</span></div>
+          <h3 class="font-bold">Движение материалов</h3><p class="text-xs text-slate-500">Только фактический приход и расход, по дате операции.</p><p v-if="!visibleStockLog.length" class="text-sm text-slate-500">Операций пока нет</p><div v-for="entry in visibleStockLog.slice(0,100)" :key="entry.id" class="border-b pb-2 text-xs"><span class="text-slate-500">{{ formatDate(entry.time) }}</span> · {{ materials.find(m=>m.id===entry.materialId)?.name }} · <strong>{{ entry.amount>0?'+':'' }}{{ entry.amount.toFixed(4) }} л.</strong> · {{ entry.text }}<span v-if="entry.orderId"> · #{{ entry.orderId.slice(0,8) }}</span></div>
         </section></div></Transition>
 
         <Transition name="modal">
@@ -1070,6 +1070,8 @@
                 <div style="text-align:center; color:#64748b; font-size: 10px; margin-top: 14px;">MIRA &amp; PAPA • timmir1.github.io</div>
             </div>
         </div>
+
+    <Transition name="modal"><div v-if="showMetricDetailsModal" class="fixed inset-0 z-[70] bg-slate-950/60 flex items-center justify-center p-3" @click.self="showMetricDetailsModal=false"><section class="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto p-5 space-y-4"><header class="sticky top-0 bg-white dark:bg-slate-900 flex items-center justify-between border-b pb-3"><div><h2 class="text-lg font-bold">{{ metricDetailTitle }}</h2><p class="text-xs text-slate-500">{{ metricDetailHint }}</p></div><button @click="showMetricDetailsModal=false" class="border rounded-xl px-3 py-2">Закрыть</button></header><div class="grid grid-cols-3 gap-2 text-xs"><div class="rounded-lg bg-slate-50 p-3">Заказов <b>{{ metricDetailRows.length }}</b></div><div class="rounded-lg bg-slate-50 p-3">Оборот <b>{{ rub(metricDetailRows.reduce((s,o)=>s+Number(o.price||0),0)) }}</b></div><div class="rounded-lg bg-slate-50 p-3">Маржа <b>{{ rub(metricDetailRows.reduce((s,o)=>s+Number(o.price||0)-Number(o.costPrice||0),0)) }}</b></div></div><button v-for="o in metricDetailRows" :key="o.id" @click="showMetricDetailsModal=false;showAnalyticsModal=false;selectOrder(o)" class="w-full flex flex-wrap items-center justify-between gap-2 rounded-xl border p-3 text-left hover:border-sky-400"><span><b>{{ o.channelName || 'Без названия' }}</b><span class="block text-xs text-slate-500">{{ o.clientName || 'Клиент не указан' }} · {{ typeInfo(o.type).label }} · {{ formatDate(o.createdAt) }}</span></span><span class="text-right text-xs">Продажа {{ rub(o.price) }}<b class="block text-emerald-700">Маржа {{ rub(Number(o.price||0)-Number(o.costPrice||0)) }}</b><span v-if="outstanding(o)>0" class="text-red-600">Долг {{ rub(outstanding(o)) }}</span></span></button><p v-if="!metricDetailRows.length" class="py-8 text-center text-sm text-slate-500">Заказов в этой группе нет.</p></section></div></Transition>
 
     </div>
 
@@ -2114,7 +2116,7 @@ const productionRecipes=()=>({
 appOptions.data=function(){
   const base=productionBaseData.call(this);
   base.settings={...base.settings,gluePrice:50,engravingPrice:500,cuttingPrice:1500,materialCostVersion:0};
-  return {...base,materials:productionMaterials(),recipes:productionRecipes(),stockLog:[],stockMaterial:'scratch',inventoryVerified:false,showMaterialsModal:false,calculatorType:'silver',showTrash:false,attentionFilter:'all',previewFilter:'kanban'};
+  return {...base,materials:productionMaterials(),recipes:productionRecipes(),stockLog:[],stockMaterial:'scratch',inventoryVerified:false,showMaterialsModal:false,calculatorType:'silver',showTrash:false,attentionFilter:'all',previewFilter:'kanban',showMetricDetailsModal:false,selectedMetricDetail:{key:'orders',value:null},priceDraft:'',priceEditContext:null};
 };
 Object.assign(appOptions.computed,{
   fees(){return this.materialFees();},
@@ -2126,6 +2128,15 @@ Object.assign(appOptions.computed,{
   totalOutstanding(){return this.orders.filter(o=>!o.deletedAt).reduce((s,o)=>s+this.outstanding(o),0);},
   paidTotal(){return this.orders.filter(o=>!o.deletedAt).reduce((s,o)=>s+Number(o.paidAmount||((o.paymentStatus||'waiting')==='paid'?o.price:0)),0);},
   filteredOrders(){const q=(this.searchQuery||'').trim().toLowerCase();return this.orders.filter(o=>!o.deletedAt&&(this.filterType==='all'||o.type===this.filterType)&&(!q||[o.id,o.channelName,o.clientName,o.clientContact,o.trackNumber].some(v=>String(v||'').toLowerCase().includes(q)))&&(this.attentionFilter==='all'||(this.attentionFilter==='debt'?this.outstanding(o)>0:this.isOverdue(o))));},
+  cloudStatusTitle(){return 'Изолированная копия: изменения сохраняются только в этом браузере';},
+  activeOrdersCount(){return this.orders.filter(o=>!o.deletedAt&&!['shipped','delivered'].includes(o.status)).length;},
+  totalRevenue(){return this.orders.filter(o=>!o.deletedAt).reduce((s,o)=>s+Number(o.price||0),0);},
+  totalProfit(){return this.orders.filter(o=>!o.deletedAt).reduce((s,o)=>s+Number(o.price||0)-Number(o.costPrice||0),0);},
+  visibleStockLog(){return this.stockLog.filter(e=>Number(e.amount)!==0).slice().sort((a,b)=>new Date(b.time)-new Date(a.time));},
+  materialShortages(){return this.materialBalances.filter(m=>m.available < -1e-8);},
+  metricDetailRows(){const d=this.selectedMetricDetail||{},orders=this.orders.filter(o=>!o.deletedAt);switch(d.key){case 'inProgress':return orders.filter(o=>!['shipped','delivered'].includes(o.status));case 'revenue':case 'margin':case 'orders':return orders;case 'debt':return orders.filter(o=>this.outstanding(o)>0);case 'type':return orders.filter(o=>o.type===d.value);case 'source':return orders.filter(o=>String(o.source||'').toLowerCase()===d.value);case 'month':return orders.filter(o=>{const x=new Date(o.createdAt);return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}`===d.value;});case 'client':return orders.filter(o=>((o.clientContact&&o.clientContact.trim())||o.clientName||'unknown')===d.value);default:return orders;}},
+  metricDetailTitle(){const d=this.selectedMetricDetail||{};const titles={inProgress:'Заказы в работе',orders:'Все заказы',revenue:'Оборот по заказам',margin:'Маржа по заказам',debt:'Долги клиентов',type:'Заказы по типу',source:'Заказы по источнику',month:'Заказы за месяц',client:'Заказы клиента'};if(d.key==='type')return this.orderTypes[d.value]?.label||titles.type;if(d.key==='source')return d.value==='avito'?'Источник: Avito':'Источник: Telegram';if(d.key==='month')return 'Заказы за '+d.value;if(d.key==='client'){const c=this.clientsList.find(x=>x.key===d.value);return c?.clientName||'Заказы клиента';}return titles[d.key]||'Подробно по заказам';},
+  metricDetailHint(){const d=this.selectedMetricDetail||{};return d.key==='margin'?'Маржа = цена продажи − себестоимость по каждой записи. Нажмите на заказ, чтобы открыть его экономику.':d.key==='debt'?'Долг = цена продажи − фактически полученная сумма.':d.key==='revenue'?'Оборот рассчитан по цене продажи заказов.': 'Нажмите на заказ, чтобы открыть карточку и историю.';},
   historyOrders(){const q=(this.historySearch||'').trim().toLowerCase();return [...this.orders].filter(o=>this.showTrash?!!o.deletedAt:!o.deletedAt).filter(o=>(this.historyFilterMode!=='archived'||this.isArchived(o))&&(this.historyFilterMode!=='active'||!this.isArchived(o))&&(!q||[o.id,o.channelName,o.clientName,o.trackNumber].some(v=>String(v||'').toLowerCase().includes(q)))).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));}
 });
 const legacyMounted=appOptions.mounted;
@@ -2150,6 +2161,12 @@ appOptions.methods.pushCloud=function(immediate){
   if(immediate)send();else this._pushTimer=setTimeout(send,800);
 };
 Object.assign(appOptions.methods,{
+  openMetricDetails(key,value=null){this.selectedMetricDetail={key,value};this.showMetricDetailsModal=true;},
+  startOrderPriceEdit(order){this.priceDraft=String(order.price??0);this.priceEditContext={id:order.id,oldPrice:Number(order.price||0),wasFullyPaid:Number(order.price||0)>0&&this.outstanding(order)<=0.001};},
+  commitOrderPriceEdit(order){const ctx=this.priceEditContext;if(!ctx||ctx.id!==order.id)return;const next=Number(this.priceDraft);if(!Number.isFinite(next)||next<0){this.priceDraft=String(ctx.oldPrice);this.priceEditContext=null;this.showToast('Цена должна быть неотрицательным числом');return;}order.price=productionCore.money(next);if(ctx.wasFullyPaid){order.paidAmount=order.price;order.paymentStatus='paid';}if(ctx.oldPrice!==order.price)this.logOrder(order,`Цена продажи изменена: ${this.rub(ctx.oldPrice)} → ${this.rub(order.price)}${ctx.wasFullyPaid?' · оплаченный заказ сохранён как полностью оплаченный':''}`);this.priceDraft=String(order.price);this.priceEditContext=null;},
+  setOrderPrice(order,value){this.startOrderPriceEdit(order);this.priceDraft=String(value);this.commitOrderPriceEdit(order);},
+  updateLegacyCost(order,value){const next=Number(value);if(!Number.isFinite(next)||next<0){this.showToast('Себестоимость должна быть неотрицательной');return;}const old=Number(order.costPrice||0);order.costPrice=productionCore.money(next);if(old!==order.costPrice)this.logOrder(order,`Себестоимость изменена вручную: ${this.rub(old)} → ${this.rub(order.costPrice)}`);},
+  updateCostItem(order,kind,index,value){const next=Number(value);if(!Number.isFinite(next)||next<0){this.showToast('Сумма должна быть неотрицательной');return;}const q=order.materialCostSnapshot;if(!q)return;const rows=kind==='material'?q.rows:q.fees,item=rows[index];if(!item)return;const old=Number(kind==='material'?item.cost:item.price)||0;const amount=productionCore.money(next);if(kind==='material')item.cost=amount;else item.price=amount;q.materialsCost=productionCore.money(q.rows.reduce((sum,row)=>sum+Number(row.cost||0),0));q.servicesCost=productionCore.money(q.fees.reduce((sum,fee)=>sum+Number(fee.price||0),0));q.total=productionCore.money(q.materialsCost+q.servicesCost);order.costAcp=q.materialsCost;const feeMap={milling:'costCutting',uv:'costEngraving',glue:'costGlue'};for(const fee of q.fees)if(feeMap[fee.id])order[feeMap[fee.id]]=Number(fee.price||0);order.costPrice=q.total;if(old!==amount)this.logOrder(order,`Себестоимость «${item.name||item.materialId}» изменена: ${this.rub(old)} → ${this.rub(amount)}`);},
   rub(value){return Number(value||0).toLocaleString('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2})+' ₽';},
   isCompactType(type){return ['instagram','football','custom'].includes(type);},
   hasMirrorFinish(type){return this.isCompactType(type);},
@@ -2195,9 +2212,7 @@ Object.assign(appOptions.methods,{
     let q=order.materialCostSnapshot;
     if(!q){if(!this.snapshotOrder(order))return false;q=order.materialCostSnapshot;}
     const required=q.rows.map(r=>({id:r.materialId,fraction:r.fraction,name:r.name}));
-    const balances=this.materialBalances;
-    for(const row of required){const balance=balances.find(m=>m.id===row.id);if(!balance||balance.available+row.fraction+1e-8<row.fraction){this.showToast('Недостаточно материала «'+row.name+'». Добавьте приход на склад.');return false;}}
-    for(const row of required){const m=this.materials.find(item=>item.id===row.id);m.onHand=productionCore.money(m.onHand-row.fraction);this.stockLog.unshift({id:crypto.randomUUID(),time:new Date().toISOString(),materialId:m.id,amount:-row.fraction,orderId:order.id,text:'Списание в производство'});}
+    for(const row of required){const m=this.materials.find(item=>item.id===row.id);if(!m)continue;m.onHand=productionCore.money(m.onHand-row.fraction);this.stockLog.unshift({id:crypto.randomUUID(),time:new Date().toISOString(),materialId:m.id,amount:-row.fraction,orderId:order.id,text:'Расход в производство'});} 
     order.materialState='consumed';this.logOrder(order,'Материалы списаны в производство');return true;
   },
   togglePickupWaiting(order){this.updateOrderStatus(order,order.status==='pickup'?'ready':'pickup');},
