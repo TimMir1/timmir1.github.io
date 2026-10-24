@@ -1,0 +1,17 @@
+{
+  "name": "Чётки — цифровой тасбих",
+  "short_name": "Чётки",
+  "start_url": "./chetki2.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#070704",
+  "theme_color": "#070704",
+  "icons": [
+    {
+      "src": "./chetki-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
