@@ -229,15 +229,10 @@ hit.addEventListener('pointermove',e=>{
   if(!g.on&&g.moved<8)return;
   g.on=true;
   let x=((mx*g.tx+my*g.ty)+g.off)/g.spx;
-  const nw=performance.now();
+  if(g.lock)return;
   if(x<g.done&&cnt()<=0){g.off+=(g.done-x)*g.spx;x=g.done}
-  if(x-g.done>=.5){
-    if(nw-g.t>=150){inc();g.done++;g.t=nw}
-    if(x-g.done>.5){g.off-=(x-g.done-.5)*g.spx;x=g.done+.5}
-  }else if(g.done-x>=.5){
-    if(nw-g.t>=150&&dec()){g.done--;g.t=nw}
-    if(g.done-x>.5){g.off+=(g.done-x-.5)*g.spx;x=g.done-.5}
-  }
+  if(x-g.done>=.5){inc();g.lock=true;T3.end();return}
+  if(g.done-x>=.5){dec();g.lock=true;T3.end();return}
   T3.drag(x-g.done);
 });
 function up(e){
