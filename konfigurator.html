@@ -149,12 +149,27 @@ function sendOrder(c){
   var tx="Здравствуйте! Хочу заказать кнопку.\nМатериал: "+MATS[st.mat].n+"\n"+
     (st.txt==="on"?"Текст на кнопке:\n"+$("l1").value+"\n"+$("name").value+"\n"+$("l3").value+"\n":"Надпись: только логотип\n")+
     "Ориентировочная цена: "+fmt(st.price);
-  try{navigator.clipboard.writeText(tx)}catch(e){}
-  var q=encodeURIComponent(tx),ph="79779662521",url,hint="";
-  if(c==="wa")url="https://wa.me/"+ph+"?text="+q;
-  else url="https://t.me/"+TG+"?text="+q;
-  $("note").textContent=hint;
-  if(url&&!window.open(url,"_blank"))$("note").textContent="Не открылось. "+(hint||"Номер: +7 977 966-25-21");
+  var note=$("note");
+  note.textContent="Текст заказа скопирован. Если сообщение не вставилось автоматически, вставьте его в чат.";
+  function copyOrder(){
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(tx).catch(function(){fallbackCopy()});
+    else fallbackCopy();
+  }
+  function fallbackCopy(){
+    var el=document.createElement("textarea");el.value=tx;el.style.position="fixed";el.style.opacity="0";document.body.appendChild(el);el.select();
+    try{document.execCommand("copy")}catch(e){}
+    document.body.removeChild(el);
+  }
+  copyOrder();
+  if(c==="wa"){
+    var deep="whatsapp://send?phone=79779662521&text="+encodeURIComponent(tx);
+    var web="https://wa.me/79779662521?text="+encodeURIComponent(tx);
+    var a=document.createElement("a");a.href=deep;a.style.display="none";document.body.appendChild(a);a.click();a.remove();
+    note.textContent="Открываем WhatsApp. Если приложение не запустилось, откройте "+web+" или напишите на +7 977 966-25-21. Текст заказа скопирован.";
+  }else{
+    window.location.href="https://t.me/"+TG;
+    note.textContent="Открываем Telegram. Вставьте скопированный текст заказа в чат @"+TG+".";
+  }
 }
 [].forEach.call(document.querySelectorAll(".send"),function(b){b.onclick=function(){sendOrder(b.dataset.c)}});
 </script>
