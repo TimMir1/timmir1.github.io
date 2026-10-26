@@ -44,11 +44,8 @@ h1{font-size:22px;margin:16px 0 10px;line-height:1.25}.panel,.seo{font-family:Mo
 #cv{display:block;width:auto;max-width:100%;height:min(36svh,300px);object-fit:contain}
 .panel input[type=text]{scroll-margin-top:calc(min(36svh,300px) + 54px);scroll-margin-bottom:24px}
 @media(min-width:800px){
- .configurator{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start;gap:24px;padding:24px 16px}
- #stage{top:24px;box-shadow:none;padding:16px}
- #cv{width:min(100%,420px);height:auto;max-height:calc(100svh - 80px)}
+ .configurator{max-width:560px;padding:0}
  .panel{width:100%;border:1px solid var(--line);border-radius:16px}
- .panel input[type=text]{scroll-margin-top:32px}
 }
 @media(max-width:799px){
  .configurator:focus-within #cv{height:min(30dvh,230px)}
