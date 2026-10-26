@@ -54,14 +54,31 @@ h1{font-size:22px;margin:16px 0 10px;line-height:1.25}.panel,.seo{font-family:Mo
  .configurator:focus-within input[type=text]{scroll-margin-top:calc(min(30dvh,230px) + 54px)}
 }
 
+
+#stage{flex-direction:column;align-items:center}
+.preview-wrap{position:relative;max-width:100%}
+#cv{cursor:text}
+.preview-actions{display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+.preview-actions button{padding:9px 14px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--text);font:inherit;cursor:pointer}
+.preview-hint{font-size:12px;margin:8px 0 0;color:var(--muted);text-align:center}
+#canvas-edit{position:absolute;left:6%;width:88%;padding:7px;border:2px solid var(--accent);border-radius:6px;background:var(--panel);color:var(--text);font-size:16px;text-align:center;transform:translateY(-50%);z-index:2}
+#zoom-dialog{border:0;border-radius:14px;padding:16px;background:var(--panel);color:var(--text);max-width:96vw;max-height:96dvh}
+#zoom-dialog::backdrop{background:rgba(0,0,0,.8)}
+#zoom-image{display:block;max-width:85vw;max-height:78dvh;width:auto;height:auto;margin:12px auto;object-fit:contain}
+#zoom-close{display:block;margin-left:auto;padding:8px 16px;font:inherit;cursor:pointer}
 </style>
 </head>
 <body>
 <main class="configurator">
-<div id="stage"><canvas id="cv" width="954" height="1174"></canvas></div>
+<div id="stage">
+ <div class="preview-wrap"><canvas id="cv" width="954" height="1174" aria-label="Предпросмотр кнопки. Нажмите на надпись для изменения"></canvas><input id="canvas-edit" type="text" hidden aria-label="Изменить надпись на кнопке" autocomplete="off"></div>
+ <div class="preview-actions"><button id="zoom-open" type="button">Увеличить</button><button id="download-preview" type="button">Скачать макет</button></div>
+ <p class="preview-hint" id="preview-hint">Нажмите на надпись на кнопке, чтобы изменить её.</p>
+</div>
+<dialog id="zoom-dialog" aria-label="Увеличенный макет кнопки"><button id="zoom-close" type="button">Закрыть ×</button><img id="zoom-image" alt="Ваш макет кнопки YouTube"></dialog>
 <div class="panel">
   <h1>Кнопка YouTube на заказ</h1>
-  <p class="edit">✎ На картинке пример. Текст на кнопке можно изменить: ниже есть поля, куда вы вписываете своё имя, название канала и число подписчиков. Картинка обновится сразу.</p>
+  <p class="edit">✎ На картинке пример. Текст на кнопке можно изменить: ниже есть поля, куда вы вписываете своё имя, название канала и число подписчиков. Картинка обновится сразу. Текст и настройки сохраняются в этом браузере.</p>
   <label>Материал</label><div class="row" id="mats"></div>
   <label>Сторона</label><div class="row" id="sides"></div>
   <label>Надпись</label><div class="row" id="txt"></div>
@@ -157,11 +174,28 @@ function draw(){
   }
   var p=Math.round(MATS[st.mat].p*SIZES[st.size].k/100)*100;
   $("price").textContent=fmt(p);$("spec").textContent=MATS[st.mat].n;st.price=p;
+  saveDraft();
 }
 function chips(box,obj,key){Object.keys(obj).forEach(function(k){
   var b=document.createElement("button");b.className="chip";b.type="button";b.textContent=obj[k].n;b.setAttribute("aria-pressed",st[key]===k);
   b.onclick=function(){st[key]=k;[].forEach.call(box.children,function(x){x.setAttribute("aria-pressed","false")});b.setAttribute("aria-pressed","true");draw()};
   box.appendChild(b)})}
+
+var DRAFT_KEY="mira-papa-award-draft-v1";
+function saveDraft(){
+ try{localStorage.setItem(DRAFT_KEY,JSON.stringify({state:st,lines:[$("l1").value,$("name").value,$("l3").value]}))}catch(e){}
+}
+try{
+ var draft=JSON.parse(localStorage.getItem(DRAFT_KEY)||"null");
+ if(draft&&draft.state&&Array.isArray(draft.lines)&&draft.lines.length===3){
+  [["mat",MATS],["side",SIDES],["txt",TXT],["lang",LANGS],["size",SIZES],["font",STYLES]].forEach(function(pair){
+   if(Object.prototype.hasOwnProperty.call(pair[1],draft.state[pair[0]]))st[pair[0]]=draft.state[pair[0]];
+  });
+  ["l1","name","l3"].forEach(function(id,i){if(typeof draft.lines[i]==="string")$(id).value=draft.lines[i].slice(0,$(id).maxLength)});
+  lastLang=st.lang;
+ }
+}catch(e){}
+
 chips($("mats"),MATS,"mat");chips($("sides"),SIDES,"side");chips($("txt"),TXT,"txt");chips($("langs"),LANGS,"lang");
 $("l1").oninput=$("name").oninput=$("l3").oninput=draw;
 function sendOrder(c){
@@ -191,6 +225,44 @@ function sendOrder(c){
   }
 }
 [].forEach.call(document.querySelectorAll(".send"),function(b){b.onclick=function(){sendOrder(b.dataset.c)}});
+
+var activeLine=null,inlineEdit=$("canvas-edit");
+function finishInline(){
+ if(activeLine){$(activeLine).value=inlineEdit.value;activeLine=null;inlineEdit.hidden=true;draw()}
+}
+cv.addEventListener("click",function(e){
+ if(st.side!=="front"||st.txt!=="on")return;
+ var rect=cv.getBoundingClientRect(),x=(e.clientX-rect.left)*W/rect.width,y=(e.clientY-rect.top)*H/rect.height;
+ if(x<70||x>884||y<768||y>914)return;
+ finishInline();
+ var index=y<819?0:y<864?1:2;
+ activeLine=["l1","name","l3"][index];
+ inlineEdit.maxLength=$(activeLine).maxLength;inlineEdit.value=$(activeLine).value;
+ inlineEdit.style.top=([796,841,886][index]/H*100)+"%";
+ inlineEdit.hidden=false;inlineEdit.focus({preventScroll:true});inlineEdit.select();
+});
+inlineEdit.addEventListener("input",function(){if(activeLine){$(activeLine).value=inlineEdit.value;draw()}});
+inlineEdit.addEventListener("blur",finishInline);
+inlineEdit.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key==="Escape"){e.preventDefault();finishInline();}});
+$("zoom-open").onclick=function(){
+ finishInline();
+ if(!silverCv){$("note").textContent="Подождите загрузки изображения.";return}
+ draw();$("zoom-image").src=cv.toDataURL("image/png");$("zoom-dialog").showModal();
+};
+$("zoom-close").onclick=function(){$("zoom-dialog").close()};
+$("zoom-dialog").addEventListener("click",function(e){if(e.target===this)this.close()});
+$("download-preview").onclick=function(){
+ finishInline();
+ if(!silverCv){$("note").textContent="Подождите загрузки изображения.";return}
+ draw();
+ cv.toBlob(function(blob){
+  if(!blob){$("note").textContent="Не удалось сохранить макет. Попробуйте ещё раз.";return}
+  var url=URL.createObjectURL(blob),a=document.createElement("a");
+  a.href=url;a.download="MIRA-PAPA-"+st.mat+"-"+st.side+".png";
+  document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url)},30000);
+ },"image/png");
+};
+
 </script>
 </body>
 </html>
