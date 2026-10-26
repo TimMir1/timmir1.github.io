@@ -72,7 +72,8 @@ h1{font-size:22px;margin:16px 0 10px;line-height:1.25}.panel,.seo{font-family:Mo
 <main class="configurator">
 <div id="stage">
  <div class="preview-wrap"><canvas id="cv" width="1010" height="1230" aria-label="Предпросмотр кнопки. Нажмите на надпись для изменения"></canvas><input id="canvas-edit" type="text" hidden aria-label="Изменить надпись на кнопке" autocomplete="off"></div>
- <div class="preview-actions"><button id="zoom-open" type="button">Увеличить</button><button id="download-preview" type="button">Скачать макет</button></div>
+ <div class="preview-actions"><button id="zoom-open" type="button">Увеличить</button><button id="download-preview" type="button">Скачать макет</button><button id="share-preview" type="button">Поделиться макетом</button></div>
+ <p class="preview-hint" id="share-status" role="status" aria-live="polite" hidden></p>
  <p class="preview-hint" id="preview-hint">Нажмите на надпись на кнопке, чтобы изменить её.</p>
 </div>
 <dialog id="zoom-dialog" aria-label="Увеличенный макет кнопки"><button id="zoom-close" type="button">Закрыть ×</button><img id="zoom-image" alt="Ваш макет кнопки YouTube"></dialog>
@@ -270,6 +271,31 @@ $("download-preview").onclick=function(){
   a.href=url;a.download="MIRA-PAPA-"+st.mat+"-"+st.side+".png";
   document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url)},30000);
  },"image/png");
+};
+
+
+$("share-preview").onclick=async function(){
+ var status=$("share-status"),button=$("share-preview");
+ function message(text){status.hidden=false;status.textContent=text}
+ finishInline();
+ if(!silverCv){message("Подождите загрузки изображения.");return}
+ if(!navigator.share||!navigator.canShare){
+  message("В этом браузере отправка фото недоступна. Нажмите «Скачать макет» и прикрепите PNG в чат.");return;
+ }
+ try{
+  draw();
+  // Prepare the file synchronously so the browser retains the click activation.
+  var data=atob(cv.toDataURL("image/png").split(",")[1]),bytes=new Uint8Array(data.length);
+  for(var i=0;i<data.length;i++)bytes[i]=data.charCodeAt(i);
+  var file=new File([bytes],"MIRA-PAPA-"+st.mat+"-"+st.side+".png",{type:"image/png"});
+  if(!navigator.canShare({files:[file]})){
+   message("Этот браузер не поддерживает отправку PNG. Нажмите «Скачать макет» и прикрепите его в чат.");return;
+  }
+  button.disabled=true;status.hidden=true;
+  await navigator.share({files:[file],title:"Мой макет кнопки — MIRA & PAPA"});
+ }catch(error){
+  if(error.name!=="AbortError")message("Не удалось открыть отправку фото. Попробуйте ещё раз или нажмите «Скачать макет».");
+ }finally{button.disabled=false}
 };
 
 </script>
