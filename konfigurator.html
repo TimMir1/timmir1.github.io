@@ -187,8 +187,8 @@ function sendOrder(c){
     var a=document.createElement("a");a.href=deep;a.style.display="none";document.body.appendChild(a);a.click();a.remove();
     note.textContent="Открываем WhatsApp. Если приложение не запустилось, откройте "+web+" или напишите на +7 977 966-25-21. Текст заказа скопирован.";
   }else{
-    window.location.href="https://t.me/"+TG;
-    note.textContent="Открываем Telegram. Вставьте скопированный текст заказа в чат @"+TG+".";
+    window.location.href="https://t.me/"+TG+"?text="+encodeURIComponent(tx);
+    note.textContent="Открываем Telegram с готовым текстом заказа. Нажмите «Отправить» в чате. Если текст не появился, вставьте его из буфера обмена.";
   }
 }
 [].forEach.call(document.querySelectorAll(".send"),function(b){b.onclick=function(){sendOrder(b.dataset.c)}});
