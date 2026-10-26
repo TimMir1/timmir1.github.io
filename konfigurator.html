@@ -130,10 +130,16 @@ var cv=$("cv"),ctx=cv.getContext("2d"),W=954,H=1174;
 var goldImg=new Image(),backImg=new Image(),silverCv=null;
 backImg.onload=function(){if(st.side==="back")draw()};
 backImg.src="assets/konfigurator-back.jpg";
+function drawPlatePhoto(g){
+  // Remove the uneven pale rim baked into the source photograph.
+  var iw=goldImg.naturalWidth,ih=goldImg.naturalHeight;
+  var insetX=Math.ceil(iw*.012),insetY=Math.ceil(ih*.008);
+  g.drawImage(goldImg,insetX,insetY,iw-2*insetX,ih-2*insetY,0,0,W,H);
+}
 goldImg.onload=function(){
   // серебро получаем из золотого снимка: убираем цвет, слегка осветляем
   silverCv=document.createElement("canvas");silverCv.width=W;silverCv.height=H;
-  var s=silverCv.getContext("2d");s.drawImage(goldImg,0,0);
+  var s=silverCv.getContext("2d");drawPlatePhoto(s);
   var d=s.getImageData(0,0,W,H),p=d.data;
   for(var i=0;i<p.length;i+=4){var l=.299*p[i]+.587*p[i+1]+.114*p[i+2],v=Math.min(255,l*1.12+4);
     p[i]=v*.985;p[i+1]=v*.992;p[i+2]=v}
@@ -172,7 +178,7 @@ function draw(){
   if(st.lang!==lastLang){lastLang=st.lang;$("l1").value=LANGS[st.lang].a;$("l3").value=LANGS[st.lang].b(st.lang==="ru"?"50 609":"50,609")}
   if(st.side==="back"){drawBack()}
   else{
-    ctx.drawImage(st.mat==="silver"?silverCv:goldImg,0,0);
+    if(st.mat==="silver")ctx.drawImage(silverCv,0,0);else drawPlatePhoto(ctx);
     if(st.txt==="on")ctx.drawImage(textLayer(),0,0);
   }
   var p=Math.round(MATS[st.mat].p*SIZES[st.size].k/100)*100;
