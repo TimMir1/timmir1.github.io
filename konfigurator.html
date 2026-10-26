@@ -86,7 +86,7 @@ h1{font-size:22px;margin:16px 0 10px;line-height:1.25}.panel,.seo{font-family:Mo
   <label for="l1">Строка 1 (можно изменить)</label>
   <input id="l1" type="text" maxlength="30" autocomplete="off">
   <label for="name">Строка 2: имя или название канала</label>
-  <input id="name" type="text" maxlength="26" value="Alex Dingo" autocomplete="off">
+  <input id="name" type="text" maxlength="26" value="Mira &amp; Solomon" autocomplete="off">
   <label for="l3">Строка 3 (например, число подписчиков)</label>
   <input id="l3" type="text" maxlength="40" autocomplete="off">
   
@@ -172,7 +172,7 @@ function draw(){
   ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle="#fff";ctx.fillRect(0,0,cv.width,cv.height);
   ctx.setTransform(1,0,0,1,28,28);
   if(!FR[st.font]){FR[st.font]=1;Promise.all(STYLES[st.font].r.map(function(r){return document.fonts.load(r[0]+" "+r[1]+"px "+r[2],"Аб Ab 1")})).then(draw)}
-  if(st.lang!==lastLang){lastLang=st.lang;$("l1").value=LANGS[st.lang].a;$("l3").value=LANGS[st.lang].b(st.lang==="ru"?"50 609":"50,609")}
+  if(st.lang!==lastLang){lastLang=st.lang;$("l1").value=LANGS[st.lang].a;$("l3").value=defaultMilestone()}
   if(st.side==="back"){drawBack()}
   else{
     if(st.mat==="silver")ctx.drawImage(silverCv,0,0);else drawPlatePhoto(ctx);
@@ -182,9 +182,10 @@ function draw(){
   $("price").textContent=fmt(p);$("spec").textContent=MATS[st.mat].n;st.price=p;
   saveDraft();
 }
+function defaultMilestone(){return LANGS[st.lang].b(st.mat==="gold"?(st.lang==="ru"?"1 000 000":"1,000,000"):(st.lang==="ru"?"100 000":"100,000"))}
 function chips(box,obj,key){Object.keys(obj).forEach(function(k){
   var b=document.createElement("button");b.className="chip";b.type="button";b.textContent=obj[k].n;b.setAttribute("aria-pressed",st[key]===k);
-  b.onclick=function(){st[key]=k;[].forEach.call(box.children,function(x){x.setAttribute("aria-pressed","false")});b.setAttribute("aria-pressed","true");draw()};
+  b.onclick=function(){st[key]=k;if(key==="mat")$("l3").value=defaultMilestone();[].forEach.call(box.children,function(x){x.setAttribute("aria-pressed","false")});b.setAttribute("aria-pressed","true");draw()};
   box.appendChild(b)})}
 
 var DRAFT_KEY="mira-papa-award-draft-v1";
@@ -198,6 +199,8 @@ try{
    if(Object.prototype.hasOwnProperty.call(pair[1],draft.state[pair[0]]))st[pair[0]]=draft.state[pair[0]];
   });
   ["l1","name","l3"].forEach(function(id,i){if(typeof draft.lines[i]==="string")$(id).value=draft.lines[i].slice(0,$(id).maxLength)});
+  if($("name").value==="Alex Dingo")$("name").value="Mira & Solomon";
+  if(/50[ ,]609/.test($("l3").value))$("l3").value=defaultMilestone();
   lastLang=st.lang;
  }
 }catch(e){}
