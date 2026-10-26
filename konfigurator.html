@@ -188,7 +188,7 @@ function chips(box,obj,key){Object.keys(obj).forEach(function(k){
   b.onclick=function(){st[key]=k;if(key==="mat")$("l3").value=defaultMilestone();[].forEach.call(box.children,function(x){x.setAttribute("aria-pressed","false")});b.setAttribute("aria-pressed","true");draw()};
   box.appendChild(b)})}
 
-var DRAFT_KEY="mira-papa-award-draft-v1";
+var DRAFT_KEY="mira-papa-award-draft-v2";
 function saveDraft(){
  try{localStorage.setItem(DRAFT_KEY,JSON.stringify({state:st,lines:[$("l1").value,$("name").value,$("l3").value]}))}catch(e){}
 }
