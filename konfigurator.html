@@ -156,9 +156,11 @@ instagramImg.onload=function(){
   for(var y=70;y<1383;y++)for(var x=103;x<1169;x++){
     var i=(y*instagramGoldCv.width+x)*4;
     var luminance=.299*data[i]+.587*data[i+1]+.114*data[i+2];
-    data[i]=Math.min(255,luminance*1.08+18);
-    data[i+1]=Math.min(255,luminance*.90+17);
-    data[i+2]=Math.min(255,luminance*.70+15);
+    if(!(x>=550&&x<=720&&y>=1215&&y<=1270&&luminance>190)){
+      data[i]=Math.min(255,luminance*1.08+18);
+      data[i+1]=Math.min(255,luminance*.90+17);
+      data[i+2]=Math.min(255,luminance*.70+15);
+    }
   }
   goldCtx.putImageData(pixels,0,0);
   if(st.award==="instagram")draw();
@@ -214,10 +216,23 @@ function draw(){
   $("price").textContent=p===null?"Цена по запросу":fmt(p);$("spec").textContent=st.award==="instagram"?"Instagram · "+MATS[st.mat].n:MATS[st.mat].n;st.price=p;
   saveDraft();
 }
-function defaultMilestone(){return LANGS[st.lang].b(st.mat==="gold"?(st.lang==="ru"?"1 000 000":"1,000,000"):(st.lang==="ru"?"100 000":"100,000"))}
+function defaultMilestone(){
+  var count=st.mat==="gold"?(st.lang==="ru"?"1 000 000":"1,000,000"):(st.lang==="ru"?"100 000":"100,000");
+  if(st.award==="instagram")return st.lang==="ru"?"За достижение "+count+" подписчиков":"For passing "+count+" followers";
+  return LANGS[st.lang].b(count);
+}
 function chips(box,obj,key){Object.keys(obj).forEach(function(k){
   var b=document.createElement("button");b.className="chip";b.type="button";b.textContent=obj[k].n;b.setAttribute("aria-pressed",st[key]===k);
-  b.onclick=function(){st[key]=k;if(key==="mat")$("l3").value=defaultMilestone();if(key==="award")syncAward();[].forEach.call(box.children,function(x){x.setAttribute("aria-pressed","false")});b.setAttribute("aria-pressed","true");draw()};
+  b.onclick=function(){
+    var previous=st[key];st[key]=k;
+    if(key==="mat")$("l3").value=defaultMilestone();
+    if(key==="award"){
+      if(previous!==k&&/^For passing [\\d, ]+ (subscribers|followers)$/i.test($("l3").value))$("l3").value=defaultMilestone();
+      syncAward();
+    }
+    [].forEach.call(box.children,function(x){x.setAttribute("aria-pressed","false")});
+    b.setAttribute("aria-pressed","true");draw()
+  };
   box.appendChild(b)})}
 
 var DRAFT_KEY="mira-papa-award-draft-v2";
@@ -233,6 +248,7 @@ try{
   ["l1","name","l3"].forEach(function(id,i){if(typeof draft.lines[i]==="string")$(id).value=draft.lines[i].slice(0,$(id).maxLength)});
   if($("name").value==="Alex Dingo")$("name").value="Mira & Solomon";
   if(/50[ ,]609/.test($("l3").value))$("l3").value=defaultMilestone();
+  if(st.award==="instagram"&&/^For passing [\\d, ]+ subscribers$/i.test($("l3").value))$("l3").value=defaultMilestone();
   lastLang=st.lang;
  }
 }catch(e){}
