@@ -153,7 +153,8 @@ instagramImg.onload=function(){
   instagramGoldCv=document.createElement("canvas");instagramGoldCv.width=instagramImg.naturalWidth;instagramGoldCv.height=instagramImg.naturalHeight;
   var goldCtx=instagramGoldCv.getContext("2d");goldCtx.drawImage(instagramImg,0,0);
   var pixels=goldCtx.getImageData(0,0,instagramGoldCv.width,instagramGoldCv.height),data=pixels.data;
-  for(var i=0;i<data.length;i+=4){
+  for(var y=70;y<1383;y++)for(var x=103;x<1169;x++){
+    var i=(y*instagramGoldCv.width+x)*4;
     var luminance=.299*data[i]+.587*data[i+1]+.114*data[i+2];
     data[i]=Math.min(255,luminance*1.08+18);
     data[i+1]=Math.min(255,luminance*.90+17);
