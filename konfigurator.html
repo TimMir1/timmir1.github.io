@@ -85,8 +85,10 @@ h1{font-size:22px;margin:16px 0 10px;line-height:1.25}.panel,.seo{font-family:Mo
 <div class="panel">
   <h1>Награды YouTube и Instagram на заказ</h1>
   <p class="edit">✎ На картинке пример. Текст на кнопке можно изменить: ниже есть поля, куда вы вписываете своё имя, название канала и число подписчиков. Картинка обновится сразу. Текст и настройки сохраняются в этом браузере.</p>
-  <label>Вид награды</label><div class="row" id="awards"></div><div id="youtube-options"><label>Материал</label><div class="row" id="mats"></div>
-  <label>Сторона</label><div class="row" id="sides"></div>
+  <label>Вид награды</label><div class="row" id="awards"></div>
+  <label>Материал</label><div class="row" id="mats"></div>
+  <div id="youtube-options"><label>Сторона</label><div class="row" id="sides"></div></div>
+  <div id="inscription-options">
   <label>Надпись</label><div class="row" id="txt"></div>
   <label>Язык надписи</label><div class="row" id="langs"></div>
   <label for="l1">Строка 1 (можно изменить)</label>
@@ -95,7 +97,6 @@ h1{font-size:22px;margin:16px 0 10px;line-height:1.25}.panel,.seo{font-family:Mo
   <input id="name" type="text" maxlength="26" value="Mira &amp; Solomon" autocomplete="off">
   <label for="l3">Строка 3 (например, число подписчиков)</label>
   <input id="l3" type="text" maxlength="40" autocomplete="off">
-  
   </div><div class="total"><span id="spec"></span><b id="price"></b></div>
   <label>Отправить заказ</label>
   <div class="row"><button class="send" data-c="wa" type="button">WhatsApp</button><button class="send" data-c="tg" type="button">Telegram</button></div>
@@ -134,7 +135,7 @@ var $=function(id){return document.getElementById(id)};
 var fmt=function(n){return n.toLocaleString("ru-RU")+" ₽"};
 var cv=$("cv"),ctx=cv.getContext("2d"),W=954,H=1174;
 
-var goldImg=new Image(),backImg=new Image(),instagramImg=new Image(),silverCv=null;
+var goldImg=new Image(),backImg=new Image(),instagramImg=new Image(),silverCv=null,instagramGoldCv=null;
 backImg.onload=function(){if(st.side==="back")draw()};
 backImg.src="assets/konfigurator-back.jpg";
 function drawPlatePhoto(g){g.drawImage(goldImg,0,0,W,H);}
@@ -148,7 +149,19 @@ goldImg.onload=function(){
   s.putImageData(d,0,0);draw();
 };
 goldImg.src="assets/konfigurator-front.jpg";
-instagramImg.onload=function(){if(st.award==="instagram")draw()};
+instagramImg.onload=function(){
+  instagramGoldCv=document.createElement("canvas");instagramGoldCv.width=W;instagramGoldCv.height=H;
+  var goldCtx=instagramGoldCv.getContext("2d");goldCtx.drawImage(instagramImg,0,0,W,H);
+  var pixels=goldCtx.getImageData(0,0,W,H),data=pixels.data;
+  for(var i=0;i<data.length;i+=4){
+    var luminance=.299*data[i]+.587*data[i+1]+.114*data[i+2];
+    data[i]=Math.min(255,luminance*1.08+22);
+    data[i+1]=Math.min(255,luminance*.86+12);
+    data[i+2]=Math.min(255,luminance*.58+5);
+  }
+  goldCtx.putImageData(pixels,0,0);
+  if(st.award==="instagram")draw();
+};
 instagramImg.src="assets/instagram-award.webp";
 
 function fit(g,t,size,min,w,wt){var s=size;do{g.font=wt+" "+s+"px "+FAM;s-=2}while(g.measureText(t).width>w&&s>min)}
@@ -183,11 +196,13 @@ function draw(){
   if(!FR[st.font]){FR[st.font]=1;Promise.all(STYLES[st.font].r.map(function(r){return document.fonts.load(r[0]+" "+r[1]+"px "+r[2],"Аб Ab 1")})).then(draw)}
   if(st.lang!==lastLang){lastLang=st.lang;$("l1").value=LANGS[st.lang].a;$("l3").value=defaultMilestone()}
   if(st.award==="instagram"){
-    if(instagramImg.complete&&instagramImg.naturalWidth){
-      var scale=Math.min(W/instagramImg.naturalWidth,H/instagramImg.naturalHeight);
-      var iw=instagramImg.naturalWidth*scale,ih=instagramImg.naturalHeight*scale;
+    var instaPlate=st.mat==="gold"&&instagramGoldCv?instagramGoldCv:instagramImg;
+    if(instaPlate.width&&instaPlate.height){
+      var scale=Math.min(W/instaPlate.width,H/instaPlate.height);
+      var iw=instaPlate.width*scale,ih=instaPlate.height*scale;
       ctx.fillStyle="#d6d6d6";ctx.fillRect(0,0,W,H);
-      ctx.drawImage(instagramImg,(W-iw)/2,(H-ih)/2,iw,ih);
+      ctx.drawImage(instaPlate,(W-iw)/2,(H-ih)/2,iw,ih);
+      if(st.txt==="on")ctx.drawImage(textLayer(),0,0);
     }
   }else if(st.side==="back"){drawBack()}
   else{
@@ -195,7 +210,7 @@ function draw(){
     if(st.txt==="on")ctx.drawImage(textLayer(),0,0);
   }
   var p=st.award==="instagram"?null:Math.round(MATS[st.mat].p*SIZES[st.size].k/100)*100;
-  $("price").textContent=p===null?"Цена по запросу":fmt(p);$("spec").textContent=st.award==="instagram"?"Instagram · серебро":MATS[st.mat].n;st.price=p;
+  $("price").textContent=p===null?"Цена по запросу":fmt(p);$("spec").textContent=st.award==="instagram"?"Instagram · "+MATS[st.mat].n:MATS[st.mat].n;st.price=p;
   saveDraft();
 }
 function defaultMilestone(){return LANGS[st.lang].b(st.mat==="gold"?(st.lang==="ru"?"1 000 000":"1,000,000"):(st.lang==="ru"?"100 000":"100,000"))}
@@ -221,11 +236,11 @@ try{
  }
 }catch(e){}
 
-function syncAward(){var insta=st.award==="instagram";$("youtube-options").hidden=insta;$("preview-hint").textContent=insta?"Серебряная награда Instagram по образцу.":"Нажмите на надпись на кнопке, чтобы изменить её.";$("cv").style.cursor=insta?"default":"text";$("canvas-edit").hidden=true;}
+function syncAward(){var insta=st.award==="instagram";$("youtube-options").hidden=insta;$("preview-hint").textContent=insta?"Выберите золото или серебро и измените текст в полях ниже.":"Нажмите на надпись на кнопке, чтобы изменить её.";$("cv").style.cursor=insta?"default":"text";$("canvas-edit").hidden=true;}
 chips($("awards"),AWARDS,"award");chips($("mats"),MATS,"mat");chips($("sides"),SIDES,"side");chips($("txt"),TXT,"txt");chips($("langs"),LANGS,"lang");syncAward();
 $("l1").oninput=$("name").oninput=$("l3").oninput=draw;
 function sendOrder(c){
-  var tx=st.award==="instagram"?"Здравствуйте! Хочу заказать серебряную награду Instagram по образцу. Стоимость прошу уточнить.": "Здравствуйте! Хочу заказать кнопку.\nМатериал: "+MATS[st.mat].n+"\n"+
+  var tx=st.award==="instagram"?"Здравствуйте! Хочу заказать "+MATS[st.mat].n.toLowerCase()+" награду Instagram по образцу.\\nНадпись:\\n"+(st.txt==="on"?[$("l1").value,$("name").value,$("l3").value].join("\\n"):"только логотип")+"\\nСтоимость прошу уточнить.": "Здравствуйте! Хочу заказать кнопку.\nМатериал: "+MATS[st.mat].n+"\n"+
     (st.txt==="on"?"Текст на кнопке:\n"+$("l1").value+"\n"+$("name").value+"\n"+$("l3").value+"\n":"Надпись: только логотип\n")+
     "Ориентировочная цена: "+fmt(st.price);
   var note=$("note");
@@ -284,7 +299,7 @@ $("download-preview").onclick=function(){
  cv.toBlob(function(blob){
   if(!blob){$("note").textContent="Не удалось сохранить макет. Попробуйте ещё раз.";return}
   var url=URL.createObjectURL(blob),a=document.createElement("a");
-  a.href=url;a.download=(st.award==="instagram"?"MIRA-PAPA-instagram":"MIRA-PAPA-"+st.mat+"-"+st.side)+".png";
+  a.href=url;a.download=(st.award==="instagram"?"MIRA-PAPA-instagram-"+st.mat:"MIRA-PAPA-"+st.mat+"-"+st.side)+".png";
   document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url)},30000);
  },"image/png");
 };
@@ -303,7 +318,7 @@ $("share-preview").onclick=async function(){
   // Prepare the file synchronously so the browser retains the click activation.
   var data=atob(cv.toDataURL("image/png").split(",")[1]),bytes=new Uint8Array(data.length);
   for(var i=0;i<data.length;i++)bytes[i]=data.charCodeAt(i);
-  var file=new File([bytes],(st.award==="instagram"?"MIRA-PAPA-instagram":"MIRA-PAPA-"+st.mat+"-"+st.side)+".png",{type:"image/png"});
+  var file=new File([bytes],(st.award==="instagram"?"MIRA-PAPA-instagram-"+st.mat:"MIRA-PAPA-"+st.mat+"-"+st.side)+".png",{type:"image/png"});
   if(!navigator.canShare({files:[file]})){
    message("Этот браузер не поддерживает отправку PNG. Нажмите «Скачать макет» и прикрепите его в чат.");return;
   }
