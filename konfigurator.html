@@ -83,9 +83,9 @@ h1{font-size:22px;margin:16px 0 10px;line-height:1.25}.panel,.seo{font-family:Mo
 </div>
 <dialog id="zoom-dialog" aria-label="Увеличенный макет кнопки"><button id="zoom-close" type="button">Закрыть ×</button><img id="zoom-image" alt="Ваш макет кнопки YouTube"></dialog>
 <div class="panel">
-  <h1>Кнопка YouTube на заказ</h1>
+  <h1>Награды YouTube и Instagram на заказ</h1>
   <p class="edit">✎ На картинке пример. Текст на кнопке можно изменить: ниже есть поля, куда вы вписываете своё имя, название канала и число подписчиков. Картинка обновится сразу. Текст и настройки сохраняются в этом браузере.</p>
-  <label>Материал</label><div class="row" id="mats"></div>
+  <label>Вид награды</label><div class="row" id="awards"></div><div id="youtube-options"><label>Материал</label><div class="row" id="mats"></div>
   <label>Сторона</label><div class="row" id="sides"></div>
   <label>Надпись</label><div class="row" id="txt"></div>
   <label>Язык надписи</label><div class="row" id="langs"></div>
@@ -96,7 +96,7 @@ h1{font-size:22px;margin:16px 0 10px;line-height:1.25}.panel,.seo{font-family:Mo
   <label for="l3">Строка 3 (например, число подписчиков)</label>
   <input id="l3" type="text" maxlength="40" autocomplete="off">
   
-  <div class="total"><span id="spec"></span><b id="price"></b></div>
+  </div><div class="total"><span id="spec"></span><b id="price"></b></div>
   <label>Отправить заказ</label>
   <div class="row"><button class="send" data-c="wa" type="button">WhatsApp</button><button class="send" data-c="tg" type="button">Telegram</button></div>
   <a id="tel" href="tel:+79779662521">Позвонить: 8 977 966-25-21</a>
@@ -104,7 +104,7 @@ h1{font-size:22px;margin:16px 0 10px;line-height:1.25}.panel,.seo{font-family:Mo
 </div>
 </main>
 <section class="seo">
-  <h2>Золотая и серебряная кнопка YouTube из металла</h2>
+  <h2>Золотая и серебряная кнопка YouTube, награда Instagram</h2>
   <p>Мастерская MIRA &amp; PAPA в Москве с 2014 года делает металлические награды на заказ. Эта кнопка повторяет форму кнопки YouTube Play Button: пластина со шлифованной фактурой, зеркальное окно с треугольником Play и логотип. На ней можно выгравировать имя автора или название канала и число подписчиков, например 100 000 или 1 000 000. Сзади кнопка чёрная, с двумя треугольными отверстиями для подвеса. Подходит как награда себе и как подарок блогеру, ютуберу или стримеру.</p>
   <h3>Можно ли изменить текст на кнопке?</h3>
   <p>Да. Меняются все три строки, язык (русский или английский), можно заказать кнопку только с логотипом.</p>
@@ -117,6 +117,7 @@ h1{font-size:22px;margin:16px 0 10px;line-height:1.25}.panel,.seo{font-family:Mo
 </section>
 <script>
 var TG = "KaramazovIvan"; // Telegram без @
+var AWARDS={youtube:{n:"YouTube"},instagram:{n:"Instagram"}};
 var MATS={gold:{n:"Золото",p:7800},silver:{n:"Серебро",p:6900}};
 var SIDES={front:{n:"Лицевая"},back:{n:"Обратная"}};
 var TXT={on:{n:"С именем"},off:{n:"Только логотип"}};
@@ -128,7 +129,7 @@ var STYLES={elegant:{n:"Элегантный",r:[["italic 400",26,PD],["700",40,
   script:{n:"Рукописный",r:[["italic 500",28,CG],["400",56,MS],["italic 500",33,CG]]},
   modern:{n:"Модерн",r:[["300",23,MO],["600",36,MO],["300",28,MO]]},
   classic:{n:"Классика",r:[["400",24,F0],["700",38,F0],["400",30,F0]]}};
-var lastLang=null,st={mat:"gold",side:"front",txt:"on",lang:"en",size:"M",font:"classic"};
+var lastLang=null,st={award:"youtube",mat:"gold",side:"front",txt:"on",lang:"en",size:"M",font:"classic"};
 var $=function(id){return document.getElementById(id)};
 var fmt=function(n){return n.toLocaleString("ru-RU")+" ₽"};
 var cv=$("cv"),ctx=cv.getContext("2d"),W=954,H=1174;
@@ -173,25 +174,38 @@ function drawBack(){
     g.strokeStyle="rgba(255,255,255,.22)";g.lineWidth=2;T(r+6);g.stroke();
     g.strokeStyle="rgba(0,0,0,.8)";T(r+3);g.stroke()});
 }
+function drawInstagram(){
+ var g=ctx,metal=g.createLinearGradient(-200,0,900,1000);
+ var steel=g.createLinearGradient(0,0,W,H);
+ steel.addColorStop(0,"#e1ded6");steel.addColorStop(.45,"#b8b7b0");steel.addColorStop(.68,"#dad8d0");steel.addColorStop(1,"#aaa9a3");
+ g.fillStyle=steel;g.fillRect(0,0,W,H);
+ for(var y=0;y<H;y+=2){g.fillStyle="rgba(255,255,255,"+(.035+Math.random()*.05)+")";g.fillRect(0,y,W,1)}
+ metal.addColorStop(0,"#46433f");metal.addColorStop(.22,"#c2bfb7");metal.addColorStop(.36,"#514d47");metal.addColorStop(.57,"#a29d95");metal.addColorStop(.78,"#494742");metal.addColorStop(1,"#c3c0b9");
+ g.save();g.translate(W/2,430);g.strokeStyle=metal;g.lineWidth=43;
+ g.beginPath();g.roundRect(-210,-210,420,420,108);g.stroke();
+ g.beginPath();g.arc(0,0,97,0,Math.PI*2);g.stroke();
+ g.fillStyle=metal;g.beginPath();g.arc(140,-140,28,0,Math.PI*2);g.fill();g.restore();
+ g.textAlign="center";g.font="italic 34px Georgia,serif";g.fillStyle="#f0efea";g.fillText("Instagram",W/2,1070);
+}
 function draw(){
   if(!silverCv)return;
   ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle="#fff";ctx.fillRect(0,0,cv.width,cv.height);
   ctx.setTransform(1,0,0,1,28,28);
   if(!FR[st.font]){FR[st.font]=1;Promise.all(STYLES[st.font].r.map(function(r){return document.fonts.load(r[0]+" "+r[1]+"px "+r[2],"Аб Ab 1")})).then(draw)}
   if(st.lang!==lastLang){lastLang=st.lang;$("l1").value=LANGS[st.lang].a;$("l3").value=defaultMilestone()}
-  if(st.side==="back"){drawBack()}
+  if(st.award==="instagram"){drawInstagram()}else if(st.side==="back"){drawBack()}
   else{
     if(st.mat==="silver")ctx.drawImage(silverCv,0,0);else drawPlatePhoto(ctx);
     if(st.txt==="on")ctx.drawImage(textLayer(),0,0);
   }
-  var p=Math.round(MATS[st.mat].p*SIZES[st.size].k/100)*100;
-  $("price").textContent=fmt(p);$("spec").textContent=MATS[st.mat].n;st.price=p;
+  var p=st.award==="instagram"?null:Math.round(MATS[st.mat].p*SIZES[st.size].k/100)*100;
+  $("price").textContent=p===null?"Цена по запросу":fmt(p);$("spec").textContent=st.award==="instagram"?"Instagram · серебро":MATS[st.mat].n;st.price=p;
   saveDraft();
 }
 function defaultMilestone(){return LANGS[st.lang].b(st.mat==="gold"?(st.lang==="ru"?"1 000 000":"1,000,000"):(st.lang==="ru"?"100 000":"100,000"))}
 function chips(box,obj,key){Object.keys(obj).forEach(function(k){
   var b=document.createElement("button");b.className="chip";b.type="button";b.textContent=obj[k].n;b.setAttribute("aria-pressed",st[key]===k);
-  b.onclick=function(){st[key]=k;if(key==="mat")$("l3").value=defaultMilestone();[].forEach.call(box.children,function(x){x.setAttribute("aria-pressed","false")});b.setAttribute("aria-pressed","true");draw()};
+  b.onclick=function(){st[key]=k;if(key==="mat")$("l3").value=defaultMilestone();if(key==="award")syncAward();[].forEach.call(box.children,function(x){x.setAttribute("aria-pressed","false")});b.setAttribute("aria-pressed","true");draw()};
   box.appendChild(b)})}
 
 var DRAFT_KEY="mira-papa-award-draft-v2";
@@ -201,7 +215,7 @@ function saveDraft(){
 try{
  var draft=JSON.parse(localStorage.getItem(DRAFT_KEY)||"null");
  if(draft&&draft.state&&Array.isArray(draft.lines)&&draft.lines.length===3){
-  [["mat",MATS],["side",SIDES],["txt",TXT],["lang",LANGS],["size",SIZES],["font",STYLES]].forEach(function(pair){
+  [["award",AWARDS],["mat",MATS],["side",SIDES],["txt",TXT],["lang",LANGS],["size",SIZES],["font",STYLES]].forEach(function(pair){
    if(Object.prototype.hasOwnProperty.call(pair[1],draft.state[pair[0]]))st[pair[0]]=draft.state[pair[0]];
   });
   ["l1","name","l3"].forEach(function(id,i){if(typeof draft.lines[i]==="string")$(id).value=draft.lines[i].slice(0,$(id).maxLength)});
@@ -211,10 +225,11 @@ try{
  }
 }catch(e){}
 
-chips($("mats"),MATS,"mat");chips($("sides"),SIDES,"side");chips($("txt"),TXT,"txt");chips($("langs"),LANGS,"lang");
+function syncAward(){var insta=st.award==="instagram";$("youtube-options").hidden=insta;$("preview-hint").textContent=insta?"Серебряная награда Instagram по образцу.":"Нажмите на надпись на кнопке, чтобы изменить её.";$("cv").style.cursor=insta?"default":"text";$("canvas-edit").hidden=true;}
+chips($("awards"),AWARDS,"award");chips($("mats"),MATS,"mat");chips($("sides"),SIDES,"side");chips($("txt"),TXT,"txt");chips($("langs"),LANGS,"lang");syncAward();
 $("l1").oninput=$("name").oninput=$("l3").oninput=draw;
 function sendOrder(c){
-  var tx="Здравствуйте! Хочу заказать кнопку.\nМатериал: "+MATS[st.mat].n+"\n"+
+  var tx=st.award==="instagram"?"Здравствуйте! Хочу заказать серебряную награду Instagram по образцу. Стоимость прошу уточнить.": "Здравствуйте! Хочу заказать кнопку.\nМатериал: "+MATS[st.mat].n+"\n"+
     (st.txt==="on"?"Текст на кнопке:\n"+$("l1").value+"\n"+$("name").value+"\n"+$("l3").value+"\n":"Надпись: только логотип\n")+
     "Ориентировочная цена: "+fmt(st.price);
   var note=$("note");
@@ -246,7 +261,7 @@ function finishInline(){
  if(activeLine){$(activeLine).value=inlineEdit.value;activeLine=null;inlineEdit.hidden=true;draw()}
 }
 cv.addEventListener("click",function(e){
- if(st.side!=="front"||st.txt!=="on")return;
+ if(st.award==="instagram"||st.side!=="front"||st.txt!=="on")return;
  var rect=cv.getBoundingClientRect(),x=(e.clientX-rect.left)*cv.width/rect.width-28,y=(e.clientY-rect.top)*cv.height/rect.height-28;
  if(x<70||x>884||y<768||y>914)return;
  finishInline();
