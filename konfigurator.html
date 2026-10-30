@@ -152,12 +152,12 @@ goldImg.src="assets/konfigurator-front.jpg";
 instagramImg.onload=function(){
   instagramGoldCv=document.createElement("canvas");instagramGoldCv.width=instagramImg.naturalWidth;instagramGoldCv.height=instagramImg.naturalHeight;
   var goldCtx=instagramGoldCv.getContext("2d");goldCtx.drawImage(instagramImg,0,0);
-  var pixels=goldCtx.getImageData(0,0,W,H),data=pixels.data;
+  var pixels=goldCtx.getImageData(0,0,instagramGoldCv.width,instagramGoldCv.height),data=pixels.data;
   for(var i=0;i<data.length;i+=4){
     var luminance=.299*data[i]+.587*data[i+1]+.114*data[i+2];
-    data[i]=Math.min(255,luminance*1.08+22);
-    data[i+1]=Math.min(255,luminance*.86+12);
-    data[i+2]=Math.min(255,luminance*.58+5);
+    data[i]=Math.min(255,luminance*1.08+18);
+    data[i+1]=Math.min(255,luminance*.90+17);
+    data[i+2]=Math.min(255,luminance*.70+15);
   }
   goldCtx.putImageData(pixels,0,0);
   if(st.award==="instagram")draw();
