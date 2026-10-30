@@ -150,8 +150,8 @@ goldImg.onload=function(){
 };
 goldImg.src="assets/konfigurator-front.jpg";
 instagramImg.onload=function(){
-  instagramGoldCv=document.createElement("canvas");instagramGoldCv.width=W;instagramGoldCv.height=H;
-  var goldCtx=instagramGoldCv.getContext("2d");goldCtx.drawImage(instagramImg,0,0,W,H);
+  instagramGoldCv=document.createElement("canvas");instagramGoldCv.width=instagramImg.naturalWidth;instagramGoldCv.height=instagramImg.naturalHeight;
+  var goldCtx=instagramGoldCv.getContext("2d");goldCtx.drawImage(instagramImg,0,0);
   var pixels=goldCtx.getImageData(0,0,W,H),data=pixels.data;
   for(var i=0;i<data.length;i+=4){
     var luminance=.299*data[i]+.587*data[i+1]+.114*data[i+2];
@@ -240,7 +240,7 @@ function syncAward(){var insta=st.award==="instagram";$("youtube-options").hidde
 chips($("awards"),AWARDS,"award");chips($("mats"),MATS,"mat");chips($("sides"),SIDES,"side");chips($("txt"),TXT,"txt");chips($("langs"),LANGS,"lang");syncAward();
 $("l1").oninput=$("name").oninput=$("l3").oninput=draw;
 function sendOrder(c){
-  var tx=st.award==="instagram"?"Здравствуйте! Хочу заказать "+MATS[st.mat].n.toLowerCase()+" награду Instagram по образцу.\\nНадпись:\\n"+(st.txt==="on"?[$("l1").value,$("name").value,$("l3").value].join("\\n"):"только логотип")+"\\nСтоимость прошу уточнить.": "Здравствуйте! Хочу заказать кнопку.\nМатериал: "+MATS[st.mat].n+"\n"+
+  var tx=st.award==="instagram"?"Здравствуйте! Хочу заказать "+MATS[st.mat].n.toLowerCase()+" награду Instagram по образцу.\nНадпись:\n"+(st.txt==="on"?[$("l1").value,$("name").value,$("l3").value].join("\n"):"только логотип")+"\nСтоимость прошу уточнить.": "Здравствуйте! Хочу заказать кнопку.\nМатериал: "+MATS[st.mat].n+"\n"+
     (st.txt==="on"?"Текст на кнопке:\n"+$("l1").value+"\n"+$("name").value+"\n"+$("l3").value+"\n":"Надпись: только логотип\n")+
     "Ориентировочная цена: "+fmt(st.price);
   var note=$("note");
