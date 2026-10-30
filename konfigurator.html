@@ -134,7 +134,7 @@ var $=function(id){return document.getElementById(id)};
 var fmt=function(n){return n.toLocaleString("ru-RU")+" ₽"};
 var cv=$("cv"),ctx=cv.getContext("2d"),W=954,H=1174;
 
-var goldImg=new Image(),backImg=new Image(),silverCv=null;
+var goldImg=new Image(),backImg=new Image(),instagramImg=new Image(),silverCv=null;
 backImg.onload=function(){if(st.side==="back")draw()};
 backImg.src="assets/konfigurator-back.jpg";
 function drawPlatePhoto(g){g.drawImage(goldImg,0,0,W,H);}
@@ -148,6 +148,8 @@ goldImg.onload=function(){
   s.putImageData(d,0,0);draw();
 };
 goldImg.src="assets/konfigurator-front.jpg";
+instagramImg.onload=function(){if(st.award==="instagram")draw()};
+instagramImg.src="assets/instagram-award.webp";
 
 function fit(g,t,size,min,w,wt){var s=size;do{g.font=wt+" "+s+"px "+FAM;s-=2}while(g.measureText(t).width>w&&s>min)}
 function textLayer(){ // гравировка: светлые буквы с лёгкой шлифовкой поверх
@@ -174,26 +176,20 @@ function drawBack(){
     g.strokeStyle="rgba(255,255,255,.22)";g.lineWidth=2;T(r+6);g.stroke();
     g.strokeStyle="rgba(0,0,0,.8)";T(r+3);g.stroke()});
 }
-function drawInstagram(){
- var g=ctx,metal=g.createLinearGradient(-200,0,900,1000);
- var steel=g.createLinearGradient(0,0,W,H);
- steel.addColorStop(0,"#e1ded6");steel.addColorStop(.45,"#b8b7b0");steel.addColorStop(.68,"#dad8d0");steel.addColorStop(1,"#aaa9a3");
- g.fillStyle=steel;g.fillRect(0,0,W,H);
- for(var y=0;y<H;y+=2){g.fillStyle="rgba(255,255,255,"+(.035+Math.random()*.05)+")";g.fillRect(0,y,W,1)}
- metal.addColorStop(0,"#46433f");metal.addColorStop(.22,"#c2bfb7");metal.addColorStop(.36,"#514d47");metal.addColorStop(.57,"#a29d95");metal.addColorStop(.78,"#494742");metal.addColorStop(1,"#c3c0b9");
- g.save();g.translate(W/2,430);g.strokeStyle=metal;g.lineWidth=43;
- g.beginPath();g.roundRect(-210,-210,420,420,108);g.stroke();
- g.beginPath();g.arc(0,0,97,0,Math.PI*2);g.stroke();
- g.fillStyle=metal;g.beginPath();g.arc(140,-140,28,0,Math.PI*2);g.fill();g.restore();
- g.textAlign="center";g.font="italic 34px Georgia,serif";g.fillStyle="#f0efea";g.fillText("Instagram",W/2,1070);
-}
 function draw(){
   if(!silverCv)return;
   ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle="#fff";ctx.fillRect(0,0,cv.width,cv.height);
   ctx.setTransform(1,0,0,1,28,28);
   if(!FR[st.font]){FR[st.font]=1;Promise.all(STYLES[st.font].r.map(function(r){return document.fonts.load(r[0]+" "+r[1]+"px "+r[2],"Аб Ab 1")})).then(draw)}
   if(st.lang!==lastLang){lastLang=st.lang;$("l1").value=LANGS[st.lang].a;$("l3").value=defaultMilestone()}
-  if(st.award==="instagram"){drawInstagram()}else if(st.side==="back"){drawBack()}
+  if(st.award==="instagram"){
+    if(instagramImg.complete&&instagramImg.naturalWidth){
+      var scale=Math.min(W/instagramImg.naturalWidth,H/instagramImg.naturalHeight);
+      var iw=instagramImg.naturalWidth*scale,ih=instagramImg.naturalHeight*scale;
+      ctx.fillStyle="#d6d6d6";ctx.fillRect(0,0,W,H);
+      ctx.drawImage(instagramImg,(W-iw)/2,(H-ih)/2,iw,ih);
+    }
+  }else if(st.side==="back"){drawBack()}
   else{
     if(st.mat==="silver")ctx.drawImage(silverCv,0,0);else drawPlatePhoto(ctx);
     if(st.txt==="on")ctx.drawImage(textLayer(),0,0);
@@ -288,7 +284,7 @@ $("download-preview").onclick=function(){
  cv.toBlob(function(blob){
   if(!blob){$("note").textContent="Не удалось сохранить макет. Попробуйте ещё раз.";return}
   var url=URL.createObjectURL(blob),a=document.createElement("a");
-  a.href=url;a.download="MIRA-PAPA-"+st.mat+"-"+st.side+".png";
+  a.href=url;a.download=(st.award==="instagram"?"MIRA-PAPA-instagram":"MIRA-PAPA-"+st.mat+"-"+st.side)+".png";
   document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url)},30000);
  },"image/png");
 };
@@ -307,7 +303,7 @@ $("share-preview").onclick=async function(){
   // Prepare the file synchronously so the browser retains the click activation.
   var data=atob(cv.toDataURL("image/png").split(",")[1]),bytes=new Uint8Array(data.length);
   for(var i=0;i<data.length;i++)bytes[i]=data.charCodeAt(i);
-  var file=new File([bytes],"MIRA-PAPA-"+st.mat+"-"+st.side+".png",{type:"image/png"});
+  var file=new File([bytes],(st.award==="instagram"?"MIRA-PAPA-instagram":"MIRA-PAPA-"+st.mat+"-"+st.side)+".png",{type:"image/png"});
   if(!navigator.canShare({files:[file]})){
    message("Этот браузер не поддерживает отправку PNG. Нажмите «Скачать макет» и прикрепите его в чат.");return;
   }
