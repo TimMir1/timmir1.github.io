@@ -227,7 +227,7 @@ function chips(box,obj,key){Object.keys(obj).forEach(function(k){
     var previous=st[key];st[key]=k;
     if(key==="mat")$("l3").value=defaultMilestone();
     if(key==="award"){
-      if(previous!==k&&/^For passing [\\d, ]+ (subscribers|followers)$/i.test($("l3").value))$("l3").value=defaultMilestone();
+      if(previous!==k&&/^For passing [0-9, ]+ (subscribers|followers)$/i.test($("l3").value))$("l3").value=defaultMilestone();
       syncAward();
     }
     [].forEach.call(box.children,function(x){x.setAttribute("aria-pressed","false")});
@@ -248,7 +248,7 @@ try{
   ["l1","name","l3"].forEach(function(id,i){if(typeof draft.lines[i]==="string")$(id).value=draft.lines[i].slice(0,$(id).maxLength)});
   if($("name").value==="Alex Dingo")$("name").value="Mira & Solomon";
   if(/50[ ,]609/.test($("l3").value))$("l3").value=defaultMilestone();
-  if(st.award==="instagram"&&/^For passing [\\d, ]+ subscribers$/i.test($("l3").value))$("l3").value=defaultMilestone();
+  if(st.award==="instagram"&&/^For passing [0-9, ]+ subscribers$/i.test($("l3").value))$("l3").value=defaultMilestone();
   lastLang=st.lang;
  }
 }catch(e){}
