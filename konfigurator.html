@@ -178,7 +178,7 @@ function drawBack(){
 }
 function draw(){
   if(!silverCv)return;
-  ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle="#fff";ctx.fillRect(0,0,cv.width,cv.height);
+  ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle=st.award==="instagram"?"#d6d6d6":"#fff";ctx.fillRect(0,0,cv.width,cv.height);
   ctx.setTransform(1,0,0,1,28,28);
   if(!FR[st.font]){FR[st.font]=1;Promise.all(STYLES[st.font].r.map(function(r){return document.fonts.load(r[0]+" "+r[1]+"px "+r[2],"Аб Ab 1")})).then(draw)}
   if(st.lang!==lastLang){lastLang=st.lang;$("l1").value=LANGS[st.lang].a;$("l3").value=defaultMilestone()}
