@@ -71,6 +71,19 @@ h1{font-size:22px;margin:16px 0 10px;line-height:1.25}.panel,.seo{font-family:Mo
 .home-link:hover{background:var(--bg)}
 .home-link:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 </style>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=114485701', 'ym');
+
+    ym(114485701, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/114485701" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
 </head>
 <body>
 <nav class="site-nav" aria-label="Навигация"><a class="home-link" href="https://timmir1.github.io/">Каталог кнопок на сайте</a></nav>
@@ -272,6 +285,7 @@ function sendOrder(c){
     document.body.removeChild(el);
   }
   copyOrder();
+  try{ym(114485701,"reachGoal",c==="wa"?"order_whatsapp":"order_telegram")}catch(e){}
   if(c==="wa"){
     var deep="whatsapp://send?phone=79779662521&text="+encodeURIComponent(tx);
     var web="https://wa.me/79779662521?text="+encodeURIComponent(tx);
