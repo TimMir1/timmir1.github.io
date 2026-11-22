@@ -44,10 +44,14 @@ h1{font-size:22px;margin:16px 0 10px;line-height:1.25}.panel,.seo{font-family:Mo
 #cv{display:block;width:auto;max-width:100%;height:min(44svh,380px);object-fit:contain}
 .panel input[type=text]{scroll-margin-top:calc(min(44svh,380px) + 54px);scroll-margin-bottom:24px}
 @media(min-width:800px){
- .configurator{max-width:560px;padding:0}
- #cv{width:460px;max-width:100%;height:auto;aspect-ratio:1010/1230}
- .panel input[type=text]{scroll-margin-top:620px}
- .panel{width:100%;border:1px solid var(--line);border-radius:16px}
+ /* Десктоп: макет слева, панель управления и строки справа */
+ .configurator{max-width:1120px;padding:8px 24px 24px;display:grid;grid-template-columns:minmax(0,1fr) minmax(340px,440px);gap:32px;align-items:start}
+ #stage{position:sticky;top:16px;padding:0;box-shadow:none;background:transparent}
+ #cv{width:auto;max-width:100%;height:min(calc(100dvh - 150px),680px);aspect-ratio:1010/1230}
+ .panel input[type=text]{scroll-margin-top:24px}
+ .panel{width:100%;margin:0;border:1px solid var(--line);border-radius:16px}
+ .site-nav{max-width:1120px;padding:12px 24px}
+ .seo{max-width:1120px;padding:24px 24px 40px}
 }
 @media(max-width:799px){
  .configurator:focus-within #cv{height:min(30dvh,230px)}
