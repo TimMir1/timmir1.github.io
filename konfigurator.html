@@ -96,7 +96,7 @@ h1{font-size:22px;margin:16px 0 10px;line-height:1.25}.panel,.seo{font-family:Mo
 </div>
 <dialog id="zoom-dialog" aria-label="Увеличенный макет кнопки"><button id="zoom-close" type="button">Закрыть ×</button><img id="zoom-image" alt="Ваш макет кнопки YouTube"></dialog>
 <div class="panel">
-  <h1>Награды YouTube и Instagram на заказ</h1>
+  <h1>Награды YouTube, Instagram и ВКонтакте на заказ</h1>
   <p class="edit">✎ На картинке пример. Текст на кнопке можно изменить: ниже есть поля, куда вы вписываете своё имя, название канала и число подписчиков. Картинка обновится сразу. Текст и настройки сохраняются в этом браузере.</p>
   <label>Вид награды</label><div class="row" id="awards"></div>
   <label>Материал</label><div class="row" id="mats"></div>
@@ -131,7 +131,7 @@ h1{font-size:22px;margin:16px 0 10px;line-height:1.25}.panel,.seo{font-family:Mo
 </section>
 <script>
 var TG = "+79779662521"; // Telegram по номеру телефона
-var AWARDS={youtube:{n:"YouTube"},instagram:{n:"Instagram"}};
+var AWARDS={youtube:{n:"YouTube"},instagram:{n:"Instagram"},vk:{n:"ВКонтакте"}};
 var MATS={gold:{n:"Золото",p:9400},silver:{n:"Серебро",p:8300}};
 var SIDES={front:{n:"Лицевая"},back:{n:"Обратная"}};
 var TXT={on:{n:"С именем"},off:{n:"Только логотип"}};
@@ -179,6 +179,17 @@ instagramImg.onload=function(){
   if(st.award==="instagram")draw();
 };
 instagramImg.src="assets/instagram-award.webp";
+// ВКонтакте: снимок золотой, серебро получаем обесцвечиванием
+var vkImg=new Image(),vkSilverCv=null;
+vkImg.onload=function(){
+  vkSilverCv=document.createElement("canvas");vkSilverCv.width=vkImg.naturalWidth;vkSilverCv.height=vkImg.naturalHeight;
+  var g=vkSilverCv.getContext("2d");g.drawImage(vkImg,0,0);
+  var d=g.getImageData(0,0,vkSilverCv.width,vkSilverCv.height),p=d.data;
+  for(var i=0;i<p.length;i+=4){var l=.299*p[i]+.587*p[i+1]+.114*p[i+2],v=Math.min(255,l*1.08+6);p[i]=v*.985;p[i+1]=v*.992;p[i+2]=v}
+  g.putImageData(d,0,0);
+  if(st.award==="vk")draw();
+};
+vkImg.src="assets/vk-award.webp";
 
 function fit(g,t,size,min,w,wt){var s=size;do{g.font=wt+" "+s+"px "+FAM;s-=2}while(g.measureText(t).width>w&&s>min)}
 function textLayer(){ // гравировка: светлые буквы с лёгкой шлифовкой поверх
@@ -220,18 +231,27 @@ function draw(){
       ctx.drawImage(instaPlate,(W-iw)/2,(H-ih)/2,iw,ih);
       if(st.txt==="on")ctx.drawImage(textLayer(),0,0);
     }
+  }else if(st.award==="vk"){
+    var vkPlate=st.mat==="silver"&&vkSilverCv?vkSilverCv:vkImg;
+    ctx.fillStyle="#fff";ctx.fillRect(0,0,W,H);
+    if(vkPlate.width&&vkPlate.height){
+      var vs=Math.min(W/vkPlate.width,H/vkPlate.height),vw=vkPlate.width*vs,vh=vkPlate.height*vs;
+      ctx.drawImage(vkPlate,(W-vw)/2,(H-vh)/2,vw,vh);
+      if(st.txt==="on")ctx.drawImage(textLayer(),0,0);
+    }
   }else if(st.side==="back"){drawBack()}
   else{
     if(st.mat==="silver")ctx.drawImage(silverCv,0,0);else drawPlatePhoto(ctx);
     if(st.txt==="on")ctx.drawImage(textLayer(),0,0);
   }
-  var p=st.award==="instagram"?null:Math.round(MATS[st.mat].p*SIZES[st.size].k/100)*100;
-  $("price").textContent=p===null?"Цена по запросу":fmt(p);$("spec").textContent=st.award==="instagram"?"Instagram · "+MATS[st.mat].n:MATS[st.mat].n;st.price=p;
+  var p=st.award!=="youtube"?null:Math.round(MATS[st.mat].p*SIZES[st.size].k/100)*100;
+  $("price").textContent=p===null?"Цена по запросу":fmt(p);$("spec").textContent=st.award!=="youtube"?AWARDS[st.award].n+" · "+MATS[st.mat].n:MATS[st.mat].n;st.price=p;
   saveDraft();
 }
 function defaultMilestone(){
   var count=st.mat==="gold"?(st.lang==="ru"?"1 000 000":"1,000,000"):(st.lang==="ru"?"100 000":"100,000");
   if(st.award==="instagram")return st.lang==="ru"?"За достижение "+count+" подписчиков":"For passing "+count+" followers";
+  if(st.award==="vk")return st.lang==="ru"?"За достижение "+count+" подписчиков":"For passing "+count+" subscribers";
   return LANGS[st.lang].b(count);
 }
 function chips(box,obj,key){Object.keys(obj).forEach(function(k){
@@ -266,11 +286,11 @@ try{
  }
 }catch(e){}
 
-function syncAward(){var insta=st.award==="instagram";$("youtube-options").hidden=insta;$("preview-hint").textContent=insta?"Выберите золото или серебро и измените текст в полях ниже.":"Нажмите на надпись на кнопке, чтобы изменить её.";$("cv").style.cursor=insta?"default":"text";$("canvas-edit").hidden=true;}
+function syncAward(){var insta=st.award!=="youtube";$("youtube-options").hidden=insta;$("preview-hint").textContent=insta?"Выберите золото или серебро и измените текст в полях ниже.":"Нажмите на надпись на кнопке, чтобы изменить её.";$("cv").style.cursor=insta?"default":"text";$("canvas-edit").hidden=true;}
 chips($("awards"),AWARDS,"award");chips($("mats"),MATS,"mat");chips($("sides"),SIDES,"side");chips($("txt"),TXT,"txt");chips($("langs"),LANGS,"lang");syncAward();
 $("l1").oninput=$("name").oninput=$("l3").oninput=draw;
 function sendOrder(c){
-  var tx=st.award==="instagram"?"Здравствуйте! Хочу заказать "+MATS[st.mat].n.toLowerCase()+" награду Instagram по образцу.\nНадпись:\n"+(st.txt==="on"?[$("l1").value,$("name").value,$("l3").value].join("\n"):"только логотип")+"\nСтоимость прошу уточнить.": "Здравствуйте! Хочу заказать кнопку.\nМатериал: "+MATS[st.mat].n+"\n"+
+  var tx=st.award!=="youtube"?"Здравствуйте! Хочу заказать "+MATS[st.mat].n.toLowerCase()+" награду "+AWARDS[st.award].n+" по образцу.\nНадпись:\n"+(st.txt==="on"?[$("l1").value,$("name").value,$("l3").value].join("\n"):"только логотип")+"\nСтоимость прошу уточнить.": "Здравствуйте! Хочу заказать кнопку.\nМатериал: "+MATS[st.mat].n+"\n"+
     (st.txt==="on"?"Текст на кнопке:\n"+$("l1").value+"\n"+$("name").value+"\n"+$("l3").value+"\n":"Надпись: только логотип\n")+
     "Ориентировочная цена: "+fmt(st.price);
   var note=$("note");
@@ -303,7 +323,7 @@ function finishInline(){
  if(activeLine){$(activeLine).value=inlineEdit.value;activeLine=null;inlineEdit.hidden=true;draw()}
 }
 cv.addEventListener("click",function(e){
- if(st.award==="instagram"||st.side!=="front"||st.txt!=="on")return;
+ if(st.award!=="youtube"||st.side!=="front"||st.txt!=="on")return;
  var rect=cv.getBoundingClientRect(),x=(e.clientX-rect.left)*cv.width/rect.width-28,y=(e.clientY-rect.top)*cv.height/rect.height-28;
  if(x<70||x>884||y<768||y>914)return;
  finishInline();
@@ -330,7 +350,7 @@ $("download-preview").onclick=function(){
  cv.toBlob(function(blob){
   if(!blob){$("note").textContent="Не удалось сохранить макет. Попробуйте ещё раз.";return}
   var url=URL.createObjectURL(blob),a=document.createElement("a");
-  a.href=url;a.download=(st.award==="instagram"?"MIRA-PAPA-instagram-"+st.mat:"MIRA-PAPA-"+st.mat+"-"+st.side)+".png";
+  a.href=url;a.download=(st.award!=="youtube"?"MIRA-PAPA-"+st.award+"-"+st.mat:"MIRA-PAPA-"+st.mat+"-"+st.side)+".png";
   document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url)},30000);
  },"image/png");
 };
@@ -349,7 +369,7 @@ $("share-preview").onclick=async function(){
   // Prepare the file synchronously so the browser retains the click activation.
   var data=atob(cv.toDataURL("image/png").split(",")[1]),bytes=new Uint8Array(data.length);
   for(var i=0;i<data.length;i++)bytes[i]=data.charCodeAt(i);
-  var file=new File([bytes],(st.award==="instagram"?"MIRA-PAPA-instagram-"+st.mat:"MIRA-PAPA-"+st.mat+"-"+st.side)+".png",{type:"image/png"});
+  var file=new File([bytes],(st.award!=="youtube"?"MIRA-PAPA-"+st.award+"-"+st.mat:"MIRA-PAPA-"+st.mat+"-"+st.side)+".png",{type:"image/png"});
   if(!navigator.canShare({files:[file]})){
    message("Этот браузер не поддерживает отправку PNG. Нажмите «Скачать макет» и прикрепите его в чат.");return;
   }
