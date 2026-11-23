@@ -74,6 +74,9 @@ h1{font-size:22px;margin:16px 0 10px;line-height:1.25}.panel,.seo{font-family:Mo
 .home-link{display:inline-flex;align-items:center;min-height:44px;padding:10px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--text);font:inherit;text-decoration:none}
 .home-link:hover{background:var(--bg)}
 .home-link:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.panel label.tex-upload{display:flex;align-items:center;justify-content:center;margin:0;color:var(--text);font-size:14px;text-align:center}
+.visually-hidden{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none}
+.panel input[type=range]{width:100%;accent-color:var(--accent)}
 </style>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
@@ -104,7 +107,17 @@ h1{font-size:22px;margin:16px 0 10px;line-height:1.25}.panel,.seo{font-family:Mo
   <p class="edit">✎ На картинке пример. Текст на кнопке можно изменить: ниже есть поля, куда вы вписываете своё имя, название канала и число подписчиков. Картинка обновится сразу. Текст и настройки сохраняются в этом браузере.</p>
   <label>Вид награды</label><div class="row" id="awards"></div>
   <label>Материал</label><div class="row" id="mats"></div>
-  <div id="youtube-options"><label>Сторона</label><div class="row" id="sides"></div></div>
+  <div id="youtube-options"><label>Сторона</label><div class="row" id="sides"></div>
+  <div id="texture-options">
+   <label>Свой узор на пластине</label>
+   <div class="row"><label class="chip tex-upload" for="tex-file">Загрузить картинку</label><input id="tex-file" type="file" accept="image/*" class="visually-hidden"><button class="chip" id="tex-clear" type="button" hidden>Убрать узор</button></div>
+   <div id="tex-controls" hidden>
+    <label>Как разместить</label><div class="row" id="texmodes"></div>
+    <label for="tex-scale">Размер узора</label><input id="tex-scale" type="range" min="60" max="700" value="200">
+    <label for="tex-strength">Насыщенность</label><input id="tex-strength" type="range" min="15" max="100" value="90">
+   </div>
+  </div>
+  </div>
   <div id="inscription-options">
   <label>Надпись</label><div class="row" id="txt"></div>
   <label>Язык надписи</label><div class="row" id="langs"></div>
@@ -147,7 +160,8 @@ var STYLES={elegant:{n:"Элегантный",r:[["italic 400",26,PD],["700",40,
   script:{n:"Рукописный",r:[["italic 500",28,CG],["400",56,MS],["italic 500",33,CG]]},
   modern:{n:"Модерн",r:[["300",23,MO],["600",36,MO],["300",28,MO]]},
   classic:{n:"Классика",r:[["400",24,F0],["700",38,F0],["400",30,F0]]}};
-var lastLang=null,st={award:"youtube",mat:"gold",side:"front",txt:"on",lang:"en",size:"M",font:"classic"};
+var TEXMODES={tile:{n:"Плиткой"},cover:{n:"На всю кнопку"}};
+var lastLang=null,st={award:"youtube",mat:"gold",side:"front",txt:"on",lang:"en",size:"M",font:"classic",texMode:"tile",texScale:200,texStrength:90};
 var $=function(id){return document.getElementById(id)};
 var fmt=function(n){return n.toLocaleString("ru-RU")+" ₽"};
 var cv=$("cv"),ctx=cv.getContext("2d"),W=954,H=1174;
@@ -163,7 +177,7 @@ goldImg.onload=function(){
   var d=s.getImageData(0,0,W,H),p=d.data;
   for(var i=0;i<p.length;i+=4){var l=.299*p[i]+.587*p[i+1]+.114*p[i+2],v=Math.min(255,l*1.12+4);
     p[i]=v*.985;p[i+1]=v*.992;p[i+2]=v}
-  s.putImageData(d,0,0);draw();
+  s.putImageData(d,0,0);buildLogoMask();draw();
 };
 goldImg.src="assets/konfigurator-front.jpg";
 instagramImg.onload=function(){
@@ -194,6 +208,81 @@ vkImg.onload=function(){
   if(st.award==="vk")draw();
 };
 vkImg.src="assets/vk-award.webp";
+
+// ---- Свой узор на пластине ----
+var texImg=null,texCache=null,texKey="",logoMaskCv=null,logoCache={};
+var TEX_KEY="mira-papa-award-texture-v1";
+function windowPath(g){ // зеркальное окно (без треугольника) в координатах снимка
+  var x0=221,y0=222,x1=729,y1=589,r=82;
+  g.beginPath();g.moveTo(x0+r,y0);g.lineTo(x1-r,y0);g.quadraticCurveTo(x1,y0,x1,y0+r);g.lineTo(x1,y1-r);g.quadraticCurveTo(x1,y1,x1-r,y1);
+  g.lineTo(x0+r,y1);g.quadraticCurveTo(x0,y1,x0,y1-r);g.lineTo(x0,y0+r);g.quadraticCurveTo(x0,y0,x0+r,y0);g.closePath();
+  g.moveTo(424,334);g.lineTo(550,408);g.lineTo(424,482);g.closePath();
+}
+function buildLogoMask(){ // логотип YouTube внизу: светлые серые пиксели золотого снимка
+  logoMaskCv=document.createElement("canvas");logoMaskCv.width=W;logoMaskCv.height=H;
+  var g=logoMaskCv.getContext("2d");drawPlatePhoto(g);
+  var x0=315,y0=960,w=325,h=100,d=g.getImageData(x0,y0,w,h),p=d.data;
+  g.clearRect(0,0,W,H);
+  for(var i=0;i<p.length;i+=4){var r=p[i],gg=p[i+1],b=p[i+2],mx=Math.max(r,gg,b),mn=Math.min(r,gg,b);
+    p[i+3]=(mx-mn<30&&(r+gg+b)/3>165)?255:0;p[i]=p[i+1]=p[i+2]=0}
+  g.putImageData(d,x0,y0);
+  // чуть расширяем маску, чтобы края букв остались чистыми
+  var c=document.createElement("canvas");c.width=W;c.height=H;var cg=c.getContext("2d");
+  [[0,0],[1,0],[-1,0],[0,1],[0,-1]].forEach(function(o){cg.drawImage(logoMaskCv,o[0],o[1])});
+  logoMaskCv=c;
+}
+function logoFor(plate){
+  var k=st.mat;if(logoCache[k])return logoCache[k];
+  var c=document.createElement("canvas");c.width=W;c.height=H;var g=c.getContext("2d");
+  g.drawImage(plate,0,0,W,H);g.globalCompositeOperation="destination-in";g.drawImage(logoMaskCv,0,0);
+  return logoCache[k]=c;
+}
+function texLayer(){
+  var k=st.texMode+"|"+st.texScale;if(texCache&&texKey===k)return texCache;
+  var c=document.createElement("canvas");c.width=W;c.height=H;var g=c.getContext("2d");
+  var iw=texImg.naturalWidth,ih=texImg.naturalHeight;
+  if(st.texMode==="cover"){
+    var s=Math.max(W/iw,H/ih);g.drawImage(texImg,(W-iw*s)/2,(H-ih*s)/2,iw*s,ih*s);
+  }else{
+    var tw=+st.texScale,th=tw*ih/iw,t=document.createElement("canvas");
+    t.width=Math.max(1,Math.round(tw));t.height=Math.max(1,Math.round(th));t.getContext("2d").drawImage(texImg,0,0,t.width,t.height);
+    g.fillStyle=g.createPattern(t,"repeat");g.translate((W/2)%t.width,(H/2)%t.height);g.fillRect(-t.width,-t.height,W+2*t.width,H+2*t.height);
+  }
+  texKey=k;return texCache=c;
+}
+function drawFront(){
+  var plate=st.mat==="silver"?silverCv:goldImg;
+  ctx.drawImage(plate,0,0,W,H);
+  if(!texImg||!texImg.naturalWidth)return;
+  ctx.save();ctx.globalCompositeOperation="multiply";ctx.globalAlpha=st.texStrength/100;ctx.drawImage(texLayer(),0,0);ctx.restore();
+  ctx.save();windowPath(ctx);ctx.clip("evenodd");ctx.drawImage(plate,0,0,W,H);ctx.restore();
+  if(logoMaskCv)ctx.drawImage(logoFor(plate),0,0);
+}
+function setTexture(src,save){
+  var img=new Image();
+  img.onload=function(){
+    texImg=img;texCache=null;texKey="";
+    $("tex-clear").hidden=false;$("tex-controls").hidden=false;
+    if(save){try{localStorage.setItem(TEX_KEY,src)}catch(e){try{localStorage.removeItem(TEX_KEY)}catch(e2){}}}
+    try{ym(114485701,"reachGoal","texture_upload")}catch(e){}
+    draw();
+  };
+  img.onerror=function(){$("note").textContent="Не удалось открыть картинку. Попробуйте JPG или PNG."};
+  img.src=src;
+}
+function readTexture(file){
+  if(!file||!/^image\//.test(file.type)){$("note").textContent="Выберите файл-картинку (JPG, PNG, WEBP).";return}
+  var url=URL.createObjectURL(file),img=new Image();
+  img.onload=function(){ // уменьшаем до 1200 px, чтобы сохранить в браузере
+    var s=Math.min(1,1200/Math.max(img.naturalWidth,img.naturalHeight)),c=document.createElement("canvas");
+    c.width=Math.round(img.naturalWidth*s);c.height=Math.round(img.naturalHeight*s);c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+    URL.revokeObjectURL(url);
+    var data=c.toDataURL("image/png");if(data.length>2500000)data=c.toDataURL("image/jpeg",.9);
+    $("note").textContent="";setTexture(data,true);
+  };
+  img.onerror=function(){URL.revokeObjectURL(url);$("note").textContent="Не удалось открыть картинку. Попробуйте JPG или PNG."};
+  img.src=url;
+}
 
 function fit(g,t,size,min,w,wt){var s=size;do{g.font=wt+" "+s+"px "+FAM;s-=2}while(g.measureText(t).width>w&&s>min)}
 function textLayer(){ // гравировка: светлые буквы с лёгкой шлифовкой поверх
@@ -245,11 +334,12 @@ function draw(){
     }
   }else if(st.side==="back"){drawBack()}
   else{
-    if(st.mat==="silver")ctx.drawImage(silverCv,0,0);else drawPlatePhoto(ctx);
+    drawFront();
     if(st.txt==="on")ctx.drawImage(textLayer(),0,0);
   }
   var p=st.award!=="youtube"?null:Math.round(MATS[st.mat].p*SIZES[st.size].k/100)*100;
   $("price").textContent=p===null?"Цена по запросу":fmt(p);$("spec").textContent=st.award!=="youtube"?AWARDS[st.award].n+" · "+MATS[st.mat].n:MATS[st.mat].n;st.price=p;
+  $("texture-options").hidden=st.side!=="front";
   saveDraft();
 }
 function defaultMilestone(){
@@ -279,23 +369,31 @@ function saveDraft(){
 try{
  var draft=JSON.parse(localStorage.getItem(DRAFT_KEY)||"null");
  if(draft&&draft.state&&Array.isArray(draft.lines)&&draft.lines.length===3){
-  [["award",AWARDS],["mat",MATS],["side",SIDES],["txt",TXT],["lang",LANGS],["size",SIZES],["font",STYLES]].forEach(function(pair){
+  [["award",AWARDS],["mat",MATS],["side",SIDES],["txt",TXT],["lang",LANGS],["size",SIZES],["font",STYLES],["texMode",TEXMODES]].forEach(function(pair){
    if(Object.prototype.hasOwnProperty.call(pair[1],draft.state[pair[0]]))st[pair[0]]=draft.state[pair[0]];
   });
   ["l1","name","l3"].forEach(function(id,i){if(typeof draft.lines[i]==="string")$(id).value=draft.lines[i].slice(0,$(id).maxLength)});
   if($("name").value==="Alex Dingo")$("name").value="Mira & Solomon";
   if(/50[ ,]609/.test($("l3").value))$("l3").value=defaultMilestone();
   if(st.award==="instagram"&&/^For passing [0-9, ]+ subscribers$/i.test($("l3").value))$("l3").value=defaultMilestone();
+  ["texScale","texStrength"].forEach(function(k){var v=+draft.state[k];if(v>=15&&v<=700)st[k]=v});
   lastLang=st.lang;
  }
 }catch(e){}
 
 function syncAward(){var insta=st.award!=="youtube";$("youtube-options").hidden=insta;$("preview-hint").textContent=insta?"Выберите золото или серебро и измените текст в полях ниже.":"Нажмите на надпись на кнопке, чтобы изменить её.";$("cv").style.cursor=insta?"default":"text";$("canvas-edit").hidden=true;}
-chips($("awards"),AWARDS,"award");chips($("mats"),MATS,"mat");chips($("sides"),SIDES,"side");chips($("txt"),TXT,"txt");chips($("langs"),LANGS,"lang");syncAward();
+chips($("awards"),AWARDS,"award");chips($("mats"),MATS,"mat");chips($("sides"),SIDES,"side");chips($("txt"),TXT,"txt");chips($("langs"),LANGS,"lang");chips($("texmodes"),TEXMODES,"texMode");syncAward();
+$("tex-scale").value=st.texScale;$("tex-strength").value=st.texStrength;
+$("tex-scale").oninput=function(){st.texScale=+this.value;if(st.texMode!=="tile"){st.texMode="tile";[].forEach.call($("texmodes").children,function(x,i){x.setAttribute("aria-pressed",i===0)})}draw()};
+$("tex-strength").oninput=function(){st.texStrength=+this.value;draw()};
+$("tex-file").onchange=function(){readTexture(this.files&&this.files[0]);this.value=""};
+$("tex-clear").onclick=function(){texImg=null;texCache=null;this.hidden=true;$("tex-controls").hidden=true;try{localStorage.removeItem(TEX_KEY)}catch(e){}draw()};
+try{var savedTex=localStorage.getItem(TEX_KEY);if(savedTex)setTexture(savedTex,false)}catch(e){}
 $("l1").oninput=$("name").oninput=$("l3").oninput=draw;
 function sendOrder(c){
   var tx=st.award!=="youtube"?"Здравствуйте! Хочу заказать "+MATS[st.mat].n.toLowerCase()+" награду "+AWARDS[st.award].n+" по образцу.\nНадпись:\n"+(st.txt==="on"?[$("l1").value,$("name").value,$("l3").value].join("\n"):"только логотип")+"\nСтоимость прошу уточнить.": "Здравствуйте! Хочу заказать кнопку.\nМатериал: "+MATS[st.mat].n+"\n"+
     (st.txt==="on"?"Текст на кнопке:\n"+$("l1").value+"\n"+$("name").value+"\n"+$("l3").value+"\n":"Надпись: только логотип\n")+
+    (texImg&&st.side==="front"?"Свой узор на пластине: да (картинку узора пришлю в чат)\n":"")+
     "Ориентировочная цена: "+fmt(st.price);
   var note=$("note");
   note.textContent="Текст заказа скопирован. Если сообщение не вставилось автоматически, вставьте его в чат.";
