@@ -114,6 +114,8 @@ h1{font-size:22px;margin:16px 0 10px;line-height:1.25}.panel,.seo{font-family:Mo
    <div id="tex-controls" hidden>
     <label>Как разместить</label><div class="row" id="texmodes"></div>
     <label for="tex-scale">Размер узора</label><input id="tex-scale" type="range" min="60" max="700" value="200">
+    <label for="tex-rotate">Поворот узора: <span id="tex-rotate-val">0°</span></label><input id="tex-rotate" type="range" min="-180" max="180" step="1" value="0">
+    <div class="row" style="margin-top:8px"><button class="chip" type="button" data-rot="-45">↺ 45°</button><button class="chip" type="button" data-rot="0">Прямо</button><button class="chip" type="button" data-rot="45">↻ 45°</button></div>
     <label for="tex-strength">Насыщенность</label><input id="tex-strength" type="range" min="15" max="100" value="90">
    </div>
   </div>
@@ -161,7 +163,7 @@ var STYLES={elegant:{n:"Элегантный",r:[["italic 400",26,PD],["700",40,
   modern:{n:"Модерн",r:[["300",23,MO],["600",36,MO],["300",28,MO]]},
   classic:{n:"Классика",r:[["400",24,F0],["700",38,F0],["400",30,F0]]}};
 var TEXMODES={tile:{n:"Плиткой"},cover:{n:"На всю кнопку"}};
-var lastLang=null,st={award:"youtube",mat:"gold",side:"front",txt:"on",lang:"en",size:"M",font:"classic",texMode:"tile",texScale:200,texStrength:90};
+var lastLang=null,st={award:"youtube",mat:"gold",side:"front",txt:"on",lang:"en",size:"M",font:"classic",texMode:"tile",texScale:200,texStrength:90,texRot:0};
 var $=function(id){return document.getElementById(id)};
 var fmt=function(n){return n.toLocaleString("ru-RU")+" ₽"};
 var cv=$("cv"),ctx=cv.getContext("2d"),W=954,H=1174;
@@ -246,15 +248,18 @@ function logoFor(plate){
   return logoCache[k]=c;
 }
 function texLayer(){
-  var k=st.texMode+"|"+st.texScale;if(texCache&&texKey===k)return texCache;
+  var k=st.texMode+"|"+st.texScale+"|"+st.texRot;if(texCache&&texKey===k)return texCache;
   var c=document.createElement("canvas");c.width=W;c.height=H;var g=c.getContext("2d");
   var iw=texImg.naturalWidth,ih=texImg.naturalHeight;
-  if(st.texMode==="cover"){
-    var s=Math.max(W/iw,H/ih);g.drawImage(texImg,(W-iw*s)/2,(H-ih*s)/2,iw*s,ih*s);
+  var a=st.texRot*Math.PI/180,ca=Math.abs(Math.cos(a)),sa=Math.abs(Math.sin(a));
+  g.translate(W/2,H/2);g.rotate(a);
+  if(st.texMode==="cover"){ // после поворота картинка всё равно закрывает всю пластину
+    var s=Math.max((W*ca+H*sa)/iw,(W*sa+H*ca)/ih);g.drawImage(texImg,-iw*s/2,-ih*s/2,iw*s,ih*s);
   }else{
     var tw=+st.texScale,th=tw*ih/iw,t=document.createElement("canvas");
     t.width=Math.max(1,Math.round(tw));t.height=Math.max(1,Math.round(th));t.getContext("2d").drawImage(texImg,0,0,t.width,t.height);
-    g.fillStyle=g.createPattern(t,"repeat");g.translate((W/2)%t.width,(H/2)%t.height);g.fillRect(-t.width,-t.height,W+2*t.width,H+2*t.height);
+    var R=Math.ceil(Math.hypot(W,H)/2)+Math.max(t.width,t.height);
+    g.fillStyle=g.createPattern(t,"repeat");g.translate(-t.width/2,-t.height/2);g.fillRect(-R,-R,2*R,2*R);
   }
   if(plateMaskCv){g.setTransform(1,0,0,1,0,0);g.globalCompositeOperation="destination-in";g.drawImage(plateMaskCv,0,0)}
   texKey=k;return texCache=c;
@@ -386,6 +391,7 @@ try{
   if(/50[ ,]609/.test($("l3").value))$("l3").value=defaultMilestone();
   if(st.award==="instagram"&&/^For passing [0-9, ]+ subscribers$/i.test($("l3").value))$("l3").value=defaultMilestone();
   ["texScale","texStrength"].forEach(function(k){var v=+draft.state[k];if(v>=15&&v<=700)st[k]=v});
+  var rv=+draft.state.texRot;if(rv>=-180&&rv<=180)st.texRot=rv;
   lastLang=st.lang;
  }
 }catch(e){}
@@ -395,6 +401,10 @@ chips($("awards"),AWARDS,"award");chips($("mats"),MATS,"mat");chips($("sides"),S
 $("tex-scale").value=st.texScale;$("tex-strength").value=st.texStrength;
 $("tex-scale").oninput=function(){st.texScale=+this.value;if(st.texMode!=="tile"){st.texMode="tile";[].forEach.call($("texmodes").children,function(x,i){x.setAttribute("aria-pressed",i===0)})}draw()};
 $("tex-strength").oninput=function(){st.texStrength=+this.value;draw()};
+function setRot(v){v=((Math.round(v)+180)%360+360)%360-180;st.texRot=v;$("tex-rotate").value=v;$("tex-rotate-val").textContent=v+"°";draw()}
+$("tex-rotate").value=st.texRot;$("tex-rotate-val").textContent=st.texRot+"°";
+$("tex-rotate").oninput=function(){setRot(+this.value)};
+[].forEach.call(document.querySelectorAll("[data-rot]"),function(b){b.onclick=function(){var d=+b.dataset.rot;setRot(d===0?0:st.texRot+d)}});
 $("tex-file").onchange=function(){readTexture(this.files&&this.files[0]);this.value=""};
 $("tex-clear").onclick=function(){texImg=null;texCache=null;this.hidden=true;$("tex-controls").hidden=true;try{localStorage.removeItem(TEX_KEY)}catch(e){}draw()};
 try{var savedTex=localStorage.getItem(TEX_KEY);if(savedTex)setTexture(savedTex,false)}catch(e){}
