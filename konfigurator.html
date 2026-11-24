@@ -77,6 +77,8 @@ h1{font-size:22px;margin:16px 0 10px;line-height:1.25}.panel,.seo{font-family:Mo
 .panel label.tex-upload{display:flex;align-items:center;justify-content:center;margin:0;color:var(--text);font-size:14px;text-align:center}
 .visually-hidden{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none}
 .panel input[type=range]{width:100%;accent-color:var(--accent)}
+.line-head{display:flex;align-items:flex-end;gap:8px}.line-head label{flex:1}
+.moves{display:flex;gap:4px;margin-bottom:4px}.mv{width:36px;height:32px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--text);font:inherit;font-size:16px;cursor:pointer}.mv:disabled{opacity:.3;cursor:default}
 </style>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
@@ -123,12 +125,15 @@ h1{font-size:22px;margin:16px 0 10px;line-height:1.25}.panel,.seo{font-family:Mo
   <div id="inscription-options">
   <label>Надпись</label><div class="row" id="txt"></div>
   <label>Язык надписи</label><div class="row" id="langs"></div>
-  <label for="l1">Строка 1 (можно изменить)</label>
-  <input id="l1" type="text" maxlength="30" autocomplete="off">
-  <label for="name">Строка 2: имя или название канала</label>
-  <input id="name" type="text" maxlength="60" value="Mira &amp; Solomon" autocomplete="off">
-  <label for="l3">Строка 3 (например, число подписчиков)</label>
-  <input id="l3" type="text" maxlength="40" autocomplete="off">
+  <div id="lines">
+  <div class="line" data-i="0"><div class="line-head"><label for="l1">Мелкая строка (например, «Награждается»)</label><span class="moves"><button type="button" class="mv" data-d="-1" aria-label="Поднять строку выше">↑</button><button type="button" class="mv" data-d="1" aria-label="Опустить строку ниже">↓</button></span></div>
+  <input id="l1" type="text" maxlength="40" autocomplete="off"></div>
+  <div class="line" data-i="1"><div class="line-head"><label for="name">Крупная строка: имя или название канала</label><span class="moves"><button type="button" class="mv" data-d="-1" aria-label="Поднять строку выше">↑</button><button type="button" class="mv" data-d="1" aria-label="Опустить строку ниже">↓</button></span></div>
+  <input id="name" type="text" maxlength="60" value="Mira &amp; Solomon" autocomplete="off"></div>
+  <div class="line" data-i="2"><div class="line-head"><label for="l3">Средняя строка (число подписчиков или пожелание)</label><span class="moves"><button type="button" class="mv" data-d="-1" aria-label="Поднять строку выше">↑</button><button type="button" class="mv" data-d="1" aria-label="Опустить строку ниже">↓</button></span></div>
+  <input id="l3" type="text" maxlength="40" autocomplete="off"></div>
+  </div>
+  <p class="preview-hint" style="text-align:left">Стрелки ↑ ↓ меняют порядок строк на кнопке. Размер шрифта переезжает вместе с текстом.</p>
   </div><div class="total"><span id="spec"></span><b id="price"></b></div>
   <label>Отправить заказ</label>
   <div class="row"><button class="send" data-c="wa" type="button">WhatsApp</button><button class="send" data-c="tg" type="button">Telegram</button></div>
@@ -163,7 +168,8 @@ var STYLES={elegant:{n:"Элегантный",r:[["italic 400",26,PD],["700",40,
   modern:{n:"Модерн",r:[["300",23,MO],["600",36,MO],["300",28,MO]]},
   classic:{n:"Классика",r:[["400",24,F0],["700",38,F0],["400",30,F0]]}};
 var TEXMODES={tile:{n:"Плиткой"},cover:{n:"На всю кнопку"}};
-var lastLang=null,st={award:"youtube",mat:"gold",side:"front",txt:"on",lang:"en",size:"M",font:"classic",texMode:"tile",texScale:200,texStrength:90,texRot:0};
+var lastLang=null,st={award:"youtube",mat:"gold",side:"front",txt:"on",lang:"en",size:"M",font:"classic",texMode:"tile",texScale:200,texStrength:90,texRot:0,order:[0,1,2]};
+var LINE_IDS=["l1","name","l3"],ROW_Y=[796,841,886];
 var $=function(id){return document.getElementById(id)};
 var fmt=function(n){return n.toLocaleString("ru-RU")+" ₽"};
 var cv=$("cv"),ctx=cv.getContext("2d"),W=954,H=1174;
@@ -303,7 +309,7 @@ function textLayer(){ // гравировка: светлые буквы с лё
   var c=document.createElement("canvas");c.width=W;c.height=H;var g=c.getContext("2d");
   g.textAlign="center";g.textBaseline="middle";
   var L1=$("l1").value.trim(),a=$("name").value.trim(),b=$("l3").value.trim();
-  var S=STYLES[st.font].r,rows=[[L1,S[0][1],S[0][0],796,S[0][2]],[a,S[1][1],S[1][0],841,S[1][2]],[b,S[2][1],S[2][0],886,S[2][2]]];
+  var S=STYLES[st.font].r,T=[L1,a,b],rows=st.order.map(function(i,pos){return [T[i],S[i][1],S[i][0],ROW_Y[pos],S[i][2]]}); // размер едет вместе с текстом
   [[1,"rgba(0,0,0,.22)"],[0,"rgba(255,255,255,.78)"]].forEach(function(o){
     g.fillStyle=o[1];rows.forEach(function(r){FAM=r[4];fit(g,r[0],r[1],16,720,r[2]);g.fillText(r[0],477,r[3]+o[0])})});
   g.globalCompositeOperation="destination-out";
@@ -391,6 +397,7 @@ try{
   if(/50[ ,]609/.test($("l3").value))$("l3").value=defaultMilestone();
   if(st.award==="instagram"&&/^For passing [0-9, ]+ subscribers$/i.test($("l3").value))$("l3").value=defaultMilestone();
   ["texScale","texStrength"].forEach(function(k){var v=+draft.state[k];if(v>=15&&v<=700)st[k]=v});
+  var o=draft.state.order;if(Array.isArray(o)&&o.length===3&&o.slice().sort().join()==="0,1,2")st.order=o.map(Number);
   var rv=+draft.state.texRot;if(rv>=-180&&rv<=180)st.texRot=rv;
   lastLang=st.lang;
  }
@@ -409,9 +416,20 @@ $("tex-file").onchange=function(){readTexture(this.files&&this.files[0]);this.va
 $("tex-clear").onclick=function(){texImg=null;texCache=null;this.hidden=true;$("tex-controls").hidden=true;try{localStorage.removeItem(TEX_KEY)}catch(e){}draw()};
 try{var savedTex=localStorage.getItem(TEX_KEY);if(savedTex)setTexture(savedTex,false)}catch(e){}
 $("l1").oninput=$("name").oninput=$("l3").oninput=draw;
+function orderedLines(){return st.order.map(function(i){return $(LINE_IDS[i]).value})}
+function syncOrder(){
+  var box=$("lines");st.order.forEach(function(i){box.appendChild(box.querySelector('.line[data-i="'+i+'"]'))});
+  [].forEach.call(box.children,function(row,pos){row.querySelector('[data-d="-1"]').disabled=pos===0;row.querySelector('[data-d="1"]').disabled=pos===2});
+}
+[].forEach.call(document.querySelectorAll(".mv"),function(btn){btn.onclick=function(){
+  var row=btn.closest(".line"),i=+row.dataset.i,pos=st.order.indexOf(i),to=pos+(+btn.dataset.d);
+  if(to<0||to>2)return;st.order[pos]=st.order[to];st.order[to]=i;syncOrder();draw();
+  (btn.disabled?row.querySelector(".mv:not(:disabled)"):btn).focus();
+}});
+syncOrder();
 function sendOrder(c){
-  var tx=st.award!=="youtube"?"Здравствуйте! Хочу заказать "+MATS[st.mat].n.toLowerCase()+" награду "+AWARDS[st.award].n+" по образцу.\nНадпись:\n"+(st.txt==="on"?[$("l1").value,$("name").value,$("l3").value].join("\n"):"только логотип")+"\nСтоимость прошу уточнить.": "Здравствуйте! Хочу заказать кнопку.\nМатериал: "+MATS[st.mat].n+"\n"+
-    (st.txt==="on"?"Текст на кнопке:\n"+$("l1").value+"\n"+$("name").value+"\n"+$("l3").value+"\n":"Надпись: только логотип\n")+
+  var tx=st.award!=="youtube"?"Здравствуйте! Хочу заказать "+MATS[st.mat].n.toLowerCase()+" награду "+AWARDS[st.award].n+" по образцу.\nНадпись:\n"+(st.txt==="on"?orderedLines().join("\n"):"только логотип")+"\nСтоимость прошу уточнить.": "Здравствуйте! Хочу заказать кнопку.\nМатериал: "+MATS[st.mat].n+"\n"+
+    (st.txt==="on"?"Текст на кнопке (сверху вниз):\n"+orderedLines().join("\n")+"\n":"Надпись: только логотип\n")+
     (texImg&&st.side==="front"?"Свой узор на пластине: да (картинку узора пришлю в чат)\n":"")+
     "Ориентировочная цена: "+fmt(st.price);
   var note=$("note");
@@ -449,7 +467,7 @@ cv.addEventListener("click",function(e){
  if(x<70||x>884||y<768||y>914)return;
  finishInline();
  var index=y<819?0:y<864?1:2;
- activeLine=["l1","name","l3"][index];
+ activeLine=LINE_IDS[st.order[index]];
  inlineEdit.maxLength=$(activeLine).maxLength;inlineEdit.value=$(activeLine).value;
  inlineEdit.style.top=(([796,841,886][index]+28)/cv.height*100)+"%";
  inlineEdit.hidden=false;inlineEdit.focus({preventScroll:true});inlineEdit.select();
