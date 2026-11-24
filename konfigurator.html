@@ -218,13 +218,24 @@ vkImg.onload=function(){
 vkImg.src="assets/vk-award.webp";
 
 // ---- Свой узор на пластине ----
-var texImg=null,texCache=null,texKey="",logoMaskCv=null,plateMaskCv=null,logoCache={};
+var texImg=null,texCache=null,texKey="",logoMaskCv=null,plateMaskCv=null,winMaskCv=null,winCache={},logoCache={};
 var TEX_KEY="mira-papa-award-texture-v1";
 function windowPath(g){ // зеркальное окно (без треугольника) в координатах снимка
   var x0=221,y0=222,x1=729,y1=589,r=82;
   g.beginPath();g.moveTo(x0+r,y0);g.lineTo(x1-r,y0);g.quadraticCurveTo(x1,y0,x1,y0+r);g.lineTo(x1,y1-r);g.quadraticCurveTo(x1,y1,x1-r,y1);
   g.lineTo(x0+r,y1);g.quadraticCurveTo(x0,y1,x0,y1-r);g.lineTo(x0,y0+r);g.quadraticCurveTo(x0,y0,x0+r,y0);g.closePath();
   g.moveTo(424,334);g.lineTo(550,408);g.lineTo(424,482);g.closePath();
+}
+function buildWinMask(){ // окно + чистая полоска металла вокруг окна и треугольника
+  winMaskCv=document.createElement("canvas");winMaskCv.width=W;winMaskCv.height=H;
+  var g=winMaskCv.getContext("2d");g.fillStyle=g.strokeStyle="#000";
+  windowPath(g);g.fill("evenodd");g.lineWidth=16;g.lineJoin="round";g.stroke();
+}
+function winFor(plate){
+  var k=st.mat;if(winCache[k])return winCache[k];
+  var c=document.createElement("canvas");c.width=W;c.height=H;var g=c.getContext("2d");
+  g.drawImage(plate,0,0,W,H);g.globalCompositeOperation="destination-in";g.drawImage(winMaskCv,0,0);
+  return winCache[k]=c;
 }
 function buildPlateMask(){ // маска самой пластины: всё, что не белый фон снимка
   plateMaskCv=document.createElement("canvas");plateMaskCv.width=W;plateMaskCv.height=H;
@@ -275,7 +286,7 @@ function drawFront(){
   ctx.drawImage(plate,0,0,W,H);
   if(!texImg||!texImg.naturalWidth)return;
   ctx.save();ctx.globalCompositeOperation="multiply";ctx.globalAlpha=st.texStrength/100;ctx.drawImage(texLayer(),0,0);ctx.restore();
-  ctx.save();windowPath(ctx);ctx.clip("evenodd");ctx.drawImage(plate,0,0,W,H);ctx.restore();
+  if(!winMaskCv)buildWinMask();ctx.drawImage(winFor(plate),0,0);
   if(logoMaskCv)ctx.drawImage(logoFor(plate),0,0);
 }
 function setTexture(src,save){
